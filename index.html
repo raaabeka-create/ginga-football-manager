@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Ghana Football Manager</title>
+    <title>Ginga FM</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,9 +15,9 @@
 
 <header>
 
-    <h1>Ghana Football Manager</h1>
+    <h1>GINGA FM</h1>
 
-    <p>Manager Dashboard</p>
+    <p>Ghana Football Management Simulation</p>
 
 </header>
 
@@ -54,24 +54,35 @@
     <main class="main">
 
 
-        <!-- CLUB INFORMATION -->
+        <!-- MANAGER / CLUB INFORMATION -->
 
         <div class="card">
 
-            <h2>Welcome, Manager</h2>
+            <h2>Welcome to Ginga FM</h2>
 
             <p>
-                Your football journey begins here.
+                Your football management career begins here.
+            </p>
+
+            <p>
+                <strong>Manager:</strong>
+                <span id="managerName">
+                    New Manager
+                </span>
             </p>
 
             <p>
                 <strong>Club:</strong>
-                Accra Lions FC
+                <span id="clubName">
+                    No club selected
+                </span>
             </p>
 
             <p>
                 <strong>League:</strong>
-                Ghana Premier Division
+                <span id="leagueName">
+                    Ghana Premier Division
+                </span>
             </p>
 
         </div>
@@ -88,7 +99,7 @@
                 <p>League Position</p>
 
                 <h2 id="position">
-                    1st
+                    -
                 </h2>
 
             </div>
@@ -111,12 +122,26 @@
 
                 <p>Balance</p>
 
-                <h2>
-                    GH₵ 500,000
+                <h2 id="balance">
+                    GH₵ 0
                 </h2>
 
             </div>
 
+
+        </div>
+
+
+
+        <!-- DATABASE STATUS -->
+
+        <div class="card">
+
+            <h2>Ginga FM World</h2>
+
+            <p id="databaseStatus">
+                Connecting to football world...
+            </p>
 
         </div>
 
@@ -128,21 +153,19 @@
 
             <h2>Next Match</h2>
 
-            <p>
-                Accra Lions FC
-                vs
-                Kumasi Warriors
+            <p id="nextMatch">
+                No fixture loaded.
             </p>
 
-            <p>
-                Saturday — 15:00
+            <p id="matchTime">
+                -
             </p>
 
         </div>
 
 
 
-        <!-- MATCH RESULT -->
+        <!-- LATEST MATCH -->
 
         <div class="card">
 
@@ -161,7 +184,26 @@
 
 
 
-<!-- GAME DATA -->
+<!-- ========================================= -->
+<!-- SUPABASE -->
+<!-- ========================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabaseClient.js"></script>
+
+
+
+<!-- ========================================= -->
+<!-- TEMPORARY GAME FILES -->
+<!-- ========================================= -->
+
+<!--
+    These files are still present while we transition
+    Ginga FM from local JavaScript data to Supabase.
+
+    We will replace them properly later.
+-->
 
 <script src="clubs.js"></script>
 
@@ -170,6 +212,7 @@
 <script src="matchEngine.js"></script>
 
 <script src="game.js"></script>
+
 
 
 </body>
