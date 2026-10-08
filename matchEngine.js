@@ -1,35 +1,27 @@
 // ==========================================
-// GHANA FOOTBALL MANAGER - MATCH ENGINE
+// GHANA FOOTBALL MANAGER
+// MATCH ENGINE
 // ==========================================
 
-// Simulate a football match
 function simulateMatch(homeTeam, awayTeam) {
 
-    // ------------------------------
-    // 1. HOME ADVANTAGE
-    // ------------------------------
+    // Home advantage
     const homeAdvantage = 3;
 
-    // ------------------------------
-    // 2. TEAM STRENGTH
-    // ------------------------------
+    // Team strength
     const homeStrength = homeTeam.strength + homeAdvantage;
     const awayStrength = awayTeam.strength;
 
-    // ------------------------------
-    // 3. STRENGTH DIFFERENCE
-    // ------------------------------
-    const strengthDifference = homeStrength - awayStrength;
+    // Difference between teams
+    const strengthDifference =
+        homeStrength - awayStrength;
 
-    // ------------------------------
-    // 4. INITIAL SCORE
-    // ------------------------------
+    // Starting score
     let homeGoals = 0;
     let awayGoals = 0;
 
-    // ------------------------------
-    // 5. CREATE SCORING CHANCES
-    // ------------------------------
+
+    // Create scoring opportunities
     for (let i = 0; i < 10; i++) {
 
         const homeChance =
@@ -38,63 +30,35 @@ function simulateMatch(homeTeam, awayTeam) {
         const awayChance =
             Math.random() * 100 - strengthDifference;
 
-        // Home team scores
+
         if (homeChance > 92) {
             homeGoals++;
         }
 
-        // Away team scores
+
         if (awayChance > 94) {
             awayGoals++;
         }
+
     }
 
-    // ------------------------------
-    // 6. RETURN MATCH RESULT
-    // ------------------------------
+
+    // Prevent unrealistic scores
+    homeGoals = Math.min(homeGoals, 6);
+    awayGoals = Math.min(awayGoals, 6);
+
+
+    // Return result
     return {
+
         homeTeam: homeTeam.name,
+
         awayTeam: awayTeam.name,
+
         homeGoals: homeGoals,
+
         awayGoals: awayGoals
+
     };
+
 }
-
-
-// ==========================================
-// TEST MATCH
-// ==========================================
-
-const homeTeam = {
-    name: "Accra Lions FC",
-    strength: 78
-};
-
-const awayTeam = {
-    name: "Kumasi Warriors",
-    strength: 76
-};
-
-
-// ==========================================
-// RUN THE MATCH
-// ==========================================
-
-const result = simulateMatch(homeTeam, awayTeam);
-
-
-// ==========================================
-// DISPLAY RESULT
-// ==========================================
-
-console.log("MATCH RESULT");
-console.log("-------------------------");
-console.log(
-    result.homeTeam +
-    " " +
-    result.homeGoals +
-    " - " +
-    result.awayGoals +
-    " " +
-    result.awayTeam
-);
