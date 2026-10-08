@@ -1,70 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Ghana Football Manager</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 
 <body>
 
 <header>
+
     <h1>Ghana Football Manager</h1>
+
     <p>Manager Dashboard</p>
+
 </header>
+
 
 <div class="container">
 
+
+    <!-- SIDEBAR -->
+
     <aside class="sidebar">
+
         <h3>MENU</h3>
 
         <button>Dashboard</button>
+
         <button>Squad</button>
+
         <button>Tactics</button>
+
         <button>Transfers</button>
+
         <button>Fixtures</button>
+
         <button>League Table</button>
+
         <button>Finances</button>
+
     </aside>
+
+
+
+    <!-- MAIN GAME AREA -->
 
     <main class="main">
 
+
+        <!-- CLUB INFORMATION -->
+
         <div class="card">
+
             <h2>Welcome, Manager</h2>
-            <p>Your football journey begins here.</p>
-            <p><strong>Club:</strong> Accra Lions FC</p>
-            <p><strong>League:</strong> Ghana Premier Division</p>
+
+            <p>
+                Your football journey begins here.
+            </p>
+
+            <p>
+                <strong>Club:</strong>
+                Accra Lions FC
+            </p>
+
+            <p>
+                <strong>League:</strong>
+                Ghana Premier Division
+            </p>
+
         </div>
+
+
+
+        <!-- CLUB STATISTICS -->
 
         <div class="stats">
 
+
             <div class="stat">
+
                 <p>League Position</p>
-                <h2>1st</h2>
+
+                <h2 id="position">
+                    1st
+                </h2>
+
             </div>
 
+
+
             <div class="stat">
+
                 <p>Points</p>
-                <h2>0</h2>
+
+                <h2 id="points">
+                    0
+                </h2>
+
             </div>
 
+
+
             <div class="stat">
+
                 <p>Balance</p>
-                <h2>GH₵ 500,000</h2>
+
+                <h2>
+                    GH₵ 500,000
+                </h2>
+
             </div>
+
 
         </div>
+
+
+
+        <!-- NEXT MATCH -->
 
         <div class="card">
+
             <h2>Next Match</h2>
-            <p>Accra Lions FC vs Kumasi Warriors</p>
-            <p>Saturday — 15:00</p>
+
+            <p>
+                Accra Lions FC
+                vs
+                Kumasi Warriors
+            </p>
+
+            <p>
+                Saturday — 15:00
+            </p>
+
         </div>
+
+
+
+        <!-- MATCH RESULT -->
+
+        <div class="card">
+
+            <h2>Latest Match</h2>
+
+            <p id="matchResult">
+                No match played yet.
+            </p>
+
+        </div>
+
 
     </main>
 
 </div>
 
+
+
+<!-- GAME DATA -->
+
+<script src="clubs.js"></script>
+
+<script src="players.js"></script>
+
+<script src="matchEngine.js"></script>
+
+<script src="game.js"></script>
+
+
 </body>
+
 </html>
