@@ -41,29 +41,38 @@
             aria-pressed="false">
 
             <svg class="theme-icon theme-icon-moon"
+                 xmlns="http://www.w3.org/2000/svg"
                  viewBox="0 0 24 24"
-                 width="19" height="19"
-                 fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round"
-                 stroke-linejoin="round" aria-hidden="true">
-                <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"></path>
+                 width="20" height="20"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2.2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 aria-hidden="true">
+                <path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8
+                         8.7 8.7 0 1 0 20.2 15.1Z"/>
             </svg>
 
             <svg class="theme-icon theme-icon-sun"
+                 xmlns="http://www.w3.org/2000/svg"
                  viewBox="0 0 24 24"
-                 width="19" height="19"
-                 fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round"
-                 stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="4"></circle>
-                <path d="M12 2v2"></path>
-                <path d="M12 20v2"></path>
-                <path d="m4.93 4.93 1.42 1.42"></path>
-                <path d="m17.65 17.65 1.42 1.42"></path>
-                <path d="M2 12h2"></path>
-                <path d="M20 12h2"></path>
-                <path d="m6.35 17.65-1.42 1.42"></path>
-                <path d="m19.07 4.93-1.42 1.42"></path>
+                 width="20" height="20"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2.2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 aria-hidden="true">
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2"/>
+                <path d="M12 20v2"/>
+                <path d="m4.93 4.93 1.42 1.42"/>
+                <path d="m17.65 17.65 1.42 1.42"/>
+                <path d="M2 12h2"/>
+                <path d="M20 12h2"/>
+                <path d="m6.35 17.65-1.42 1.42"/>
+                <path d="m19.07 4.93-1.42 1.42"/>
             </svg>
         </button>
 
@@ -73,26 +82,28 @@
             type="button"
             aria-label="Open settings"
             title="Settings">
-
-            <svg viewBox="0 0 24 24" width="20" height="20"
-                 fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round"
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 24 24"
+                 width="20" height="20"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
                  aria-hidden="true">
-                <circle cx="12" cy="12" r="3"></circle>
+                <circle cx="12" cy="12" r="3"/>
                 <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.75.53l-.06.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.47-1.03l-.1-.01-2.94-1.7.02-.09a1.7 1.7 0 0 0-.53-1.75l-.07-.06v-3.4l.09-.04a1.7 1.7 0 0 0 1.03-1.47l.01-.1 1.7-2.94.09.02a1.7 1.7 0 0 0 1.75-.53l.06-.07h3.4l.04.09a1.7 1.7 0 0 0 1.47 1.03l.1.01 2.94 1.7-.02.09a1.7 1.7 0 0 0 .53 1.75l.07.06v3.4z"
-                      transform="translate(-3 -3) scale(1.25)"></path>
+                      transform="translate(-3 -3) scale(1.25)"/>
             </svg>
         </button>
     </div>
 </header>
 
 <div class="container">
-
     <aside class="sidebar">
         <h3>MENU</h3>
 
         <nav class="sidebar-nav" aria-label="Main navigation">
-
             <button class="nav-button active" type="button" data-page="dashboard">
                 <span class="nav-icon icon-dashboard" aria-hidden="true">▦</span>
                 Dashboard
@@ -142,7 +153,6 @@
                 <span class="nav-icon icon-news" aria-hidden="true">▣</span>
                 News
             </button>
-
         </nav>
 
         <div class="sidebar-footer">
@@ -152,7 +162,6 @@
     </aside>
 
     <main class="main">
-
         <div class="page-heading">
             <div>
                 <p class="page-eyebrow">MANAGER'S OFFICE</p>
@@ -163,21 +172,9 @@
         <section class="card">
             <h2>Welcome to Ginga FM</h2>
             <p>Your football management career begins here.</p>
-
-            <p>
-                <strong>Manager:</strong>
-                <span id="managerName">New Manager</span>
-            </p>
-
-            <p>
-                <strong>Club:</strong>
-                <span id="clubName">No club selected</span>
-            </p>
-
-            <p>
-                <strong>League:</strong>
-                <span id="leagueName">Ghana Premier Division</span>
-            </p>
+            <p><strong>Manager:</strong> <span id="managerName">New Manager</span></p>
+            <p><strong>Club:</strong> <span id="clubName">No club selected</span></p>
+            <p><strong>League:</strong> <span id="leagueName">Ghana Premier Division</span></p>
         </section>
 
         <section class="stats" aria-label="Club statistics">
@@ -185,12 +182,10 @@
                 <p>League Position</p>
                 <h2 id="position">-</h2>
             </div>
-
             <div class="stat">
                 <p>Points</p>
                 <h2 id="points">0</h2>
             </div>
-
             <div class="stat">
                 <p>Balance</p>
                 <h2 id="balance">GH₵ 0</h2>
@@ -224,8 +219,10 @@
             <h2>Settings</h2>
         </div>
 
-        <button id="closeSettingsButton" class="close-button"
-                type="button" aria-label="Close settings">×</button>
+        <button id="closeSettingsButton"
+                class="close-button"
+                type="button"
+                aria-label="Close settings">×</button>
     </div>
 
     <p>Game settings will be available here as Ginga FM develops.</p>
@@ -234,12 +231,10 @@
         <span>Game</span>
         <span>Coming soon</span>
     </div>
-
     <div class="settings-item">
         <span>Notifications</span>
         <span>Coming soon</span>
     </div>
-
     <div class="settings-item">
         <span>Account</span>
         <span>Coming soon</span>
@@ -249,49 +244,42 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabaseClient.js"></script>
 <script src="databaseTest.js"></script>
-
 <script src="clubs.js"></script>
 <script src="players.js"></script>
 <script src="matchEngine.js"></script>
 <script src="game.js"></script>
 
 <script>
-    // THEME TOGGLE
+    // Theme selection and saved preference
     const themeToggle = document.getElementById("themeToggle");
     const rootElement = document.documentElement;
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 
     function applyTheme(theme, savePreference = true) {
         const selectedTheme = theme === "dark" ? "dark" : "light";
+        const isDark = selectedTheme === "dark";
 
         rootElement.dataset.theme = selectedTheme;
-
-        const isDark = selectedTheme === "dark";
 
         themeToggle.setAttribute(
             "aria-label",
             isDark ? "Switch to gold light theme" : "Switch to red dark theme"
         );
-
         themeToggle.setAttribute(
             "title",
             isDark ? "Switch to gold light theme" : "Switch to red dark theme"
         );
-
         themeToggle.setAttribute("aria-pressed", String(isDark));
 
         if (themeColorMeta) {
-            themeColorMeta.setAttribute(
-                "content",
-                isDark ? "#111111" : "#d4a017"
-            );
+            themeColorMeta.content = isDark ? "#141414" : "#d4a017";
         }
 
         if (savePreference) {
             try {
                 localStorage.setItem("ginga-fm-theme", selectedTheme);
             } catch (error) {
-                // The theme still works if browser storage is unavailable.
+                // Theme switching still works when storage is unavailable.
             }
         }
     }
@@ -303,7 +291,7 @@
         applyTheme(currentTheme === "light" ? "dark" : "light");
     });
 
-    // SETTINGS DIALOG
+    // Settings dialog
     const settingsButton = document.getElementById("settingsButton");
     const settingsDialog = document.getElementById("settingsDialog");
     const closeSettingsButton = document.getElementById("closeSettingsButton");
@@ -324,7 +312,7 @@
         }
     });
 
-    // MAIN NAVIGATION
+    // Main navigation
     const navigationButtons = document.querySelectorAll(".nav-button");
     const navigationMessage = document.getElementById("navigationMessage");
 
@@ -336,13 +324,11 @@
 
             button.classList.add("active");
 
-            if (button.dataset.page === "dashboard") {
-                navigationMessage.textContent = "";
-            } else {
-                navigationMessage.textContent =
-                    button.textContent.trim() +
-                    " will be connected to its game screen in a later step.";
-            }
+            navigationMessage.textContent =
+                button.dataset.page === "dashboard"
+                    ? ""
+                    : button.textContent.trim() +
+                      " will be connected to its game screen in a later step.";
         });
     });
 </script>
