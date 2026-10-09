@@ -1,7 +1,9 @@
 
+/* CUSTOM FONTS — files are in the repository root */
+
 @font-face {
     font-family: "Matcha Mint";
-    src: url("./fonts/Matcha-Mint.ttf") format("truetype");
+    src: url("./Matcha-Mint.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -9,22 +11,22 @@
 
 @font-face {
     font-family: "Bigtimes";
-    src: url("./fonts/Bigtimes.ttf") format("truetype");
+    src: url("./Bigtimes.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
 }
 
-/* GINGA FM THEME COLORS */
+/* DEFAULT THEME: GINGA GOLD */
 
 :root {
     color-scheme: light;
 
     --accent: #d4a017;
-    --accent-hover: #b8890c;
-    --accent-soft: #fff4cf;
+    --accent-hover: #ad7d08;
+    --accent-soft: #fff3c4;
     --accent-contrast: #171717;
-    --accent-border: #c39213;
+    --accent-border: #b8890c;
 
     --sidebar: #171717;
     --sidebar-hover: #303030;
@@ -42,10 +44,9 @@
     --header-text: #171717;
     --header-subtitle: #30260d;
 
-    --focus: #9c7100;
-    --success: #218447;
+    --focus: #8a6400;
+    --success: #65d989;
     --dialog-backdrop: rgba(15, 15, 15, 0.55);
-
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.045);
 }
 
@@ -55,19 +56,19 @@ html[data-theme="dark"] {
     color-scheme: dark;
 
     --accent: #e50914;
-    --accent-hover: #ff2833;
+    --accent-hover: #ff303a;
     --accent-soft: #351417;
     --accent-contrast: #ffffff;
     --accent-border: #a80c14;
 
-    --sidebar: #0b0b0b;
+    --sidebar: #090909;
     --sidebar-hover: #292929;
     --sidebar-text: #ededed;
     --sidebar-muted: #a2a2a2;
 
     --background: #111111;
     --surface: #1b1b1b;
-    --surface-secondary: #222222;
+    --surface-secondary: #252525;
     --text: #f2f2f2;
     --muted: #b0b0b0;
     --border: #353535;
@@ -77,9 +78,7 @@ html[data-theme="dark"] {
     --header-subtitle: #e7b4b6;
 
     --focus: #ff646b;
-    --success: #65d989;
     --dialog-backdrop: rgba(0, 0, 0, 0.72);
-
     --shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -155,6 +154,8 @@ button:focus-visible {
     color: var(--header-subtitle);
 }
 
+/* HEADER CONTROLS */
+
 .header-actions {
     display: flex;
     align-items: center;
@@ -163,16 +164,15 @@ button:focus-visible {
     flex: 0 0 auto;
 }
 
-/* THEME AND SETTINGS BUTTONS */
-
 .theme-toggle,
 .settings-button {
     display: grid;
     place-items: center;
     width: 39px;
     height: 39px;
-    flex: 0 0 auto;
-    border: 1px solid currentColor;
+    flex: 0 0 39px;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.25);
     border-radius: 9px;
     cursor: pointer;
     transition:
@@ -182,42 +182,40 @@ button:focus-visible {
         transform 0.2s ease;
 }
 
+/* Moon button is intentionally visible in the default gold theme. */
+
 .theme-toggle {
-    background: rgba(255, 255, 255, 0.32);
-    color: var(--header-text);
-    border-color: rgba(0, 0, 0, 0.2);
+    background: #fff0b8;
+    color: #171717;
+    border-color: #9d7200;
 }
 
 .theme-toggle:hover {
-    background: rgba(255, 255, 255, 0.55);
+    background: #ffe28a;
     transform: translateY(-1px);
 }
 
+/* Settings button */
+
 .settings-button {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
     color: var(--header-text);
-    border-color: rgba(0, 0, 0, 0.2);
+    border-color: rgba(0, 0, 0, 0.25);
 }
 
 .settings-button:hover {
-    background: rgba(255, 255, 255, 0.4);
-    transform: rotate(10deg);
+    background: rgba(255, 255, 255, 0.45);
+    transform: rotate(8deg);
 }
 
-html[data-theme="dark"] .theme-toggle,
-html[data-theme="dark"] .settings-button {
-    background: #242424;
-    color: #ffffff;
-    border-color: #454545;
-}
-
-html[data-theme="dark"] .theme-toggle:hover,
-html[data-theme="dark"] .settings-button:hover {
-    background: #383838;
-}
+/* Explicit icon visibility prevents both icons disappearing. */
 
 .theme-icon {
     display: none;
+    width: 20px;
+    height: 20px;
+    visibility: visible;
+    opacity: 1;
 }
 
 html[data-theme="light"] .theme-icon-moon {
@@ -228,7 +226,27 @@ html[data-theme="dark"] .theme-icon-sun {
     display: block;
 }
 
-/* MAIN LAYOUT */
+html[data-theme="dark"] .theme-toggle {
+    background: #292929;
+    color: #ffffff;
+    border-color: #555555;
+}
+
+html[data-theme="dark"] .theme-toggle:hover {
+    background: #3a3a3a;
+}
+
+html[data-theme="dark"] .settings-button {
+    background: #242424;
+    color: #ffffff;
+    border-color: #454545;
+}
+
+html[data-theme="dark"] .settings-button:hover {
+    background: #383838;
+}
+
+/* LAYOUT */
 
 .container {
     display: flex;
@@ -277,10 +295,7 @@ html[data-theme="dark"] .theme-icon-sun {
     cursor: pointer;
     text-align: left;
     font-size: 14px;
-    transition:
-        background-color 0.18s ease,
-        color 0.18s ease,
-        border-color 0.18s ease;
+    transition: background-color 0.18s ease, color 0.18s ease;
 }
 
 .sidebar button.nav-button:hover {
@@ -296,7 +311,6 @@ html[data-theme="dark"] .theme-icon-sun {
 }
 
 html[data-theme="dark"] .sidebar button.nav-button.active {
-    background: var(--accent);
     color: #ffffff;
 }
 
@@ -313,51 +327,16 @@ html[data-theme="dark"] .sidebar button.nav-button.active {
     line-height: 1;
 }
 
-.icon-dashboard {
-    color: #60a5fa;
-}
-
-.icon-squad {
-    color: #fbbf24;
-}
-
-.icon-tactics {
-    color: #c084fc;
-}
-
-.icon-transfers {
-    color: #34d399;
-}
-
-.icon-fixtures {
-    color: #fb923c;
-}
-
-.icon-rankings {
-    color: #facc15;
-}
-
-.icon-finances {
-    color: #4ade80;
-}
-
-.icon-board {
-    color: #f472b6;
-}
-
-.icon-staff {
-    color: #67e8f9;
-}
-
-.icon-news {
-    color: #f87171;
-}
-
-/* Keep colorful icons visible on the gold active item. */
-
-html[data-theme="light"] .nav-button.active .nav-icon {
-    filter: saturate(1.1);
-}
+.icon-dashboard { color: #60a5fa; }
+.icon-squad { color: #fbbf24; }
+.icon-tactics { color: #c084fc; }
+.icon-transfers { color: #34d399; }
+.icon-fixtures { color: #fb923c; }
+.icon-rankings { color: #facc15; }
+.icon-finances { color: #4ade80; }
+.icon-board { color: #f472b6; }
+.icon-staff { color: #67e8f9; }
+.icon-news { color: #f87171; }
 
 .sidebar-footer {
     display: flex;
@@ -421,16 +400,13 @@ html[data-theme="dark"] .page-eyebrow {
     background: var(--surface);
     color: var(--text);
     box-shadow: var(--shadow);
-    transition:
-        background-color 0.22s ease,
-        border-color 0.22s ease,
-        color 0.22s ease;
+    transition: background-color 0.22s ease, border-color 0.22s ease;
 }
 
 .card h2 {
     margin-top: 0;
-    font-size: 19px;
     color: var(--text);
+    font-size: 19px;
 }
 
 .card p {
@@ -459,10 +435,7 @@ html[data-theme="dark"] .page-eyebrow {
     color: var(--text);
     text-align: center;
     box-shadow: var(--shadow);
-    transition:
-        background-color 0.22s ease,
-        border-color 0.22s ease,
-        color 0.22s ease;
+    transition: background-color 0.22s ease, border-color 0.22s ease;
 }
 
 .stat p {
@@ -563,7 +536,7 @@ html[data-theme="dark"] .stat h2 {
     color: var(--muted);
 }
 
-/* RESPONSIVE LAYOUT */
+/* RESPONSIVE */
 
 @media (max-width: 800px) {
     .top-header {
@@ -653,6 +626,7 @@ html[data-theme="dark"] .stat h2 {
     .settings-button {
         width: 35px;
         height: 35px;
+        flex-basis: 35px;
         border-radius: 8px;
     }
 
@@ -685,7 +659,7 @@ html[data-theme="dark"] .stat h2 {
     }
 }
 
-/* ACCESSIBILITY: RESPECT REDUCED MOTION */
+/* REDUCED MOTION ACCESSIBILITY */
 
 @media (prefers-reduced-motion: reduce) {
     *,
