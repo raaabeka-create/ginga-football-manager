@@ -64,11 +64,11 @@ html[data-theme="dark"] {
 color-scheme: dark;
 
 ```
---accent: #e50914;
---accent-hover: #ff303a;
+--accent: #c40b14;
+--accent-hover: #e02029;
 --accent-soft: #351417;
 --accent-contrast: #ffffff;
---accent-border: #a80c14;
+--accent-border: #920910;
 
 --sidebar: #090909;
 --sidebar-hover: #292929;
@@ -331,10 +331,9 @@ visibility: visible;
 -webkit-text-fill-color: var(--accent-contrast);
 }
 
-/*
+/* =========================================================
 GINGA GOLD ACTIVE TAB VISIBILITY FIX
-Explicitly set the active tab's text and icon visibility.
-*/
+========================================================= */
 
 html[data-theme="light"] .sidebar button.nav-button.active,
 html[data-theme="light"] .sidebar button.nav-button.active span,
@@ -355,20 +354,30 @@ opacity: 1 !important;
 visibility: visible !important;
 }
 
-/* DARK THEME ACTIVE TAB */
+/* =========================================================
+GINGA RED ACTIVE TAB - REDUCED BRIGHTNESS
+========================================================= */
 
 html[data-theme="dark"] .sidebar button.nav-button.active {
-background: #e50914;
-border-color: #a80c14;
-color: #ffffff;
--webkit-text-fill-color: #ffffff;
-}
-
-html[data-theme="dark"] .sidebar button.nav-button.active span {
-color: #ffffff;
--webkit-text-fill-color: #ffffff;
+background: #c40b14 !important;
+border-color: #920910 !important;
+color: #ffffff !important;
+-webkit-text-fill-color: #ffffff !important;
 opacity: 1;
 visibility: visible;
+}
+
+html[data-theme="dark"] .sidebar button.nav-button.active span,
+html[data-theme="dark"] .sidebar button.nav-button.active .nav-icon {
+color: #ffffff !important;
+-webkit-text-fill-color: #ffffff !important;
+opacity: 1 !important;
+visibility: visible !important;
+}
+
+html[data-theme="dark"] .sidebar button.nav-button.active * {
+opacity: 1 !important;
+visibility: visible !important;
 }
 
 /* =========================================================
