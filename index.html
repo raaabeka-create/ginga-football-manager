@@ -23,9 +23,77 @@
     <link rel="preload" href="./fonts/Matcha-Mint.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="./fonts/Bigtimes.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./auth.css">
 </head>
 
 <body>
+<section id="authScreen" class="auth-screen" aria-labelledby="authTitle">
+    <div class="auth-card">
+        <div class="auth-brand">
+            <p class="auth-kicker">GHANA FOOTBALL MANAGEMENT</p>
+            <h1 id="authTitle">GINGA FM</h1>
+            <p class="auth-subtitle">Your club. Your decisions. Your legacy.</p>
+        </div>
+
+        <div id="authPanels">
+            <div class="auth-tabs" role="tablist" aria-label="Account access">
+                <button class="auth-tab active" type="button" data-auth-view="login" role="tab" aria-selected="true">Log in</button>
+                <button class="auth-tab" type="button" data-auth-view="register" role="tab" aria-selected="false">Create account</button>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <h2>Welcome back, Manager</h2>
+                <p class="auth-help">Log in to continue your Ginga FM career.</p>
+                <label for="loginEmail">Email address</label>
+                <input id="loginEmail" name="email" type="email" autocomplete="email" required maxlength="254">
+                <label for="loginPassword">Password</label>
+                <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+                <button class="auth-primary" type="submit">Log in</button>
+                <button id="resetPasswordButton" class="auth-text-button" type="button">Forgot password?</button>
+            </form>
+
+            <form id="registerForm" class="auth-form" hidden>
+                <h2>Create your manager account</h2>
+                <p class="auth-help">Set up your profile first. You will choose an available club after signing in.</p>
+                <label for="registerManagerName">Manager's full name</label>
+                <input id="registerManagerName" name="managerName" type="text" autocomplete="name" required minlength="2" maxlength="80">
+                <label for="registerUsername">Manager username</label>
+                <input id="registerUsername" name="managerUsername" type="text" autocomplete="username" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_]{3,20}" aria-describedby="usernameHelp">
+                <small id="usernameHelp" class="auth-field-help">3–20 characters. Use letters, numbers, or underscores.</small>
+                <label for="registerNationality">Nationality</label>
+                <input id="registerNationality" name="nationality" type="text" autocomplete="country-name" value="Ghanaian" required minlength="2" maxlength="60">
+                <label for="registerEmail">Email address</label>
+                <input id="registerEmail" name="email" type="email" autocomplete="email" required maxlength="254">
+                <label for="registerPassword">Password</label>
+                <input id="registerPassword" name="password" type="password" autocomplete="new-password" required minlength="8" aria-describedby="passwordHelp">
+                <small id="passwordHelp" class="auth-field-help">Use at least 8 characters.</small>
+                <label for="registerPasswordConfirm">Confirm password</label>
+                <input id="registerPasswordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" required minlength="8">
+                <button class="auth-primary" type="submit">Create manager account</button>
+            </form>
+        </div>
+
+        <section id="clubSetup" class="auth-form" hidden>
+            <h2>Choose your club</h2>
+            <p class="auth-help">Select an available club to begin your single managerial career. Each club can have one manager.</p>
+            <p id="clubSetupManager" class="club-setup-manager"></p>
+            <form id="clubSetupForm">
+                <label for="clubSelect">Available clubs</label>
+                <select id="clubSelect" name="clubId" required>
+                    <option value="">Loading available clubs…</option>
+                </select>
+                <p id="clubAvailabilityMessage" class="auth-field-help"></p>
+                <button id="claimClubButton" class="auth-primary" type="submit">Start my career</button>
+            </form>
+        </section>
+
+        <p id="authMessage" class="auth-message" role="status" aria-live="polite"></p>
+        <p class="auth-footer">Ginga FM · Ghana Football Management Simulation</p>
+    </div>
+</section>
+
+<div id="appShell" hidden>
+
 <header class="top-header">
     <div class="header-brand">
         <h1>GINGA FM</h1>
@@ -33,6 +101,8 @@
     </div>
 
     <div class="header-actions">
+        <span id="headerManagerUsername" class="header-manager-username" hidden></span>
+        <button id="signOutButton" class="sign-out-button" type="button" hidden>Log out</button>
         <button
             class="theme-toggle"
             id="themeToggle"
@@ -174,6 +244,8 @@
             <h2>Welcome to Ginga FM</h2>
             <p>Your football management career begins here.</p>
             <p><strong>Manager:</strong> <span id="managerName">New Manager</span></p>
+            <p><strong>Username:</strong> <span id="managerUsername">-</span></p>
+            <p><strong>Nationality:</strong> <span id="managerNationality">-</span></p>
             <p><strong>Club:</strong> <span id="clubName">No club selected</span></p>
             <p><strong>League:</strong> <span id="leagueName">Ghana Premier Division</span></p>
         </section>
@@ -214,6 +286,7 @@
         <p id="navigationMessage" class="navigation-message" role="status"></p>
     </main>
 </div>
+</div>
 
 <dialog id="settingsDialog" class="settings-dialog">
     <div class="settings-heading">
@@ -247,13 +320,13 @@
 <!-- Load Supabase before the game's database scripts. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabaseClient.js"></script>
-<script src="./databaseTest.js"></script>
 
 <!-- Existing game scripts are retained. -->
 <script src="./clubs.js"></script>
 <script src="./players.js"></script>
 <script src="./matchEngine.js"></script>
 <script src="./game.js"></script>
+<script src="./auth.js"></script>
 
 <script>
 (function () {
