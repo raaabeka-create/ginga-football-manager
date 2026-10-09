@@ -1,7 +1,6 @@
 
 :root {
     --green: #0b5d1e;
-    --green-dark: #084516;
     --sidebar: #17202a;
     --sidebar-hover: #263544;
     --background: #f2f4f7;
@@ -31,7 +30,7 @@ button:focus-visible {
     outline-offset: 2px;
 }
 
-/* TOP HEADER */
+/* HEADER */
 
 .top-header {
     min-height: 84px;
@@ -41,7 +40,7 @@ button:focus-visible {
     gap: 20px;
     padding: 16px 30px;
     background: var(--green);
-    color: #ffffff;
+    color: white;
 }
 
 .header-brand h1 {
@@ -65,7 +64,7 @@ button:focus-visible {
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 9px;
     background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
+    color: white;
     cursor: pointer;
     transition: background 0.2s, transform 0.2s;
 }
@@ -75,7 +74,7 @@ button:focus-visible {
     transform: rotate(12deg);
 }
 
-/* PAGE LAYOUT */
+/* LAYOUT */
 
 .container {
     display: flex;
@@ -91,7 +90,7 @@ button:focus-visible {
     flex: 0 0 230px;
     padding: 22px 14px;
     background: var(--sidebar);
-    color: #ffffff;
+    color: white;
 }
 
 .sidebar h3 {
@@ -114,7 +113,7 @@ button:focus-visible {
     width: 100%;
     min-height: 44px;
     margin: 0;
-    padding: 11px 12px;
+    padding: 10px 12px;
     border: 1px solid transparent;
     border-radius: 7px;
     background: transparent;
@@ -127,23 +126,67 @@ button:focus-visible {
 
 .sidebar button.nav-button:hover {
     background: var(--sidebar-hover);
-    color: #ffffff;
+    color: white;
 }
 
 .sidebar button.nav-button.active {
     border-color: rgba(255, 255, 255, 0.08);
     background: var(--green);
-    color: #ffffff;
+    color: white;
     font-weight: 700;
 }
+
+/* COLORFUL SIDEBAR ICONS */
 
 .nav-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    min-width: 22px;
-    font-size: 17px;
+    width: 23px;
+    min-width: 23px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.icon-dashboard {
+    color: #60a5fa;
+}
+
+.icon-squad {
+    color: #fbbf24;
+}
+
+.icon-tactics {
+    color: #c084fc;
+}
+
+.icon-transfers {
+    color: #34d399;
+}
+
+.icon-fixtures {
+    color: #fb923c;
+}
+
+.icon-rankings {
+    color: #facc15;
+}
+
+.icon-finances {
+    color: #4ade80;
+}
+
+.icon-board {
+    color: #f472b6;
+}
+
+.icon-staff {
+    color: #67e8f9;
+}
+
+.icon-news {
+    color: #f87171;
 }
 
 .sidebar-footer {
@@ -244,8 +287,6 @@ button:focus-visible {
     font-size: 26px;
 }
 
-/* NAVIGATION FEEDBACK */
-
 .navigation-message {
     min-height: 20px;
     margin: 0 0 15px;
@@ -253,14 +294,14 @@ button:focus-visible {
     font-size: 13px;
 }
 
-/* SETTINGS DIALOG */
+/* SETTINGS */
 
 .settings-dialog {
     width: min(440px, calc(100% - 32px));
     padding: 25px;
     border: 1px solid var(--border);
     border-radius: 12px;
-    background: #ffffff;
+    background: white;
     color: var(--text);
     box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
 }
@@ -318,7 +359,7 @@ button:focus-visible {
     color: var(--muted);
 }
 
-/* RESPONSIVE LAYOUT */
+/* RESPONSIVE */
 
 @media (max-width: 800px) {
     .container {
