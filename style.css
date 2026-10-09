@@ -97,9 +97,11 @@ color-scheme: dark;
 GLOBAL STYLES
 ========================================================= */
 
-* {
-  box-sizing: border-box;
-  }
+*,
+*::before,
+*::after {
+box-sizing: border-box;
+}
 
 html {
 min-height: 100%;
@@ -324,13 +326,54 @@ border-color: var(--accent-border);
 background: var(--accent);
 color: var(--accent-contrast);
 font-weight: 700;
+opacity: 1;
+visibility: visible;
+-webkit-text-fill-color: var(--accent-contrast);
 }
+
+/*
+GINGA GOLD ACTIVE TAB VISIBILITY FIX
+Explicitly set the active tab's text and icon visibility.
+*/
+
+html[data-theme="light"] .sidebar button.nav-button.active,
+html[data-theme="light"] .sidebar button.nav-button.active span,
+html[data-theme="light"] .sidebar button.nav-button.active .nav-icon {
+color: #171717 !important;
+-webkit-text-fill-color: #171717 !important;
+opacity: 1 !important;
+visibility: visible !important;
+}
+
+html[data-theme="light"] .sidebar button.nav-button.active {
+background: #d4a017 !important;
+border-color: #b8890c !important;
+}
+
+html[data-theme="light"] .sidebar button.nav-button.active * {
+opacity: 1 !important;
+visibility: visible !important;
+}
+
+/* DARK THEME ACTIVE TAB */
 
 html[data-theme="dark"] .sidebar button.nav-button.active {
+background: #e50914;
+border-color: #a80c14;
 color: #ffffff;
+-webkit-text-fill-color: #ffffff;
 }
 
-/* SIDEBAR ICON COLOURS */
+html[data-theme="dark"] .sidebar button.nav-button.active span {
+color: #ffffff;
+-webkit-text-fill-color: #ffffff;
+opacity: 1;
+visibility: visible;
+}
+
+/* =========================================================
+SIDEBAR ICON COLOURS
+========================================================= */
 
 .nav-icon {
 display: inline-flex;
@@ -341,6 +384,8 @@ min-width: 23px;
 font-size: 18px;
 font-weight: 700;
 line-height: 1;
+opacity: 1;
+visibility: visible;
 }
 
 .icon-dashboard {
@@ -382,6 +427,10 @@ color: #67e8f9;
 .icon-news {
 color: #f87171;
 }
+
+/* =========================================================
+SIDEBAR FOOTER
+========================================================= */
 
 .sidebar-footer {
 display: flex;
