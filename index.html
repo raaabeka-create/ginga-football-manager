@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#d4a017">
 
     <title>Ginga FM | Ghana Football Management Simulation</title>
+    <meta name="description" content="Ginga FM is a Ghanaian football management simulation. Build your club, manage your squad and compete.">
 
     <script>
         (function () {
@@ -20,11 +21,12 @@
         })();
     </script>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="preload" href="./fonts/Matcha-Mint.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="./fonts/Bigtimes.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
-
 <header class="top-header">
     <div class="header-brand">
         <h1>GINGA FM</h1>
@@ -36,8 +38,8 @@
             class="theme-toggle"
             id="themeToggle"
             type="button"
-            aria-label="Switch to dark theme"
-            title="Switch to dark theme"
+            aria-label="Switch to red dark theme"
+            title="Switch to red dark theme"
             aria-pressed="false">
 
             <svg class="theme-icon theme-icon-moon"
@@ -194,7 +196,9 @@
 
         <section class="card">
             <h2>Ginga FM World</h2>
-            <p id="databaseStatus">Connecting to football world...</p>
+            <p id="databaseStatus" role="status" aria-live="polite">
+                Connecting to football world...
+            </p>
         </section>
 
         <section class="card">
@@ -241,21 +245,27 @@
     </div>
 </dialog>
 
+<!-- Load Supabase before the game's database scripts. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabaseClient.js"></script>
-<script src="databaseTest.js"></script>
-<script src="clubs.js"></script>
-<script src="players.js"></script>
-<script src="matchEngine.js"></script>
-<script src="game.js"></script>
+<script src="./supabaseClient.js"></script>
+<script src="./databaseTest.js"></script>
+
+<!-- Existing game scripts are retained. -->
+<script src="./clubs.js"></script>
+<script src="./players.js"></script>
+<script src="./matchEngine.js"></script>
+<script src="./game.js"></script>
 
 <script>
-    // Theme selection and saved preference
-    const themeToggle = document.getElementById("themeToggle");
+(function () {
+    "use strict";
+
+    // Theme controls
     const rootElement = document.documentElement;
+    const themeToggle = document.getElementById("themeToggle");
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 
-    function applyTheme(theme, savePreference = true) {
+    function applyTheme(theme, savePreference) {
         const selectedTheme = theme === "dark" ? "dark" : "light";
         const isDark = selectedTheme === "dark";
 
@@ -279,7 +289,7 @@
             try {
                 localStorage.setItem("ginga-fm-theme", selectedTheme);
             } catch (error) {
-                // Theme switching still works when storage is unavailable.
+                console.warn("Could not save theme preference:", error);
             }
         }
     }
@@ -288,7 +298,7 @@
 
     themeToggle.addEventListener("click", function () {
         const currentTheme = rootElement.dataset.theme || "light";
-        applyTheme(currentTheme === "light" ? "dark" : "light");
+        applyTheme(currentTheme === "light" ? "dark" : "light", true);
     });
 
     // Settings dialog
@@ -297,22 +307,29 @@
     const closeSettingsButton = document.getElementById("closeSettingsButton");
 
     settingsButton.addEventListener("click", function () {
-        if (!settingsDialog.open) {
-            settingsDialog.showModal();
+        if (typeof settingsDialog.showModal === "function") {
+            if (!settingsDialog.open) settingsDialog.showModal();
+        } else {
+            settingsDialog.setAttribute("open", "");
         }
     });
 
     closeSettingsButton.addEventListener("click", function () {
-        settingsDialog.close();
+        if (typeof settingsDialog.close === "function") {
+            settingsDialog.close();
+        } else {
+            settingsDialog.removeAttribute("open");
+        }
     });
 
     settingsDialog.addEventListener("click", function (event) {
-        if (event.target === settingsDialog) {
+        if (event.target === settingsDialog &&
+            typeof settingsDialog.close === "function") {
             settingsDialog.close();
         }
     });
 
-    // Main navigation
+    // Navigation buttons
     const navigationButtons = document.querySelectorAll(".nav-button");
     const navigationMessage = document.getElementById("navigationMessage");
 
@@ -331,7 +348,23 @@
                       " will be connected to its game screen in a later step.";
         });
     });
-</script>
 
+    // Report custom font loading in the browser console for diagnosis.
+    if (document.fonts && document.fonts.load) {
+        Promise.all([
+            document.fonts.load('16px "Matcha Mint"'),
+            document.fonts.load('16px "Bigtimes"')
+        ]).then(function (results) {
+            console.info("Ginga FM font loading results:", {
+                matchaMintLoaded: results[0].length > 0,
+                bigtimesLoaded: results[1].length > 0
+            });
+        }).catch(function (error) {
+            console.error("A Ginga FM custom font failed to load:", error);
+        });
+    }
+})();
+</script>
 </body>
 </html>
+```
