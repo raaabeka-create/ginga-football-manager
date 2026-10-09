@@ -1,11 +1,24 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#d4a017">
 
-    <title>Ginga FM</title>
+    <title>Ginga FM | Ghana Football Management Simulation</title>
+
+    <script>
+        (function () {
+            try {
+                const savedTheme = localStorage.getItem("ginga-fm-theme");
+                document.documentElement.dataset.theme =
+                    savedTheme === "dark" ? "dark" : "light";
+            } catch (error) {
+                document.documentElement.dataset.theme = "light";
+            }
+        })();
+    </script>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -18,21 +31,59 @@
         <p>Ghana Football Management Simulation</p>
     </div>
 
-    <button
-        class="settings-button"
-        id="settingsButton"
-        type="button"
-        aria-label="Open settings"
-        title="Settings">
-        <svg viewBox="0 0 24 24" width="20" height="20"
-             fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round"
-             aria-hidden="true">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.75.53l-.06.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.47-1.03l-.1-.01-2.94-1.7.02-.09a1.7 1.7 0 0 0-.53-1.75l-.07-.06v-3.4l.09-.04a1.7 1.7 0 0 0 1.03-1.47l.01-.1 1.7-2.94.09.02a1.7 1.7 0 0 0 1.75-.53l.06-.07h3.4l.04.09a1.7 1.7 0 0 0 1.47 1.03l.1.01 2.94 1.7-.02.09a1.7 1.7 0 0 0 .53 1.75l.07.06v3.4z"
-                  transform="translate(-3 -3) scale(1.25)"></path>
-        </svg>
-    </button>
+    <div class="header-actions">
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Switch to dark theme"
+            title="Switch to dark theme"
+            aria-pressed="false">
+
+            <svg class="theme-icon theme-icon-moon"
+                 viewBox="0 0 24 24"
+                 width="19" height="19"
+                 fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"></path>
+            </svg>
+
+            <svg class="theme-icon theme-icon-sun"
+                 viewBox="0 0 24 24"
+                 width="19" height="19"
+                 fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2"></path>
+                <path d="M12 20v2"></path>
+                <path d="m4.93 4.93 1.42 1.42"></path>
+                <path d="m17.65 17.65 1.42 1.42"></path>
+                <path d="M2 12h2"></path>
+                <path d="M20 12h2"></path>
+                <path d="m6.35 17.65-1.42 1.42"></path>
+                <path d="m19.07 4.93-1.42 1.42"></path>
+            </svg>
+        </button>
+
+        <button
+            class="settings-button"
+            id="settingsButton"
+            type="button"
+            aria-label="Open settings"
+            title="Settings">
+
+            <svg viewBox="0 0 24 24" width="20" height="20"
+                 fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 aria-hidden="true">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.75.53l-.06.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.47-1.03l-.1-.01-2.94-1.7.02-.09a1.7 1.7 0 0 0-.53-1.75l-.07-.06v-3.4l.09-.04a1.7 1.7 0 0 0 1.03-1.47l.01-.1 1.7-2.94.09.02a1.7 1.7 0 0 0 1.75-.53l.06-.07h3.4l.04.09a1.7 1.7 0 0 0 1.47 1.03l.1.01 2.94 1.7-.02.09a1.7 1.7 0 0 0 .53 1.75l.07.06v3.4z"
+                      transform="translate(-3 -3) scale(1.25)"></path>
+            </svg>
+        </button>
+    </div>
 </header>
 
 <div class="container">
@@ -205,12 +256,62 @@
 <script src="game.js"></script>
 
 <script>
+    // THEME TOGGLE
+    const themeToggle = document.getElementById("themeToggle");
+    const rootElement = document.documentElement;
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
+    function applyTheme(theme, savePreference = true) {
+        const selectedTheme = theme === "dark" ? "dark" : "light";
+
+        rootElement.dataset.theme = selectedTheme;
+
+        const isDark = selectedTheme === "dark";
+
+        themeToggle.setAttribute(
+            "aria-label",
+            isDark ? "Switch to gold light theme" : "Switch to red dark theme"
+        );
+
+        themeToggle.setAttribute(
+            "title",
+            isDark ? "Switch to gold light theme" : "Switch to red dark theme"
+        );
+
+        themeToggle.setAttribute("aria-pressed", String(isDark));
+
+        if (themeColorMeta) {
+            themeColorMeta.setAttribute(
+                "content",
+                isDark ? "#111111" : "#d4a017"
+            );
+        }
+
+        if (savePreference) {
+            try {
+                localStorage.setItem("ginga-fm-theme", selectedTheme);
+            } catch (error) {
+                // The theme still works if browser storage is unavailable.
+            }
+        }
+    }
+
+    applyTheme(rootElement.dataset.theme || "light", false);
+
+    themeToggle.addEventListener("click", function () {
+        const currentTheme = rootElement.dataset.theme || "light";
+        applyTheme(currentTheme === "light" ? "dark" : "light");
+    });
+
+    // SETTINGS DIALOG
     const settingsButton = document.getElementById("settingsButton");
     const settingsDialog = document.getElementById("settingsDialog");
     const closeSettingsButton = document.getElementById("closeSettingsButton");
 
     settingsButton.addEventListener("click", function () {
-        settingsDialog.showModal();
+        if (!settingsDialog.open) {
+            settingsDialog.showModal();
+        }
     });
 
     closeSettingsButton.addEventListener("click", function () {
@@ -223,6 +324,7 @@
         }
     });
 
+    // MAIN NAVIGATION
     const navigationButtons = document.querySelectorAll(".nav-button");
     const navigationMessage = document.getElementById("navigationMessage");
 
