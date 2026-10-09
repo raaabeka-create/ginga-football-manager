@@ -24,78 +24,74 @@
         type="button"
         aria-label="Open settings"
         title="Settings">
-        <svg
-            viewBox="0 0 24 24"
-            width="20"
-            height="20"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round"
+             aria-hidden="true">
             <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.75.53l-.06.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.47-1.03l-.1-.01-2.94-1.7.02-.09a1.7 1.7 0 0 0-.53-1.75l-.07-.06v-3.4l.09-.04a1.7 1.7 0 0 0 1.03-1.47l.01-.1 1.7-2.94.09.02a1.7 1.7 0 0 0 1.75-.53l.06-.07h3.4l.04.09a1.7 1.7 0 0 0 1.47 1.03l.1.01 2.94 1.7-.02.09a1.7 1.7 0 0 0 .53 1.75l.07.06v3.4z" transform="translate(-3 -3) scale(1.25)"></path>
+            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.75.53l-.06.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.47-1.03l-.1-.01-2.94-1.7.02-.09a1.7 1.7 0 0 0-.53-1.75l-.07-.06v-3.4l.09-.04a1.7 1.7 0 0 0 1.03-1.47l.01-.1 1.7-2.94.09.02a1.7 1.7 0 0 0 1.75-.53l.06-.07h3.4l.04.09a1.7 1.7 0 0 0 1.47 1.03l.1.01 2.94 1.7-.02.09a1.7 1.7 0 0 0 .53 1.75l.07.06v3.4z"
+                  transform="translate(-3 -3) scale(1.25)"></path>
         </svg>
     </button>
 </header>
 
 <div class="container">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <h3>MENU</h3>
 
         <nav class="sidebar-nav" aria-label="Main navigation">
+
             <button class="nav-button active" type="button" data-page="dashboard">
-                <span class="nav-icon">▦</span>
+                <span class="nav-icon icon-dashboard" aria-hidden="true">▦</span>
                 Dashboard
             </button>
 
             <button class="nav-button" type="button" data-page="squad">
-                <span class="nav-icon">♟</span>
+                <span class="nav-icon icon-squad" aria-hidden="true">♟</span>
                 Squad
             </button>
 
             <button class="nav-button" type="button" data-page="tactics">
-                <span class="nav-icon">⚙</span>
+                <span class="nav-icon icon-tactics" aria-hidden="true">⚙</span>
                 Tactics
             </button>
 
             <button class="nav-button" type="button" data-page="transfers">
-                <span class="nav-icon">⇄</span>
+                <span class="nav-icon icon-transfers" aria-hidden="true">⇄</span>
                 Transfers
             </button>
 
             <button class="nav-button" type="button" data-page="fixtures">
-                <span class="nav-icon">▤</span>
+                <span class="nav-icon icon-fixtures" aria-hidden="true">▤</span>
                 Fixtures
             </button>
 
             <button class="nav-button" type="button" data-page="league">
-                <span class="nav-icon">🏆</span>
-                League Table
+                <span class="nav-icon icon-rankings" aria-hidden="true">🏆</span>
+                Rankings
             </button>
 
             <button class="nav-button" type="button" data-page="finances">
-                <span class="nav-icon">₵</span>
+                <span class="nav-icon icon-finances" aria-hidden="true">₵</span>
                 Finances
             </button>
 
             <button class="nav-button" type="button" data-page="board">
-                <span class="nav-icon">♧</span>
+                <span class="nav-icon icon-board" aria-hidden="true">♧</span>
                 Board
             </button>
 
             <button class="nav-button" type="button" data-page="staff">
-                <span class="nav-icon">♙</span>
+                <span class="nav-icon icon-staff" aria-hidden="true">♙</span>
                 Staff
             </button>
 
             <button class="nav-button" type="button" data-page="news">
-                <span class="nav-icon">▣</span>
+                <span class="nav-icon icon-news" aria-hidden="true">▣</span>
                 News
             </button>
+
         </nav>
 
         <div class="sidebar-footer">
@@ -104,7 +100,6 @@
         </div>
     </aside>
 
-    <!-- MAIN GAME AREA -->
     <main class="main">
 
         <div class="page-heading">
@@ -114,10 +109,8 @@
             </div>
         </div>
 
-        <!-- MANAGER / CLUB INFORMATION -->
         <section class="card">
             <h2>Welcome to Ginga FM</h2>
-
             <p>Your football management career begins here.</p>
 
             <p>
@@ -136,7 +129,6 @@
             </p>
         </section>
 
-        <!-- CLUB STATISTICS -->
         <section class="stats" aria-label="Club statistics">
             <div class="stat">
                 <p>League Position</p>
@@ -154,20 +146,17 @@
             </div>
         </section>
 
-        <!-- DATABASE STATUS -->
         <section class="card">
             <h2>Ginga FM World</h2>
             <p id="databaseStatus">Connecting to football world...</p>
         </section>
 
-        <!-- NEXT MATCH -->
         <section class="card">
             <h2>Next Match</h2>
             <p id="nextMatch">No fixture loaded.</p>
             <p id="matchTime">-</p>
         </section>
 
-        <!-- LATEST MATCH -->
         <section class="card">
             <h2>Latest Match</h2>
             <p id="matchResult">No match played yet.</p>
@@ -177,7 +166,6 @@
     </main>
 </div>
 
-<!-- SETTINGS DIALOG -->
 <dialog id="settingsDialog" class="settings-dialog">
     <div class="settings-heading">
         <div>
@@ -185,13 +173,8 @@
             <h2>Settings</h2>
         </div>
 
-        <button
-            id="closeSettingsButton"
-            class="close-button"
-            type="button"
-            aria-label="Close settings">
-            ×
-        </button>
+        <button id="closeSettingsButton" class="close-button"
+                type="button" aria-label="Close settings">×</button>
     </div>
 
     <p>Game settings will be available here as Ginga FM develops.</p>
@@ -212,12 +195,10 @@
     </div>
 </dialog>
 
-<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabaseClient.js"></script>
 <script src="databaseTest.js"></script>
 
-<!-- TEMPORARY GAME FILES -->
 <script src="clubs.js"></script>
 <script src="players.js"></script>
 <script src="matchEngine.js"></script>
@@ -253,9 +234,7 @@
 
             button.classList.add("active");
 
-            const page = button.dataset.page;
-
-            if (page === "dashboard") {
+            if (button.dataset.page === "dashboard") {
                 navigationMessage.textContent = "";
             } else {
                 navigationMessage.textContent =
