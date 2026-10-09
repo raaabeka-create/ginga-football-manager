@@ -1,6 +1,6 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,211 +10,261 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-
 <body>
 
-<header>
+<header class="top-header">
+    <div class="header-brand">
+        <h1>GINGA FM</h1>
+        <p>Ghana Football Management Simulation</p>
+    </div>
 
-    <h1>GINGA FM</h1>
-
-    <p>Ghana Football Management Simulation</p>
-
+    <button
+        class="settings-button"
+        id="settingsButton"
+        type="button"
+        aria-label="Open settings"
+        title="Settings">
+        <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.75.53l-.06.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.47-1.03l-.1-.01-2.94-1.7.02-.09a1.7 1.7 0 0 0-.53-1.75l-.07-.06v-3.4l.09-.04a1.7 1.7 0 0 0 1.03-1.47l.01-.1 1.7-2.94.09.02a1.7 1.7 0 0 0 1.75-.53l.06-.07h3.4l.04.09a1.7 1.7 0 0 0 1.47 1.03l.1.01 2.94 1.7-.02.09a1.7 1.7 0 0 0 .53 1.75l.07.06v3.4z" transform="translate(-3 -3) scale(1.25)"></path>
+        </svg>
+    </button>
 </header>
-
 
 <div class="container">
 
-
     <!-- SIDEBAR -->
-
     <aside class="sidebar">
-
         <h3>MENU</h3>
 
-        <button>Dashboard</button>
+        <nav class="sidebar-nav" aria-label="Main navigation">
+            <button class="nav-button active" type="button" data-page="dashboard">
+                <span class="nav-icon">▦</span>
+                Dashboard
+            </button>
 
-        <button>Squad</button>
+            <button class="nav-button" type="button" data-page="squad">
+                <span class="nav-icon">♟</span>
+                Squad
+            </button>
 
-        <button>Tactics</button>
+            <button class="nav-button" type="button" data-page="tactics">
+                <span class="nav-icon">⚙</span>
+                Tactics
+            </button>
 
-        <button>Transfers</button>
+            <button class="nav-button" type="button" data-page="transfers">
+                <span class="nav-icon">⇄</span>
+                Transfers
+            </button>
 
-        <button>Fixtures</button>
+            <button class="nav-button" type="button" data-page="fixtures">
+                <span class="nav-icon">▤</span>
+                Fixtures
+            </button>
 
-        <button>League Table</button>
+            <button class="nav-button" type="button" data-page="league">
+                <span class="nav-icon">🏆</span>
+                League Table
+            </button>
 
-        <button>Finances</button>
+            <button class="nav-button" type="button" data-page="finances">
+                <span class="nav-icon">₵</span>
+                Finances
+            </button>
 
+            <button class="nav-button" type="button" data-page="board">
+                <span class="nav-icon">♧</span>
+                Board
+            </button>
+
+            <button class="nav-button" type="button" data-page="staff">
+                <span class="nav-icon">♙</span>
+                Staff
+            </button>
+
+            <button class="nav-button" type="button" data-page="news">
+                <span class="nav-icon">▣</span>
+                News
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="online-dot"></span>
+            Ginga FM World
+        </div>
     </aside>
 
-
-
     <!-- MAIN GAME AREA -->
-
     <main class="main">
 
+        <div class="page-heading">
+            <div>
+                <p class="page-eyebrow">MANAGER'S OFFICE</p>
+                <h2>Dashboard</h2>
+            </div>
+        </div>
 
         <!-- MANAGER / CLUB INFORMATION -->
-
-        <div class="card">
-
+        <section class="card">
             <h2>Welcome to Ginga FM</h2>
 
-            <p>
-                Your football management career begins here.
-            </p>
+            <p>Your football management career begins here.</p>
 
             <p>
                 <strong>Manager:</strong>
-                <span id="managerName">
-                    New Manager
-                </span>
+                <span id="managerName">New Manager</span>
             </p>
 
             <p>
                 <strong>Club:</strong>
-                <span id="clubName">
-                    No club selected
-                </span>
+                <span id="clubName">No club selected</span>
             </p>
 
             <p>
                 <strong>League:</strong>
-                <span id="leagueName">
-                    Ghana Premier Division
-                </span>
+                <span id="leagueName">Ghana Premier Division</span>
             </p>
-
-        </div>
-
-
+        </section>
 
         <!-- CLUB STATISTICS -->
-
-        <div class="stats">
-
-
+        <section class="stats" aria-label="Club statistics">
             <div class="stat">
-
                 <p>League Position</p>
-
-                <h2 id="position">
-                    -
-                </h2>
-
+                <h2 id="position">-</h2>
             </div>
 
-
-
             <div class="stat">
-
                 <p>Points</p>
-
-                <h2 id="points">
-                    0
-                </h2>
-
+                <h2 id="points">0</h2>
             </div>
-
-
 
             <div class="stat">
-
                 <p>Balance</p>
-
-                <h2 id="balance">
-                    GH₵ 0
-                </h2>
-
+                <h2 id="balance">GH₵ 0</h2>
             </div>
-
-
-        </div>
-
-
+        </section>
 
         <!-- DATABASE STATUS -->
-
-        <div class="card">
-
+        <section class="card">
             <h2>Ginga FM World</h2>
-
-            <p id="databaseStatus">
-                Connecting to football world...
-            </p>
-
-        </div>
-
-
+            <p id="databaseStatus">Connecting to football world...</p>
+        </section>
 
         <!-- NEXT MATCH -->
-
-        <div class="card">
-
+        <section class="card">
             <h2>Next Match</h2>
-
-            <p id="nextMatch">
-                No fixture loaded.
-            </p>
-
-            <p id="matchTime">
-                -
-            </p>
-
-        </div>
-
-
+            <p id="nextMatch">No fixture loaded.</p>
+            <p id="matchTime">-</p>
+        </section>
 
         <!-- LATEST MATCH -->
-
-        <div class="card">
-
+        <section class="card">
             <h2>Latest Match</h2>
+            <p id="matchResult">No match played yet.</p>
+        </section>
 
-            <p id="matchResult">
-                No match played yet.
-            </p>
-
-        </div>
-
-
+        <p id="navigationMessage" class="navigation-message" role="status"></p>
     </main>
-
 </div>
 
+<!-- SETTINGS DIALOG -->
+<dialog id="settingsDialog" class="settings-dialog">
+    <div class="settings-heading">
+        <div>
+            <p class="page-eyebrow">PREFERENCES</p>
+            <h2>Settings</h2>
+        </div>
 
+        <button
+            id="closeSettingsButton"
+            class="close-button"
+            type="button"
+            aria-label="Close settings">
+            ×
+        </button>
+    </div>
 
-<!-- ========================================= -->
+    <p>Game settings will be available here as Ginga FM develops.</p>
+
+    <div class="settings-item">
+        <span>Game</span>
+        <span>Coming soon</span>
+    </div>
+
+    <div class="settings-item">
+        <span>Notifications</span>
+        <span>Coming soon</span>
+    </div>
+
+    <div class="settings-item">
+        <span>Account</span>
+        <span>Coming soon</span>
+    </div>
+</dialog>
+
 <!-- SUPABASE -->
-<!-- ========================================= -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="supabaseClient.js"></script>
 <script src="databaseTest.js"></script>
 
-
-<!-- ========================================= -->
 <!-- TEMPORARY GAME FILES -->
-<!-- ========================================= -->
-
-<!--
-    These files are still present while we transition
-    Ginga FM from local JavaScript data to Supabase.
-
-    We will replace them properly later.
--->
-
 <script src="clubs.js"></script>
-
 <script src="players.js"></script>
-
 <script src="matchEngine.js"></script>
-
 <script src="game.js"></script>
 
+<script>
+    const settingsButton = document.getElementById("settingsButton");
+    const settingsDialog = document.getElementById("settingsDialog");
+    const closeSettingsButton = document.getElementById("closeSettingsButton");
 
+    settingsButton.addEventListener("click", function () {
+        settingsDialog.showModal();
+    });
+
+    closeSettingsButton.addEventListener("click", function () {
+        settingsDialog.close();
+    });
+
+    settingsDialog.addEventListener("click", function (event) {
+        if (event.target === settingsDialog) {
+            settingsDialog.close();
+        }
+    });
+
+    const navigationButtons = document.querySelectorAll(".nav-button");
+    const navigationMessage = document.getElementById("navigationMessage");
+
+    navigationButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            navigationButtons.forEach(function (item) {
+                item.classList.remove("active");
+            });
+
+            button.classList.add("active");
+
+            const page = button.dataset.page;
+
+            if (page === "dashboard") {
+                navigationMessage.textContent = "";
+            } else {
+                navigationMessage.textContent =
+                    button.textContent.trim() +
+                    " will be connected to its game screen in a later step.";
+            }
+        });
+    });
+</script>
 
 </body>
-
 </html>
