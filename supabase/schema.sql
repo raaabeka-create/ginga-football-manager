@@ -27,6 +27,27 @@ create unique index if not exists manager_profiles_club_id_uidx
     on public.manager_profiles (club_id)
     where club_id is not null;
 
+-- One persistent career slot per manager account.
+create table if not exists public.manager_careers (
+    manager_id uuid primary key references public.manager_profiles(id) on delete cascade,
+    club_id text not null,
+    season integer not null default 1 check (season >= 1),
+    career_state jsonb not null default '{}'::jsonb,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now()
+);
+
+alter table public.manager_careers enable row level security;
+revoke all on table public.manager_careers from anon, authenticated;
+grant select on table public.manager_careers to authenticated;
+
+drop policy if exists "Managers can read their own career" on public.manager_careers;
+create policy "Managers can read their own career"
+    on public.manager_careers
+    for select
+    to authenticated
+    using (manager_id = (select auth.uid()));
+
 alter table public.manager_profiles enable row level security;
 
 drop policy if exists "Managers can read their own profile" on public.manager_profiles;
@@ -193,9 +214,13 @@ begin
             raise exception 'That club has already been claimed. Please choose another.';
     end;
 
+    insert into public.manager_careers (manager_id, club_id)
+    values (auth.uid(), p_club_id)
+    on conflict (manager_id) do nothing;
+
     return public.get_my_manager_profile();
 end;
-$$;
+$;
 
 revoke all on function public.get_available_clubs() from public;
 grant execute on function public.get_available_clubs() to anon, authenticated;
