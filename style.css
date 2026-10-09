@@ -1,7 +1,12 @@
 ```css
 /* =========================================================
-   GINGA FM - CUSTOM FONTS
-========================================================= */
+   GINGA FM — COMPLETE STYLESHEET
+   Fonts: Matcha Mint and Bigtimes
+   ========================================================= */
+
+/* =========================
+   CUSTOM FONTS
+   ========================= */
 
 @font-face {
     font-family: "Matcha Mint";
@@ -19,181 +24,165 @@
     font-display: swap;
 }
 
-/* =========================================================
-   DEFAULT THEME - GINGA GOLD
-========================================================= */
+/* =========================
+   LIGHT THEME VARIABLES
+   ========================= */
 
 :root {
-    color-scheme: light;
+    --primary: #d4af37;
+    --primary-hover: #bd9825;
+    --primary-light: rgba(212, 175, 55, 0.14);
 
-    --accent: #d4a017;
-    --accent-hover: #ad7d08;
-    --accent-soft: #fff3c4;
-    --accent-contrast: #171717;
-    --accent-border: #b8890c;
-
-    --sidebar: #171717;
-    --sidebar-hover: #303030;
-    --sidebar-text: #eeeeee;
-    --sidebar-muted: #a5a5a5;
-
-    --background: #f4f4f4;
+    --background: #f6f7f8;
     --surface: #ffffff;
-    --surface-secondary: #f8f8f8;
-    --text: #202020;
-    --muted: #6b7280;
+    --surface-hover: #f0f1f2;
+
+    --text: #202124;
+    --text-secondary: #686868;
     --border: #e2e2e2;
 
-    --header-background: #d4a017;
-    --header-text: #171717;
-    --header-subtitle: #30260d;
+    --header-subtitle: #686868;
+    --sidebar-background: rgba(255, 255, 255, 0.94);
+    --sidebar-text: #343434;
+    --sidebar-active-background: #d4af37;
+    --sidebar-active-text: #181818;
 
-    --focus: #8a6400;
-    --success: #65d989;
-    --dialog-backdrop: rgba(15, 15, 15, 0.55);
-    --shadow: 0 2px 8px rgba(0, 0, 0, 0.045);
+    --card-background: rgba(255, 255, 255, 0.92);
+    --input-background: #ffffff;
+
+    --shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+
+    --wallpaper-overlay: rgba(255, 255, 255, 0.82);
 }
 
-/* =========================================================
-   DARK THEME - GINGA RED
-========================================================= */
+/* =========================
+   DARK THEME VARIABLES
+   ========================= */
 
-html[data-theme="dark"] {
-    color-scheme: dark;
-
-    --accent: #c40b14;
-    --accent-hover: #e02029;
-    --accent-soft: #351417;
-    --accent-contrast: #ffffff;
-    --accent-border: #920910;
-
-    --sidebar: #090909;
-    --sidebar-hover: #292929;
-    --sidebar-text: #ededed;
-    --sidebar-muted: #a2a2a2;
-
+body.dark-theme {
     --background: #111111;
-    --surface: #1b1b1b;
-    --surface-secondary: #252525;
-    --text: #f2f2f2;
-    --muted: #b0b0b0;
-    --border: #353535;
+    --surface: #1d1d1d;
+    --surface-hover: #292929;
 
-    --header-background: #141414;
-    --header-text: #ffffff;
-    --header-subtitle: #e7b4b6;
+    --text: #f4f4f4;
+    --text-secondary: #b6b6b6;
+    --border: #383838;
 
-    --focus: #ff646b;
-    --success: #65d989;
-    --dialog-backdrop: rgba(0, 0, 0, 0.72);
-    --shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+    --header-subtitle: #d0d0d0;
+    --sidebar-background: rgba(24, 24, 24, 0.96);
+    --sidebar-text: #eeeeee;
+    --sidebar-active-background: #d4af37;
+    --sidebar-active-text: #171717;
+
+    --card-background: rgba(28, 28, 28, 0.94);
+    --input-background: #242424;
+
+    --shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+
+    --wallpaper-overlay: rgba(0, 0, 0, 0.76);
 }
 
-/* =========================================================
-   GLOBAL STYLES
-========================================================= */
+/* =========================
+   GLOBAL RESET
+   ========================= */
 
-*,
-*::before,
-*::after {
+* {
     box-sizing: border-box;
 }
 
 html {
     min-height: 100%;
-    background: var(--background);
+    scroll-behavior: smooth;
 }
 
 body {
     min-height: 100vh;
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
-    background-color: var(--background);
+    font-size: 15px;
+    line-height: 1.5;
     color: var(--text);
+    background-color: var(--background);
     transition:
-        background-color 0.22s ease,
-        color 0.22s ease;
+        background-color 0.25s ease,
+        color 0.25s ease;
 }
 
-button {
+button,
+input,
+select,
+textarea {
     font: inherit;
 }
 
-button:focus-visible {
-    outline: 3px solid var(--focus);
-    outline-offset: 3px;
+button {
+    cursor: pointer;
 }
 
-::selection {
-    background: var(--accent);
-    color: var(--accent-contrast);
+img {
+    max-width: 100%;
 }
 
-/* =========================================================
-   THEME WALLPAPERS
-   Images are stored in the root-level images/ directory.
-========================================================= */
+a {
+    color: inherit;
+    text-decoration: none;
+}
 
-/* GINGA GOLD - LIGHT THEME */
+button,
+input,
+select,
+textarea {
+    color: var(--text);
+}
 
-html[data-theme="light"] body {
-    background-color: #f4f4f4;
-    background-image:
-        linear-gradient(
-            rgba(255, 255, 255, 0.82),
-            rgba(255, 255, 255, 0.82)
-        ),
-        url("./images/Muted%20Maroon%20Football%20Motion%20Wallpaper.png");
+/* =========================
+   WALLPAPER BACKGROUND
+   ========================= */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+
+    background-image: url("./images/wallpaper.jpg");
+    background-position: center;
     background-size: cover;
-    background-position: center center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
 }
 
-/* GINGA RED - DARK THEME */
-
-html[data-theme="dark"] body {
-    background-color: #111111;
-    background-image:
-        linear-gradient(
-            rgba(12, 12, 12, 0.76),
-            rgba(12, 12, 12, 0.76)
-        ),
-        url("./images/Neon%20Violet%20Polygonal%20Soccer%20Sprint.png");
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--wallpaper-overlay);
 }
 
-/* =========================================================
-   HEADER AND BRAND FONTS
-========================================================= */
+/* =========================
+   HEADER / BRAND
+   ========================= */
 
-.top-header {
-    min-height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 14px 30px;
-    background: var(--header-background);
-    color: var(--header-text);
-    border-bottom: 1px solid var(--accent-border);
-    transition:
-        background-color 0.22s ease,
-        color 0.22s ease;
+header,
+.header {
+    position: relative;
+    z-index: 10;
 }
 
 .header-brand {
     min-width: 0;
 }
 
-.header-brand h1 {
+.header-brand h1,
+.header-brand h1 *,
+h1.header-title {
     margin: 0;
     font-family: "Matcha Mint", Georgia, serif !important;
     font-size: clamp(32px, 4vw, 43px);
     font-weight: 400;
+    font-style: normal;
     line-height: 1.12;
     letter-spacing: 1px;
     overflow-wrap: anywhere;
@@ -204,646 +193,559 @@ html[data-theme="dark"] body {
     font-family: "Bigtimes", Arial, sans-serif !important;
     font-size: clamp(12px, 1.5vw, 16px);
     font-weight: 400;
+    font-style: normal;
     line-height: 1.35;
     color: var(--header-subtitle);
 }
 
-/* =========================================================
-   HEADER CONTROLS
-========================================================= */
+/* =========================
+   GENERAL BUTTONS
+   ========================= */
 
-.header-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 9px;
-    flex: 0 0 auto;
-}
-
-.theme-toggle,
-.settings-button {
-    display: grid;
-    place-items: center;
-    width: 39px;
-    height: 39px;
-    flex: 0 0 39px;
-    padding: 0;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    border-radius: 9px;
-    cursor: pointer;
+button {
+    border: 0;
+    border-radius: 7px;
     transition:
         background-color 0.2s ease,
         color 0.2s ease,
-        border-color 0.2s ease,
         transform 0.2s ease;
 }
 
-.theme-toggle {
-    background: #fff0b8;
-    color: #171717;
-    border-color: #9d7200;
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
 }
 
-.theme-toggle:hover {
-    background: #ffe28a;
-    transform: translateY(-1px);
+.primary-button,
+.btn-primary {
+    padding: 10px 16px;
+    color: #181818;
+    background: var(--primary);
+    font-weight: 700;
 }
 
-.theme-toggle .theme-icon {
-    display: none;
-    width: 20px;
-    height: 20px;
-    visibility: visible;
-    opacity: 1;
-    stroke: currentColor;
+.primary-button:hover,
+.btn-primary:hover {
+    background: var(--primary-hover);
 }
 
-html[data-theme="light"] .theme-toggle .theme-icon-moon {
+.secondary-button,
+.btn-secondary {
+    padding: 10px 16px;
+    color: var(--text);
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+}
+
+.secondary-button:hover,
+.btn-secondary:hover {
+    background: var(--surface);
+}
+
+/* =========================
+   FORM CONTROLS
+   ========================= */
+
+input,
+select,
+textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--input-background);
+    color: var(--text);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.8;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    width: auto;
+    accent-color: var(--primary);
+}
+
+label {
     display: block;
+    margin-bottom: 6px;
+    color: var(--text);
+    font-weight: 600;
 }
 
-html[data-theme="dark"] .theme-toggle .theme-icon-sun {
-    display: block;
-}
+/* =========================
+   MAIN PAGE LAYOUT
+   ========================= */
 
-html[data-theme="dark"] .theme-toggle {
-    background: #292929;
-    color: #ffffff;
-    border-color: #555555;
-}
-
-html[data-theme="dark"] .theme-toggle:hover {
-    background: #3a3a3a;
-}
-
-.settings-button {
-    background: rgba(255, 255, 255, 0.25);
-    color: var(--header-text);
-    border-color: rgba(0, 0, 0, 0.25);
-}
-
-.settings-button:hover {
-    background: rgba(255, 255, 255, 0.45);
-    transform: rotate(8deg);
-}
-
-html[data-theme="dark"] .settings-button {
-    background: #242424;
-    color: #ffffff;
-    border-color: #454545;
-}
-
-html[data-theme="dark"] .settings-button:hover {
-    background: #383838;
-}
-
-/* =========================================================
-   MAIN LAYOUT
-========================================================= */
-
-.container {
+.app-container,
+.app-layout {
     display: flex;
-    min-height: calc(100vh - 100px);
+    min-height: 100vh;
+    width: 100%;
 }
 
-/* =========================================================
-   SIDEBAR AND NAVIGATION
-========================================================= */
+.main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 24px;
+    background: transparent;
+}
+
+.page-content {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* =========================
+   SIDEBAR
+   ========================= */
 
 .sidebar {
-    display: flex;
-    flex-direction: column;
-    width: 230px;
-    flex: 0 0 230px;
-    padding: 22px 14px;
-    background: var(--sidebar);
+    flex: 0 0 245px;
+    width: 245px;
+    min-width: 0;
+    min-height: 100vh;
+    padding: 20px 14px;
+
     color: var(--sidebar-text);
+    background: var(--sidebar-background);
     border-right: 1px solid var(--border);
-    transition:
-        background-color 0.22s ease,
-        color 0.22s ease;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
-.sidebar h3 {
-    margin: 0 10px 18px;
-    color: var(--sidebar-muted);
-    font-size: 11px;
-    letter-spacing: 1.5px;
-}
-
+.sidebar nav,
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
 }
 
-.sidebar button.nav-button {
+.sidebar a,
+.sidebar button,
+.sidebar .nav-item {
     display: flex;
     align-items: center;
     gap: 12px;
     width: 100%;
-    min-height: 44px;
-    margin: 0;
-    padding: 10px 12px;
-    border: 1px solid transparent;
-    border-radius: 7px;
-    background: transparent;
+    min-width: 0;
+    padding: 11px 13px;
+
     color: var(--sidebar-text);
-    cursor: pointer;
+    background: transparent;
+    border-radius: 8px;
     text-align: left;
-    font-size: 14px;
+    overflow-wrap: anywhere;
+
     transition:
-        background-color 0.18s ease,
-        color 0.18s ease;
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
-.sidebar button.nav-button:hover {
-    background: var(--sidebar-hover);
-    color: #ffffff;
+.sidebar a:hover,
+.sidebar button:hover,
+.sidebar .nav-item:hover {
+    color: var(--text);
+    background: var(--surface-hover);
 }
 
-.sidebar button.nav-button.active {
-    border-color: var(--accent-border);
-    background: var(--accent);
-    color: var(--accent-contrast);
+/* Keep the active navigation item clearly visible. */
+.sidebar a.active,
+.sidebar button.active,
+.sidebar .nav-item.active,
+.sidebar a[aria-current="page"],
+.sidebar .active {
+    color: var(--sidebar-active-text) !important;
+    background: var(--sidebar-active-background) !important;
     font-weight: 700;
-    opacity: 1;
-    visibility: visible;
-    -webkit-text-fill-color: var(--accent-contrast);
 }
 
-/* =========================================================
-   GINGA GOLD ACTIVE TAB VISIBILITY FIX
-========================================================= */
-
-html[data-theme="light"] .sidebar button.nav-button.active,
-html[data-theme="light"] .sidebar button.nav-button.active span,
-html[data-theme="light"] .sidebar button.nav-button.active .nav-icon {
-    color: #171717 !important;
-    -webkit-text-fill-color: #171717 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
+.sidebar a.active *,
+.sidebar button.active *,
+.sidebar .nav-item.active *,
+.sidebar a[aria-current="page"] * {
+    color: var(--sidebar-active-text) !important;
 }
 
-html[data-theme="light"] .sidebar button.nav-button.active {
-    background: #d4a017 !important;
-    border-color: #b8890c !important;
+.sidebar .nav-icon,
+.sidebar svg {
+    flex: 0 0 auto;
 }
 
-html[data-theme="light"] .sidebar button.nav-button.active * {
-    opacity: 1 !important;
-    visibility: visible !important;
-}
+/* =========================
+   ICONS
+   ========================= */
 
-/* =========================================================
-   GINGA RED ACTIVE TAB - REDUCED BRIGHTNESS
-========================================================= */
-
-html[data-theme="dark"] .sidebar button.nav-button.active {
-    background: #c40b14 !important;
-    border-color: #920910 !important;
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-    opacity: 1;
-    visibility: visible;
-}
-
-html[data-theme="dark"] .sidebar button.nav-button.active span,
-html[data-theme="dark"] .sidebar button.nav-button.active .nav-icon {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-html[data-theme="dark"] .sidebar button.nav-button.active * {
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-/* =========================================================
-   SIDEBAR ICON COLOURS
-========================================================= */
-
+.icon,
 .nav-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 23px;
-    min-width: 23px;
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1;
-    opacity: 1;
-    visibility: visible;
+    flex-shrink: 0;
 }
 
-.icon-dashboard {
-    color: #60a5fa;
+svg {
+    max-width: 100%;
 }
 
-.icon-squad {
-    color: #fbbf24;
-}
+/* =========================
+   CARDS AND PANELS
+   ========================= */
 
-.icon-tactics {
-    color: #c084fc;
-}
-
-.icon-transfers {
-    color: #34d399;
-}
-
-.icon-fixtures {
-    color: #fb923c;
-}
-
-.icon-rankings {
-    color: #facc15;
-}
-
-.icon-finances {
-    color: #4ade80;
-}
-
-.icon-board {
-    color: #f472b6;
-}
-
-.icon-staff {
-    color: #67e8f9;
-}
-
-.icon-news {
-    color: #f87171;
-}
-
-/* =========================================================
-   SIDEBAR FOOTER
-========================================================= */
-
-.sidebar-footer {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    margin: auto 8px 0;
-    padding-top: 28px;
-    color: var(--sidebar-muted);
-    font-size: 12px;
-}
-
-.online-dot {
-    width: 8px;
-    height: 8px;
-    flex: 0 0 8px;
-    border-radius: 50%;
-    background: var(--success);
-    box-shadow: 0 0 0 3px rgba(101, 217, 137, 0.12);
-}
-
-/* =========================================================
-   MAIN CONTENT
-   Transparent background allows the wallpaper to show.
-========================================================= */
-
-.main {
+.card,
+.panel,
+.content-card {
     min-width: 0;
-    flex: 1;
-    padding: 30px;
-    background: transparent;
-    transition: background-color 0.22s ease;
-}
-
-.page-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 22px;
-}
-
-.page-eyebrow {
-    margin: 0 0 5px;
-    color: var(--accent-hover);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.4px;
-}
-
-html[data-theme="dark"] .page-eyebrow {
-    color: #ff646b;
-}
-
-.page-heading h2 {
-    margin: 0;
+    padding: 20px;
     color: var(--text);
-    font-size: 27px;
-}
-
-.card {
-    margin-bottom: 20px;
-    padding: 22px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--surface);
-    color: var(--text);
-    box-shadow: var(--shadow);
-    transition:
-        background-color 0.22s ease,
-        border-color 0.22s ease;
-}
-
-.card h2 {
-    margin-top: 0;
-    color: var(--text);
-    font-size: 19px;
-}
-
-.card p {
-    line-height: 1.6;
-}
-
-.card p:last-child {
-    margin-bottom: 0;
-}
-
-/* =========================================================
-   STATISTICS
-========================================================= */
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-}
-
-.stat {
-    min-width: 0;
-    padding: 20px 12px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--surface);
-    color: var(--text);
-    text-align: center;
-    box-shadow: var(--shadow);
-    transition:
-        background-color 0.22s ease,
-        border-color 0.22s ease;
-}
-
-.stat p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 13px;
-}
-
-.stat h2 {
-    margin: 8px 0 0;
-    color: var(--accent-hover);
-    font-size: 26px;
-}
-
-html[data-theme="dark"] .stat h2 {
-    color: #ff454e;
-}
-
-.navigation-message {
-    min-height: 20px;
-    margin: 0 0 15px;
-    color: var(--muted);
-    font-size: 13px;
-}
-
-/* =========================================================
-   SETTINGS DIALOG
-========================================================= */
-
-.settings-dialog {
-    width: min(440px, calc(100% - 32px));
-    max-height: calc(100% - 32px);
-    overflow-y: auto;
-    padding: 25px;
+    background: var(--card-background);
     border: 1px solid var(--border);
     border-radius: 12px;
-    background: var(--surface);
-    color: var(--text);
-    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
-.settings-dialog::backdrop {
-    background: var(--dialog-backdrop);
+.card h2,
+.card h3,
+.panel h2,
+.panel h3 {
+    margin-top: 0;
+    color: var(--text);
+}
+
+.card p,
+.panel p {
+    color: var(--text-secondary);
+}
+
+.card-grid,
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(min(100%, 230px), 1fr) );
+    gap: 18px;
+}
+
+/* =========================
+   STATISTICS
+   ========================= */
+
+.stats-grid,
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 16px;
+}
+
+.stat-card,
+.stat-box {
+    min-width: 0;
+    padding: 18px;
+    background: var(--card-background);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.stat-card h3,
+.stat-box h3 {
+    margin: 0 0 8px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.stat-card .stat-value,
+.stat-box .stat-value {
+    color: var(--primary);
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+/* =========================
+   TABLES
+   ========================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text);
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    color: var(--text);
+    font-weight: 700;
+}
+
+td {
+    color: var(--text-secondary);
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* =========================
+   SETTINGS DIALOG / MODAL
+   ========================= */
+
+dialog,
+.modal,
+.settings-dialog {
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+dialog {
+    max-width: min(600px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(3px);
 }
 
-.settings-heading {
+.modal,
+.settings-dialog {
+    padding: 24px;
+}
+
+.modal h2,
+.settings-dialog h2 {
+    margin-top: 0;
+}
+
+/* =========================
+   UTILITY CLASSES
+   ========================= */
+
+.text-muted {
+    color: var(--text-secondary);
+}
+
+.text-primary {
+    color: var(--primary);
+}
+
+.flex {
     display: flex;
-    align-items: flex-start;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.justify-between {
     justify-content: space-between;
-    gap: 15px;
 }
 
-.settings-heading h2 {
-    margin: 0;
-    color: var(--text);
-    font-size: 23px;
+.gap-sm {
+    gap: 8px;
 }
 
-.close-button {
-    display: grid;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    flex: 0 0 auto;
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    background: var(--surface-secondary);
-    color: var(--text);
-    cursor: pointer;
-    font-size: 23px;
-    line-height: 1;
+.gap-md {
+    gap: 16px;
 }
 
-.close-button:hover {
-    border-color: var(--accent);
-    background: var(--accent-soft);
+.gap-lg {
+    gap: 24px;
 }
 
-.settings-dialog > p {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.6;
+.w-full {
+    width: 100%;
 }
 
-.settings-item {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
+.hidden {
+    display: none !important;
 }
 
-.settings-item:last-child {
-    border-bottom: 0;
-}
-
-.settings-item span:last-child {
-    color: var(--muted);
-}
-
-/* =========================================================
-   RESPONSIVE LAYOUT - TABLETS
-========================================================= */
+/* =========================
+   TABLET RESPONSIVENESS
+   ========================= */
 
 @media (max-width: 800px) {
-    .top-header {
-        min-height: 92px;
-        padding: 13px 20px;
+    .sidebar {
+        flex-basis: 210px;
+        width: 210px;
+        padding: 16px 10px;
     }
 
-    .container {
-        min-height: calc(100vh - 92px);
+    .main-content {
+        padding: 18px;
+    }
+
+    .card,
+    .panel,
+    .content-card {
+        padding: 16px;
+    }
+
+    .header-brand h1,
+    .header-brand h1 *,
+    h1.header-title {
+        font-size: clamp(29px, 5vw, 38px);
+    }
+}
+
+/* =========================
+   MOBILE RESPONSIVENESS
+   ========================= */
+
+@media (max-width: 600px) {
+    .app-container,
+    .app-layout {
         flex-direction: column;
-    }
-
-    .header-brand h1 {
-        font-size: clamp(30px, 6vw, 38px);
-    }
-
-    .header-brand p {
-        font-size: clamp(11px, 2.2vw, 14px);
     }
 
     .sidebar {
         width: 100%;
+        min-height: auto;
         flex: 0 0 auto;
-        padding: 15px;
+        padding: 10px;
+
         border-right: 0;
         border-bottom: 1px solid var(--border);
     }
 
-    .sidebar h3 {
-        margin-bottom: 12px;
-    }
-
+    .sidebar nav,
     .sidebar-nav {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        flex-direction: row;
+        flex-wrap: wrap;
         gap: 6px;
     }
 
-    .sidebar button.nav-button {
-        min-height: 42px;
-        padding: 10px;
-        font-size: 13px;
+    .sidebar a,
+    .sidebar button,
+    .sidebar .nav-item {
+        width: auto;
+        max-width: 100%;
+        padding: 9px 11px;
     }
 
-    .sidebar-footer {
-        margin-top: 18px;
-        padding-top: 0;
+    .main-content {
+        width: 100%;
+        padding: 14px;
     }
 
-    .main {
-        padding: 22px 16px;
+    .card-grid,
+    .cards-grid,
+    .stats-grid,
+    .statistics-grid {
+        grid-template-columns: 1fr;
     }
 
-    .page-heading h2 {
-        font-size: 24px;
-    }
-}
-
-/* =========================================================
-   RESPONSIVE LAYOUT - SMALL PHONES
-========================================================= */
-
-@media (max-width: 420px) {
-    .top-header {
-        min-height: 84px;
-        gap: 10px;
-        padding: 12px 14px;
-    }
-
-    .container {
-        min-height: calc(100vh - 84px);
-    }
-
-    .header-brand h1 {
-        font-size: clamp(27px, 8vw, 33px);
+    .header-brand h1,
+    .header-brand h1 *,
+    h1.header-title {
+        font-size: clamp(27px, 7vw, 35px);
         letter-spacing: 0.5px;
     }
 
     .header-brand p {
-        max-width: 245px;
-        margin-top: 4px;
-        font-size: 11px;
-        line-height: 1.3;
+        font-size: 13px;
     }
 
-    .header-actions {
-        gap: 6px;
+    .card,
+    .panel,
+    .content-card {
+        padding: 14px;
+        border-radius: 10px;
     }
 
-    .theme-toggle,
-    .settings-button {
-        width: 35px;
-        height: 35px;
-        flex-basis: 35px;
-        border-radius: 8px;
-    }
-
-    .theme-toggle svg,
-    .settings-button svg {
-        width: 18px;
-        height: 18px;
-    }
-
-    .stats {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .stat {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 14px 16px;
-        text-align: left;
-    }
-
-    .stat h2 {
-        margin: 0;
-        font-size: 22px;
-    }
-
-    .card {
-        padding: 18px;
+    th,
+    td {
+        padding: 9px;
     }
 }
 
-/* =========================================================
-   MOBILE WALLPAPER PERFORMANCE
-========================================================= */
+/* =========================
+   SMALL MOBILE SCREENS
+   ========================= */
+
+@media (max-width: 420px) {
+    .main-content {
+        padding: 10px;
+    }
+
+    .sidebar {
+        padding: 8px;
+    }
+
+    .sidebar a,
+    .sidebar button,
+    .sidebar .nav-item {
+        gap: 7px;
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .header-brand h1,
+    .header-brand h1 *,
+    h1.header-title {
+        font-size: 28px;
+    }
+
+    .header-brand p {
+        font-size: 12px;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .btn-primary,
+    .btn-secondary {
+        padding: 9px 12px;
+    }
+}
+
+/* =========================
+   MOBILE WALLPAPER
+   ========================= */
 
 @media (max-width: 768px) {
-    html[data-theme="light"] body,
-    html[data-theme="dark"] body {
-        background-attachment: scroll;
+    body::before {
         background-position: center center;
     }
 }
 
-/* =========================================================
+/* =========================
    REDUCED MOTION ACCESSIBILITY
-========================================================= */
+   ========================= */
 
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
     *::after {
         scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
 ```
