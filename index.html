@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 
-<body>
+<body style="visibility: hidden;">
 <header class="top-header">
     <div class="header-brand">
         <h1>GINGA FM</h1>
@@ -247,6 +247,38 @@
 <!-- Load Supabase before the game's database scripts. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabaseClient.js"></script>
+<script>
+(function () {
+    "use strict";
+
+    async function checkEntryRoute() {
+        try {
+            const { data, error } = await supabaseClient.auth.getUser();
+            if (error) throw error;
+
+            if (!data.user) {
+                window.location.replace("./login.html");
+                return;
+            }
+
+            const managerName = data.user.user_metadata &&
+                data.user.user_metadata.manager_name;
+
+            if (!managerName) {
+                window.location.replace("./manager.html");
+                return;
+            }
+
+            document.body.style.visibility = "visible";
+        } catch (error) {
+            console.error("Could not verify Ginga FM account:", error);
+            window.location.replace("./login.html");
+        }
+    }
+
+    checkEntryRoute();
+})();
+</script>
 <script src="./databaseTest.js"></script>
 
 <!-- Existing game scripts are retained. -->
