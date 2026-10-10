@@ -424,7 +424,7 @@
 
                 if (error) throw error;
                 signedInUser = data.user || signedInUser;
-                showMessage("Manager profile saved successfully.", "success");
+                showMessage("Your manager profile has been saved successfully.", "success");
             } catch (error) {
                 console.error("Could not save manager profile:", error);
                 showMessage(error.message || "Could not save your profile. Please try again.", "error");
