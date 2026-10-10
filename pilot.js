@@ -73,8 +73,8 @@ function initCareer() {
     players.forEach(p=>{
         if(career.playerClubOverrides[p.id])p.club=career.playerClubOverrides[p.id];
         const state=career.playerStates[p.id];
-        if(state&&clubForPlayer(p)===selected.name){["fitness","morale","form","injuryWeeks","age","appearances","goals"].forEach(k=>{if(state[k]!==undefined)p[k]=state[k]});if(state.attributes)p.attributes={...state.attributes}}
-        ensurePlayerAttributes(p);
+        if(state&&clubForPlayer(p)===selected.name){["fitness","morale","form","injuryWeeks","age","appearances","goals","assists","minutesPlayed","yellowCards","redCards","cleanSheets","ratingTotal","ratedAppearances","potential"].forEach(k=>{if(state[k]!==undefined)p[k]=state[k]});if(state.attributes)p.attributes={...state.attributes};if(state.physicalDetails)p.physicalDetails={...state.physicalDetails};if(state.positions)p.positions=[...state.positions];if(state.developmentHistory)p.developmentHistory=[...state.developmentHistory]}
+        ensurePlayerDetails(p);
     });
     // Migrate older career saves into the required 25-33 player range without deleting players.
     const registeredCount = clubName => players.filter(p=>!p.retired&&clubForPlayer(p)===clubName).length;
@@ -154,7 +154,7 @@ function playerOverall(player){
 function ensurePlayerAttributes(player){
     const a=player.attributes||(player.attributes={});
     const base=k=>Math.max(1,Math.min(99,Math.round(Number(a[k]||50))));
-    const set=(key,value)=>{if(!Number.isFinite(Number(a[key])))a[key]=Math.max(1,Math.min(99,Math.round(value)))};
+    const set=(key,value)=>{a[key]=Math.max(1,Math.min(99,Math.round(value)))};
     set("acceleration",base("pace")*0.72+base("dribbling")*0.28);
     set("agility",base("dribbling")*0.55+base("pace")*0.25+base("composure")*0.20);
     set("balance",base("physical")*0.35+base("dribbling")*0.40+base("composure")*0.25);
@@ -197,7 +197,7 @@ function runAITransferWindow(){
     }
     return completed;
 }
-function persistPlayerStates(club){players.filter(p=>clubForPlayer(p)===club.name).forEach(p=>{career.playerStates[p.id]={fitness:p.fitness,morale:p.morale,form:p.form,injuryWeeks:Number(p.injuryWeeks||0),age:p.age,appearances:Number(p.appearances||0),goals:Number(p.goals||0),attributes:{...(p.attributes||{})}}})}
+function persistPlayerStates(club){players.filter(p=>clubForPlayer(p)===club.name).forEach(p=>{career.playerStates[p.id]={fitness:p.fitness,morale:p.morale,form:p.form,injuryWeeks:Number(p.injuryWeeks||0),age:p.age,appearances:Number(p.appearances||0),goals:Number(p.goals||0),assists:Number(p.assists||0),minutesPlayed:Number(p.minutesPlayed||0),yellowCards:Number(p.yellowCards||0),redCards:Number(p.redCards||0),cleanSheets:Number(p.cleanSheets||0),ratingTotal:Number(p.ratingTotal||0),ratedAppearances:Number(p.ratedAppearances||0),potential:p.potential,attributes:{...(p.attributes||{})},physicalDetails:{...(p.physicalDetails||{})},positions:[...(p.positions||[])],developmentHistory:[...(p.developmentHistory||[])]}})}
 function updatePlayerCondition(match){
     if(!match)return;const club=getClub(career.clubId),result=match.result,ids=new Set((club.id===match.home.id?result.homeLineup:result.awayLineup)||[]);
     const won=(club.id===match.home.id&&result.homeGoals>result.awayGoals)||(club.id===match.away.id&&result.awayGoals>result.homeGoals),drew=result.homeGoals===result.awayGoals;
