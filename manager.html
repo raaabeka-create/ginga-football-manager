@@ -149,7 +149,7 @@
                             <option value="Regional">Regional — regional and competitive teams</option>
                             <option value="Municipal">Municipal — district and community teams</option>
                             <option value="Locale">Locale — local grassroots football</option>
-                            <option value="Coast League">Coast League — under-10s / upset specialist</option>
+                            <option value="Coast League">Coast League — U10 / U13 / U15, upset specialist</option>
                         </select>
                     </div>
                     <div class="manager-field">
@@ -269,7 +269,6 @@
         };
 
         const ratingExplainer = document.getElementById("ratingExplainer");
-        let hasLoadedProfile = false;
 
         function clampRating(value) {
             return Math.max(1, Math.min(100, Math.round(value)));
@@ -319,7 +318,7 @@
                 "Regional": "moderate boost",
                 "Municipal": "neutral baseline",
                 "Locale": "modest experience penalty",
-                "Coast League": "grassroots under-10s profile, with a small youth-development edge"
+                "Coast League": "grassroots U10/U13/U15 profile: weaker overall ratings, with a small youth-development edge and upset potential"
             };
 
             ratingExplainer.textContent = styleName + " + " + licenceName + ": " + licenceSummary[licenceName] + ". Ratings are calculated as style base + licence modifier, capped at 1–100. You can now adjust each slider freely; changing style or licence recalculates the suggested starting profile.";
@@ -373,7 +372,6 @@
                 document.getElementById(id).value = profile[key] !== undefined ? profile[key] : 50;
                 setSliderDisplay(id);
             });
-            hasLoadedProfile = true;
             if (!profile.management_style) {
                 document.getElementById("style").value = "";
                 ratingExplainer.textContent = "All six ratings are currently neutral at 50/100. Choose a style and licence to calculate your suggested starting ratings. You can then fine-tune every slider.";
