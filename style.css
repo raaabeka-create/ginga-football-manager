@@ -863,3 +863,57 @@ html[data-theme="dark"] .stat h2 {
         animation-iteration-count: 1 !important;
     }
 }
+
+
+/* Ginga FM career systems: lineup, market and match-report refinements */
+.market-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 190px;
+    gap: 10px;
+    margin: 0 0 16px;
+}
+.market-filters input,
+.market-filters select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-secondary);
+    color: var(--text);
+    font: inherit;
+}
+.market-filters input:focus,
+.market-filters select:focus {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+}
+[data-lineup-player] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+[data-lineup-player]:disabled {
+    cursor: not-allowed;
+    opacity: .45;
+}
+.match-report {
+    border-top: 3px solid var(--accent);
+}
+.match-report .metric-grid {
+    margin-top: 14px;
+    margin-bottom: 12px;
+}
+.match-report .metric-card {
+    padding: 13px;
+}
+.match-report .metric-card strong {
+    font-size: 22px;
+}
+@media (max-width: 620px) {
+    .market-filters {
+        grid-template-columns: 1fr;
+    }
+}
