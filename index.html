@@ -71,7 +71,7 @@ if(view)view.innerHTML='<section class="game-panel"><h2>We could not verify your
 (function(){
 const root=document.documentElement,button=document.getElementById("themeToggle"),dialogButton=document.getElementById("dialogThemeToggle"),dialog=document.getElementById("settingsDialog");
 function applyTheme(theme,save){root.dataset.theme=theme==="dark"?"dark":"light";const dark=root.dataset.theme==="dark";button.setAttribute("aria-pressed",String(dark));button.title=dark?"Switch to gold light theme":"Switch to red dark theme";if(save){try{localStorage.setItem("ginga-fm-theme",root.dataset.theme)}catch(_){}}}
-applyTheme(root.dataset.theme||"light",false);
+let savedTheme="light";try{savedTheme=localStorage.getItem("ginga-fm-theme")||root.dataset.theme||"light"}catch(_){}applyTheme(savedTheme,false);
 const clock=document.getElementById("realWorldClock");
 function updateRealWorldClock(){if(!clock)return;const now=new Date();const dateText=new Intl.DateTimeFormat(undefined,{weekday:"short",day:"2-digit",month:"short",year:"numeric"}).format(now);const timeText=new Intl.DateTimeFormat(undefined,{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(now);clock.querySelector(".clock-date").textContent=dateText;clock.querySelector(".clock-time").textContent=timeText;clock.dateTime=now.toISOString();}
 updateRealWorldClock();window.setInterval(updateRealWorldClock,1000);
