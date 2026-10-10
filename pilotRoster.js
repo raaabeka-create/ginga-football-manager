@@ -49,7 +49,7 @@ players.forEach(player => {
 
     const middleNames = ["Avery","Blaise","Cedric","Darian","Elian","Fabian","Gideon","Harlan","Isaiah","Jalen","Kellan","Lucian","Marcel","Nolan","Orion","Paolo","Quentin","Rafael","Simeon","Thiago","Uriah","Victor","Warren","Xavier","Yannick","Zaire","Amari","Bastian","Cyril","Denzel","Emmanuel","Farouk","Gabriel","Hamza","Idris","Joaquin","Kwame","Malik","Nathaniel","Obed","Pascal","Raphael","Samuel","Tariq","Umar","Vincent","Wilfred","Yusuf","Zion","Anders","Benoit","Callum","Dario","Elias","Florian","Henrik","Ibrahim","Javier","Kofi","Lennox","Mikael","Noel","Otto","Parker","Romain","Stefan","Tomas","Ulrich","Wesley","Yohan","Zachary"];
     const existingNamePairs = new Set(players.map(player => {
-        const parts = String(player.name || "").trim().split(/\\s+/);
+        const parts = String(player.name || "").trim().split(/\s+/);
         return (parts[0] + " " + (parts[parts.length - 1] || "")).toLowerCase();
     }));
     function uniqueName(firstNames, surnames, index) {
@@ -169,9 +169,9 @@ players.forEach(player => {
     const seenNamePairs = new Set();
     players.forEach((player, index) => {
         const original = String(player.name || "Player").trim();
-        const originalParts = original.split(/\\s+/);
+        const originalParts = original.split(/\s+/);
         let candidate = original;
-        let parts = candidate.split(/\\s+/);
+        let parts = candidate.split(/\s+/);
         let pair = (parts[0] + " " + parts[parts.length - 1]).toLowerCase();
         if (seenNames.has(candidate.toLowerCase()) || seenNamePairs.has(pair)) {
             const last = parts[parts.length - 1] || "Player";
@@ -199,7 +199,7 @@ players.forEach(player => {
             }
             player.name = candidate;
         }
-        parts = String(player.name).trim().split(/\\s+/);
+        parts = String(player.name).trim().split(/\s+/);
         seenNames.add(String(player.name).toLowerCase());
         seenNamePairs.add((parts[0] + " " + parts[parts.length - 1]).toLowerCase());
     });
