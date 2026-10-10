@@ -9,6 +9,7 @@ let marketSearch = "";
 let marketPosition = "ALL";
 let marketPage = 0;
 let selectedPlayerId = null;
+let playerProfileReturnPage = "squad";
 const money = n => "GH₵ " + Math.round(Number(n || 0)).toLocaleString("en-GH");
 const safe = value => String(value == null ? "" : value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const getClub = id => clubs.find(c => Number(c.id) === Number(id));
@@ -55,6 +56,7 @@ function initCareer() {
     if(!career.startingXI)career.startingXI=[];
     if(!career.playerStates)career.playerStates={};
     if(!career.contracts)career.contracts={};
+    if(!Array.isArray(career.transferHistory))career.transferHistory=[];
     if(!Array.isArray(career.youthPlayers))career.youthPlayers=[];
     if(career.boardConfidence==null)career.boardConfidence=70;
     if(career.managerReputation==null)career.managerReputation=50;
@@ -135,10 +137,9 @@ function shell() {
     document.querySelectorAll("[data-signout]").forEach(el=>el.addEventListener("click",signOut));
 }
 function playerOverall(player){
-    const a=player.attributes||{},pos=String(player.position||"").toUpperCase();
-    if(pos==="GK")return Math.round(Number(a.goalkeeping||40)*0.5+Number(a.composure||50)*0.15+Number(a.passing||45)*0.1+Number(a.physical||50)*0.1+Number(a.defending||30)*0.15);
-    const keys=["CB","LB","RB"].includes(pos)?["defending","physical","pace","passing","stamina","composure"]:["CM","DM","AM","LM","RM"].includes(pos)?["passing","stamina","dribbling","composure","defending","pace"]:["shooting","pace","dribbling","composure","passing","physical"];
-    return Math.round(keys.reduce((sum,k)=>sum+Number(a[k]||45),0)/keys.length);
+    const a=player&&player.attributes||{},pos=String(player&&player.position||"").toUpperCase();
+    const values=pos==="GK"?[["goalkeeping",0.45],["composure",0.12],["passing",0.10],["physical",0.10],["defending",0.10],["stamina",0.08],["pace",0.05]]:["CB","LB","RB"].includes(pos)?[["defending",0.25],["physical",0.18],["pace",0.14],["stamina",0.12],["passing",0.12],["composure",0.10],["dribbling",0.05],["shooting",0.04]]:["CM","DM","AM"].includes(pos)?[["passing",0.20],["stamina",0.16],["dribbling",0.15],["composure",0.14],["defending",0.12],["pace",0.10],["shooting",0.08],["physical",0.05]]:[["shooting",0.22],["pace",0.18],["dribbling",0.16],["composure",0.14],["passing",0.12],["physical",0.08],["stamina",0.06],["defending",0.04]];
+    return Math.round(values.reduce((sum,item)=>sum+Number(a[item[0]]||0)*item[1],0));
 }
 function ensurePlayerAttributes(player){
     const a=player.attributes||(player.attributes={});
@@ -252,8 +253,8 @@ async function handleTacticChange(event){
 }
 async function handleAction(event){
     const action=event.currentTarget.dataset.action;
-    if(action==="view-player"){selectedPlayerId=Number(event.currentTarget.dataset.player);activePage="player-profile";shell();return}
-    if(action==="back-to-squad"){activePage="squad";shell();return}
+    if(action==="view-player"){selectedPlayerId=Number(event.currentTarget.dataset.player);playerProfileReturnPage=activePage==="player-profile"?playerProfileReturnPage:activePage;activePage="player-profile";shell();return}
+    if(action==="back-to-squad"){activePage=playerProfileReturnPage||"squad";shell();return}
     if(action==="edit-profile"){location.href="./manager.html";return}
     if(action==="accept-job-offer"){
         const nextClub=getClub(Number(event.currentTarget.dataset.club));
@@ -269,12 +270,12 @@ async function handleAction(event){
     if(action==="market-next"||action==="market-prev"){const count=players.filter(p=>!p.retired&&clubForPlayer(p)!==getClub(career.clubId).name&&(!marketSearch||[p.name,p.club,p.nationality||""].join(" ").toLowerCase().includes(marketSearch.toLowerCase()))&&(marketPosition==="ALL"||p.position===marketPosition)).length;const pages=Math.max(1,Math.ceil(count/40));marketPage=Math.max(0,Math.min(pages-1,marketPage+(action==="market-next"?1:-1)));shell();return}
     if(action==="sell-player"){
         const id=Number(event.currentTarget.dataset.player),player=players.find(p=>Number(p.id)===id),club=getClub(career.clubId),squad=players.filter(p=>clubForPlayer(p)===club.name);
-        if(!player||squad.length<=11){showToast("Keep at least 11 registered players.",true);return}
+        if(!player||squad.length<=25){showToast("Keep at least 25 registered players in your squad.",true);return}
         const fee=Math.round(transferFee(player)*0.7);
         if(!confirm("Sell "+player.name+" for "+money(fee)+"? This removes the player from your squad."))return;
-        const other=clubs.filter(c=>c.id!==club.id).sort((a,b)=>players.filter(p=>p.club===a.name).length-players.filter(p=>p.club===b.name).length)[0];
+        const other=clubs.filter(c=>c.id!==club.id&&players.filter(p=>!p.retired&&clubForPlayer(p)===c.name).length<33).sort((a,b)=>players.filter(p=>!p.retired&&clubForPlayer(p)===a.name).length-players.filter(p=>!p.retired&&clubForPlayer(p)===b.name).length)[0];
         if(!other){showToast("No destination club is available.",true);return}
-        career.playerClubOverrides[id]=other.name;player.club=other.name;career.balance+=fee;career.transferBudget+=Math.round(fee*0.25);career.contracts[id]={wage:0,years:0};career.startingXI=(career.startingXI||[]).filter(pid=>Number(pid)!==id);
+        career.playerClubOverrides[id]=other.name;player.club=other.name;career.balance+=fee;career.transferBudget+=Math.round(fee*0.25);career.contracts[id]={wage:0,years:0,expirySeason:career.season};career.startingXI=(career.startingXI||[]).filter(pid=>Number(pid)!==id);career.transferHistory=career.transferHistory||[];career.transferHistory.push({playerId:id,playerName:player.name,season:career.season,from:club.name,to:other.name,fee,type:"Sale"});
         career.news.push({date:"MATCHDAY "+career.currentRound,title:"Player sold",body:player.name+" has been sold to "+other.name+" for "+money(fee)+"."});
         try{persistPlayerStates(club);await saveCareer(player.name+" sold.");shell()}catch(e){showToast("Sale could not be saved: "+e.message,true)}return
     }
@@ -289,7 +290,7 @@ async function handleAction(event){
         if(weeklyWages+wage>club.finances.wageBudget){showToast("The player's estimated wage would exceed your weekly wage budget.",true);return}
         if(squad.length>=33){showToast("Your squad has reached the 33-player limit. Sell a player first.",true);return}
         if(!confirm("Sign "+player.name+" for "+money(fee)+" and an estimated weekly wage of "+money(wage)+"?"))return;
-        career.playerClubOverrides[id]=club.name;player.club=club.name;career.contracts[id]={wage,years:3};career.balance-=fee;career.transferBudget-=fee;
+        career.playerClubOverrides[id]=club.name;player.club=club.name;career.contracts[id]={wage,years:3,expirySeason:career.season+2};career.balance-=fee;career.transferBudget-=fee;career.transferHistory=career.transferHistory||[];career.transferHistory.push({playerId:id,playerName:player.name,season:career.season,from:sellerClubName,to:club.name,fee,type:"Signing"});
         career.news.push({date:"MATCHDAY "+career.currentRound,title:"New signing confirmed",body:player.name+" has joined "+getClub(career.clubId).name+" for "+money(fee)+"."});
         try{await saveCareer(player.name+" signed successfully.");shell()}catch(e){showToast("Signing could not be saved: "+e.message,true)}
     }
