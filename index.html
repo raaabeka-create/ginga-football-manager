@@ -1,400 +1,71 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#d4a017">
-
-    <title>Ginga FM | Ghana Football Management Simulation</title>
-    <meta name="description" content="Ginga FM is a Ghanaian football management simulation. Build your club, manage your squad and compete.">
-
-    <script>
-        (function () {
-            try {
-                const savedTheme = localStorage.getItem("ginga-fm-theme");
-                document.documentElement.dataset.theme =
-                    savedTheme === "dark" ? "dark" : "light";
-            } catch (error) {
-                document.documentElement.dataset.theme = "light";
-            }
-        })();
-    </script>
-
-    <link rel="preload" href="./fonts/Matcha-Mint.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="./fonts/Bigtimes.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="stylesheet" href="./style.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#d4a017">
+<title>Ginga FM | Ghana Football Management Simulation</title>
+<meta name="description" content="Lead your club, manage your squad, shape matchdays and compete in the Ghana Premier Division.">
+<script>
+try{document.documentElement.dataset.theme=localStorage.getItem("ginga-fm-theme")==="dark"?"dark":"light"}catch(_){}
+</script>
+<link rel="preload" href="./fonts/Matcha-Mint.ttf" as="font" type="font/ttf" crossorigin><link rel="preload" href="./fonts/Bigtimes.ttf" as="font" type="font/ttf" crossorigin><link rel="stylesheet" href="./style.css">
+<style>
+body{visibility:hidden}.game-ready{visibility:visible}.top-header{position:relative;z-index:2}.header-season{margin-left:auto;margin-right:14px;padding:7px 10px;border:1px solid rgba(0,0,0,.2);border-radius:7px;font-size:11px;font-weight:900;letter-spacing:1px}.container{align-items:stretch}.sidebar{position:sticky;top:0;height:calc(100vh - 100px);overflow-y:auto}.main{padding:28px;max-width:1800px;margin:0 auto}.sidebar button.nav-button{font-weight:600}.sidebar button.nav-button.active{box-shadow:inset 3px 0 0 rgba(255,255,255,.35)}
+.hero-panel{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:space-between;gap:25px;min-height:270px;margin-bottom:20px;padding:34px;border:1px solid rgba(255,255,255,.13);border-radius:16px;overflow:hidden;background:linear-gradient(105deg,rgba(12,12,12,.96) 0%,rgba(22,14,15,.91) 58%,rgba(87,18,26,.72) 100%),url('./images/Muted%20Maroon%20Football%20Motion%20Wallpaper.png') center/cover;color:#fff;box-shadow:0 15px 35px rgba(0,0,0,.14)}
+.hero-panel:before{content:"";position:absolute;z-index:-1;width:320px;height:320px;right:6%;top:-100px;border:1px solid rgba(255,255,255,.13);border-radius:50%;box-shadow:0 0 0 28px rgba(255,255,255,.025),0 0 0 58px rgba(255,255,255,.02)}
+.hero-copy{max-width:650px}.hero-kicker,.panel-eyebrow{margin:0 0 8px;color:var(--accent-hover);font-size:10px;font-weight:900;letter-spacing:1.7px}.hero-kicker{color:#f0c94c}.hero-copy h1{font-size:clamp(28px,4vw,43px);line-height:1.12;letter-spacing:-.8px;margin:0 0 12px;color:white}.hero-copy>p:not(.hero-kicker){max-width:530px;color:#dedede;line-height:1.65;font-size:14px;margin:0}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:23px}.game-btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:43px;padding:12px 16px;border:1px solid var(--accent);border-radius:8px;background:var(--accent);color:var(--accent-contrast);font-weight:800;font-size:13px;cursor:pointer}.game-btn:hover{filter:brightness(1.05);transform:translateY(-1px)}.game-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}.game-btn.secondary{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:white}.hero-emblem{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:150px;color:#e5d7b1;font-size:10px;font-weight:800;letter-spacing:1.4px}.big-crest{width:112px;height:128px;display:grid;place-items:center;clip-path:polygon(8% 0,92% 0,85% 75%,50% 100%,15% 75%);background:linear-gradient(145deg,#f4d46a,#b7830c);color:#171717;font-size:31px;font-weight:1000;filter:drop-shadow(0 10px 12px rgba(0,0,0,.2))}
+.metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.metric-grid.compact{grid-template-columns:repeat(2,minmax(0,1fr))}.metric-card{min-width:0;padding:19px;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadow)}.metric-card>span{display:block;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:1px}.metric-card>strong{display:block;margin:10px 0 5px;font-size:clamp(20px,2.2vw,27px);letter-spacing:-.5px;color:var(--text);overflow-wrap:anywhere}.metric-card small{color:var(--muted);font-size:11px}.content-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(320px,1fr);gap:18px;align-items:start}.game-panel{min-width:0;margin-bottom:18px;padding:22px;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadow)}.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:17px}.panel-heading h2{font-size:19px;margin:0;color:var(--text)}.panel-heading .subtle{margin:5px 0 0}.panel-eyebrow{font-size:9px}.live-pill{display:inline-flex;align-items:center;white-space:nowrap;padding:6px 9px;border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.8px}.text-btn{border:0;background:transparent;color:var(--accent-hover);font-size:11px;font-weight:800;cursor:pointer}.fixture-row{display:grid;grid-template-columns:46px minmax(0,1fr) 54px minmax(0,1fr) 58px;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid var(--border);font-size:11px}.fixture-row:last-child{border-bottom:0}.fixture-row.your-fixture{margin-left:-10px;margin-right:-10px;padding-left:10px;padding-right:10px;border-radius:7px;background:var(--accent-soft)}.round-tag{color:var(--muted);font-size:9px;font-weight:800}.fixture-team{display:flex;align-items:center;gap:7px;min-width:0}.fixture-team strong{overflow-wrap:anywhere;font-size:10px}.fixture-team.away{justify-content:flex-end;text-align:right}.mini-crest{display:inline-grid;place-items:center;flex:0 0 26px;width:26px;height:28px;clip-path:polygon(8% 0,92% 0,84% 75%,50% 100%,16% 75%);background:var(--accent);color:var(--accent-contrast);font-size:8px;font-weight:900}.fixture-score{text-align:center;white-space:nowrap;font-weight:900;font-size:13px}.fixture-score i{font-style:normal;color:var(--muted)}.fixture-score>span{color:var(--muted);font-size:10px}.fixture-state{font-size:8px;text-align:right;text-transform:uppercase;font-weight:900;letter-spacing:.5px}.fixture-state.played{color:#2f9b66}.fixture-state.scheduled{color:var(--muted)}.panel-divider{height:1px;background:var(--border);margin:22px 0}.table-scroll{width:100%;overflow-x:auto}.data-table{width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap}.data-table th{padding:11px 8px;text-align:left;color:var(--muted);font-size:9px;letter-spacing:.7px;border-bottom:1px solid var(--border)}.data-table td{padding:12px 8px;border-bottom:1px solid var(--border);color:var(--text)}.data-table tbody tr:last-child td{border-bottom:0}.data-table .your-row{background:var(--accent-soft)}.data-table .your-row td:first-child{border-left:3px solid var(--accent)}.table-club{display:flex;align-items:center;gap:7px}.table-club .mini-crest{width:21px;height:23px;flex-basis:21px}.cell-sub{display:block;margin-top:3px;color:var(--muted);font-size:9px}.empty-state,.subtle{color:var(--muted);font-size:12px;line-height:1.6}.view-intro{margin-bottom:22px}.view-intro h1{margin:0 0 8px;font-size:clamp(27px,4vw,38px);letter-spacing:-.7px}.view-intro>p:last-child{margin:0;color:var(--muted);line-height:1.6;font-size:13px}.position-chip{display:inline-block;padding:4px 7px;border-radius:5px;background:var(--surface-secondary);font-weight:800}.notice-line{padding:12px 14px;border-left:3px solid var(--accent);color:var(--muted);font-size:11px;line-height:1.6}.tactics-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(230px,.9fr);gap:24px}.pitch-visual{position:relative;min-height:350px;border:2px solid rgba(255,255,255,.7);border-radius:9px;background:repeating-linear-gradient(0deg,#1b6643 0,#1b6643 40px,#205f3e 40px,#205f3e 80px);overflow:hidden}.pitch-visual:before{content:"";position:absolute;inset:12px;border:1px solid rgba(255,255,255,.6)}.pitch-half{position:absolute;left:12px;right:12px;top:50%;border-top:1px solid rgba(255,255,255,.6)}.pitch-circle{position:absolute;left:50%;top:50%;width:80px;height:80px;border:1px solid rgba(255,255,255,.6);border-radius:50%;transform:translate(-50%,-50%)}.pitch-box{position:absolute;left:28%;width:44%;height:15%;border:1px solid rgba(255,255,255,.6)}.pitch-box.top{top:12px;border-top:0}.pitch-box.bottom{bottom:12px;border-bottom:0}.pitch-label{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:rgba(255,255,255,.8);font-size:9px;letter-spacing:2px}.tactics-form label{display:block;margin-bottom:15px;font-size:11px;font-weight:800}.tactics-form select{display:block;width:100%;margin-top:7px;padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--surface-secondary);color:var(--text);font:inherit}.small-btn{border:1px solid var(--accent-border);border-radius:6px;padding:7px 10px;background:var(--accent);color:var(--accent-contrast);font-size:10px;font-weight:900;cursor:pointer}.small-btn:disabled{opacity:.4;cursor:not-allowed}.finance-line{display:flex;justify-content:space-between;gap:12px;padding:15px 0;border-bottom:1px solid var(--border);font-size:12px}.finance-line.total{border-bottom:0;border-top:2px solid var(--border);font-size:14px;font-weight:900}.positive{color:#29965b}.negative{color:#d34b4b}.objective-card{display:flex;gap:15px;padding:17px 0;border-bottom:1px solid var(--border)}.objective-card:last-child{border-bottom:0}.objective-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:10px;background:var(--accent-soft);font-size:19px}.objective-card strong{font-size:13px}.objective-card p{margin:5px 0;color:var(--muted);font-size:12px;line-height:1.5}.objective-card small{color:var(--accent-hover);font-size:10px;font-weight:800}.profile-top{display:flex;align-items:center;gap:16px;margin-bottom:25px}.profile-avatar{display:grid;place-items:center;width:64px;height:64px;flex:0 0 64px;border-radius:15px;background:var(--accent);color:var(--accent-contrast);font-size:22px;font-weight:900}.profile-top h2{margin:0 0 5px}.skill-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-bottom:24px}.skill>div:first-child{display:flex;justify-content:space-between;gap:10px;font-size:11px}.skill strong{color:var(--accent-hover)}.skill-track{height:6px;margin-top:8px;border-radius:8px;background:var(--border);overflow:hidden}.skill-track i{display:block;height:100%;border-radius:8px;background:var(--accent)}.news-item{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--border)}.news-item:last-child{border-bottom:0}.news-dot{flex:0 0 9px;width:9px;height:9px;margin-top:5px;border-radius:50%;background:var(--accent)}.news-item small{color:var(--accent-hover);font-size:9px;font-weight:900;letter-spacing:1px}.news-item h3{margin:6px 0;font-size:14px}.news-item p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}.toast{position:fixed;z-index:20;right:22px;bottom:22px;max-width:min(420px,calc(100vw - 28px));padding:14px 17px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);box-shadow:0 12px 40px rgba(0,0,0,.2);font-size:12px;line-height:1.5;opacity:0;pointer-events:none;transform:translateY(8px);transition:.2s}.toast.visible{opacity:1;transform:translateY(0)}.toast.error{border-color:#d34b4b}.settings-dialog .game-btn{margin-top:14px}
+@media(max-width:1100px){.content-grid{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar{width:205px;flex-basis:205px}.main{padding:20px}}
+@media(max-width:800px){.sidebar{position:relative;height:auto;overflow:visible}.sidebar-nav{grid-template-columns:repeat(3,minmax(0,1fr))}.sidebar button.nav-button{justify-content:flex-start}.main{padding:18px 13px}.hero-panel{padding:25px;min-height:230px}.hero-emblem{min-width:110px}.big-crest{width:85px;height:100px;font-size:24px}.tactics-layout{grid-template-columns:1fr}.pitch-visual{min-height:260px}}
+@media(max-width:560px){.header-season{display:none}.hero-panel{align-items:flex-start;min-height:0;padding:22px}.hero-emblem{min-width:68px;margin-top:16px}.big-crest{width:60px;height:72px;font-size:18px}.hero-emblem>span{font-size:7px;text-align:center}.hero-copy h1{font-size:27px}.hero-copy>p:not(.hero-kicker){font-size:12px}.hero-actions{gap:7px}.game-btn{font-size:11px;padding:10px}.metric-card{padding:14px}.metric-card>strong{font-size:20px}.game-panel{padding:15px}.fixture-row{grid-template-columns:34px minmax(0,1fr) 40px minmax(0,1fr);gap:5px}.fixture-state{display:none}.fixture-team strong{font-size:9px}.fixture-team .mini-crest{flex-basis:20px;width:20px;height:22px}.skill-grid{grid-template-columns:1fr}.sidebar-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.panel-heading h2{font-size:16px}}
+</style>
 </head>
-
-<body style="visibility: hidden;">
+<body>
 <header class="top-header">
-    <div class="header-brand">
-        <h1>GINGA FM</h1>
-        <p>Ghana Football Management Simulation</p>
-    </div>
-
-    <div class="header-actions">
-        <button
-            class="theme-toggle"
-            id="themeToggle"
-            type="button"
-            aria-label="Switch to red dark theme"
-            title="Switch to red dark theme"
-            aria-pressed="false">
-
-            <svg class="theme-icon theme-icon-moon"
-                 xmlns="http://www.w3.org/2000/svg"
-                 viewBox="0 0 24 24"
-                 width="20" height="20"
-                 fill="none"
-                 stroke="currentColor"
-                 stroke-width="2.2"
-                 stroke-linecap="round"
-                 stroke-linejoin="round"
-                 aria-hidden="true">
-                <path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8
-                         8.7 8.7 0 1 0 20.2 15.1Z"/>
-            </svg>
-
-            <svg class="theme-icon theme-icon-sun"
-                 xmlns="http://www.w3.org/2000/svg"
-                 viewBox="0 0 24 24"
-                 width="20" height="20"
-                 fill="none"
-                 stroke="currentColor"
-                 stroke-width="2.2"
-                 stroke-linecap="round"
-                 stroke-linejoin="round"
-                 aria-hidden="true">
-                <circle cx="12" cy="12" r="4"/>
-                <path d="M12 2v2"/>
-                <path d="M12 20v2"/>
-                <path d="m4.93 4.93 1.42 1.42"/>
-                <path d="m17.65 17.65 1.42 1.42"/>
-                <path d="M2 12h2"/>
-                <path d="M20 12h2"/>
-                <path d="m6.35 17.65-1.42 1.42"/>
-                <path d="m19.07 4.93-1.42 1.42"/>
-            </svg>
-        </button>
-
-        <button
-            class="settings-button"
-            id="settingsButton"
-            type="button"
-            aria-label="Open settings"
-            title="Settings">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 viewBox="0 0 24 24"
-                 width="20" height="20"
-                 fill="none"
-                 stroke="currentColor"
-                 stroke-width="2"
-                 stroke-linecap="round"
-                 stroke-linejoin="round"
-                 aria-hidden="true">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.75.53l-.06.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.47-1.03l-.1-.01-2.94-1.7.02-.09a1.7 1.7 0 0 0-.53-1.75l-.07-.06v-3.4l.09-.04a1.7 1.7 0 0 0 1.03-1.47l.01-.1 1.7-2.94.09.02a1.7 1.7 0 0 0 1.75-.53l.06-.07h3.4l.04.09a1.7 1.7 0 0 0 1.47 1.03l.1.01 2.94 1.7-.02.09a1.7 1.7 0 0 0 .53 1.75l.07.06v3.4z"
-                      transform="translate(-3 -3) scale(1.25)"/>
-            </svg>
-        </button>
-    </div>
-</header>
-
+<div class="header-brand"><h1>GINGA FM</h1><p>Ghana Football Management Simulation</p></div>
+<span id="seasonLabel" class="header-season">SEASON 1</span>
+<div class="header-actions">
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme" title="Switch theme" aria-pressed="false"><svg class="theme-icon theme-icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.7 8.7 0 1 0 20.2 15.1Z"/></svg><svg class="theme-icon theme-icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M6.35 17.65l-1.42 1.42M19.07 4.93l-1.42 1.42"/></svg></button>
+<button class="settings-button" id="settingsButton" type="button" aria-label="Open settings" title="Settings"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15.1a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.75.53l-.06.07h-3.4l-.04-.09a1.7 1.7 0 0 0-1.47-1.03l-.1-.01-2.94-1.7.02-.09a1.7 1.7 0 0 0-.53-1.75l-.07-.06v-3.4l.09-.04a1.7 1.7 0 0 0 1.03-1.47l.01-.1 1.7-2.94.09.02a1.7 1.7 0 0 0 1.75-.53l.06-.07h3.4l.04.09a1.7 1.7 0 0 0 1.47 1.03l.1.01 2.94 1.7-.02.09a1.7 1.7 0 0 0-.53 1.75l-.07.06v3.4z" transform="translate(-3 -3) scale(1.25)"/></svg></button>
+</div></header>
 <div class="container">
-    <aside class="sidebar">
-        <h3>MENU</h3>
-
-        <nav class="sidebar-nav" aria-label="Main navigation">
-            <button class="nav-button active" type="button" data-page="dashboard">
-                <span class="nav-icon icon-dashboard" aria-hidden="true">▦</span>
-                Dashboard
-            </button>
-
-            <button class="nav-button" type="button" data-page="squad">
-                <span class="nav-icon icon-squad" aria-hidden="true">♟</span>
-                Squad
-            </button>
-
-            <button class="nav-button" type="button" data-page="tactics">
-                <span class="nav-icon icon-tactics" aria-hidden="true">⚙</span>
-                Tactics
-            </button>
-
-            <button class="nav-button" type="button" data-page="transfers">
-                <span class="nav-icon icon-transfers" aria-hidden="true">⇄</span>
-                Transfers
-            </button>
-
-            <button class="nav-button" type="button" data-page="fixtures">
-                <span class="nav-icon icon-fixtures" aria-hidden="true">▤</span>
-                Fixtures
-            </button>
-
-            <button class="nav-button" type="button" data-page="league">
-                <span class="nav-icon icon-rankings" aria-hidden="true">🏆</span>
-                Rankings
-            </button>
-
-            <button class="nav-button" type="button" data-page="finances">
-                <span class="nav-icon icon-finances" aria-hidden="true">₵</span>
-                Finances
-            </button>
-
-            <button class="nav-button" type="button" data-page="board">
-                <span class="nav-icon icon-board" aria-hidden="true">♧</span>
-                Board
-            </button>
-
-            <button class="nav-button" type="button" data-page="staff">
-                <span class="nav-icon icon-staff" aria-hidden="true">♙</span>
-                Staff
-            </button>
-
-            <button class="nav-button" type="button" data-page="news">
-                <span class="nav-icon icon-news" aria-hidden="true">▣</span>
-                News
-            </button>
-        </nav>
-
-        <div class="sidebar-footer">
-            <span class="online-dot"></span>
-            Ginga FM World
-        </div>
-    </aside>
-
-    <main class="main">
-        <div class="page-heading">
-            <div>
-                <p class="page-eyebrow">MANAGER'S OFFICE</p>
-                <h2>Dashboard</h2>
-            </div>
-        </div>
-
-        <section class="card">
-            <h2>Welcome to Ginga FM</h2>
-            <p>Your football management career begins here.</p>
-            <p><strong>Manager:</strong> <span id="managerName">New Manager</span></p>
-            <p><strong>Club:</strong> <span id="clubName">No club selected</span></p>
-            <p><strong>League:</strong> <span id="leagueName">Ghana Premier Division</span></p>
-        </section>
-
-        <section class="stats" aria-label="Club statistics">
-            <div class="stat">
-                <p>League Position</p>
-                <h2 id="position">-</h2>
-            </div>
-            <div class="stat">
-                <p>Points</p>
-                <h2 id="points">0</h2>
-            </div>
-            <div class="stat">
-                <p>Balance</p>
-                <h2 id="balance">GH₵ 0</h2>
-            </div>
-        </section>
-
-        <section class="card">
-            <h2>Ginga FM World</h2>
-            <p id="databaseStatus" role="status" aria-live="polite">
-                Connecting to football world...
-            </p>
-        </section>
-
-        <section class="card">
-            <h2>Next Match</h2>
-            <p id="nextMatch">No fixture loaded.</p>
-            <p id="matchTime">-</p>
-        </section>
-
-        <section class="card">
-            <h2>Latest Match</h2>
-            <p id="matchResult">No match played yet.</p>
-        </section>
-
-        <p id="navigationMessage" class="navigation-message" role="status"></p>
-    </main>
+<aside class="sidebar"><h3>MANAGER'S OFFICE</h3><nav class="sidebar-nav" aria-label="Main navigation">
+<button class="nav-button active" type="button" data-page="dashboard"><span class="nav-icon icon-dashboard">▦</span>Dashboard</button>
+<button class="nav-button" type="button" data-page="squad"><span class="nav-icon icon-squad">♟</span>Squad</button>
+<button class="nav-button" type="button" data-page="tactics"><span class="nav-icon icon-tactics">⚙</span>Tactics</button>
+<button class="nav-button" type="button" data-page="transfers"><span class="nav-icon icon-transfers">⇄</span>Transfers</button>
+<button class="nav-button" type="button" data-page="fixtures"><span class="nav-icon icon-fixtures">▤</span>Fixtures</button>
+<button class="nav-button" type="button" data-page="league"><span class="nav-icon icon-rankings">🏆</span>League table</button>
+<button class="nav-button" type="button" data-page="finances"><span class="nav-icon icon-finances">₵</span>Finances</button>
+<button class="nav-button" type="button" data-page="board"><span class="nav-icon icon-board">♧</span>Board</button>
+<button class="nav-button" type="button" data-page="staff"><span class="nav-icon icon-staff">♙</span>Manager</button>
+<button class="nav-button" type="button" data-page="news"><span class="nav-icon icon-news">▣</span>Club news</button>
+</nav><div class="sidebar-footer"><span class="online-dot"></span><span id="worldStatus">Connecting to career save…</span></div></aside>
+<main class="main"><div class="page-heading"><div><p class="page-eyebrow">GHANA PREMIER DIVISION</p><h2 id="clubLabel">Your club</h2></div><div style="text-align:right"><span style="display:block;color:var(--muted);font-size:10px;letter-spacing:1px">MANAGER</span><strong id="managerLabel">Manager</strong></div></div><div id="view" aria-live="polite"></div></main>
 </div>
-
-<dialog id="settingsDialog" class="settings-dialog">
-    <div class="settings-heading">
-        <div>
-            <p class="page-eyebrow">PREFERENCES</p>
-            <h2>Settings</h2>
-        </div>
-
-        <button id="closeSettingsButton"
-                class="close-button"
-                type="button"
-                aria-label="Close settings">×</button>
-    </div>
-
-    <p>Game settings will be available here as Ginga FM develops.</p>
-
-    <div class="settings-item">
-        <span>Game</span>
-        <span>Coming soon</span>
-    </div>
-    <div class="settings-item">
-        <span>Notifications</span>
-        <span>Coming soon</span>
-    </div>
-    <div class="settings-item">
-        <span>Account</span>
-        <span>Coming soon</span>
-    </div>
-</dialog>
-
-<!-- Load Supabase before the game's database scripts. -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./supabaseClient.js"></script>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<dialog id="settingsDialog" class="settings-dialog"><div class="settings-heading"><div><p class="page-eyebrow">PREFERENCES</p><h2>Settings</h2></div><button id="closeSettingsButton" class="close-button" type="button" aria-label="Close settings">×</button></div><p>Make Ginga FM comfortable for your next matchday.</p><div class="settings-item"><span>Display theme</span><button id="dialogThemeToggle" class="small-btn" type="button">Switch theme</button></div><div class="settings-item"><span>Manager profile</span><a href="./manager.html" style="color:var(--accent-hover)">Edit profile ↗</a></div><div class="settings-item"><span>Account</span><button class="small-btn" type="button" data-signout>Log out</button></div></dialog>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabaseClient.js"></script>
 <script>
-(function () {
-    "use strict";
-
-    async function checkEntryRoute() {
-        try {
-            const { data, error } = await supabaseClient.auth.getUser();
-            if (error) throw error;
-
-            if (!data.user) {
-                window.location.replace("./login.html");
-                return;
-            }
-
-            const managerName = data.user.user_metadata &&
-                data.user.user_metadata.manager_name;
-
-            if (!managerName) {
-                window.location.replace("./manager.html");
-                return;
-            }
-
-            document.body.style.visibility = "visible";
-        } catch (error) {
-            console.error("Could not verify Ginga FM account:", error);
-            window.location.replace("./login.html");
-        }
-    }
-
-    checkEntryRoute();
+(async function(){
+try{
+const {data,error}=await supabaseClient.auth.getUser();if(error)throw error;
+if(!data.user){location.replace("./login.html");return}
+const meta=data.user.user_metadata||{};
+if(!meta.manager_name){location.replace("./manager.html");return}
+if(!meta.club_id){location.replace("./club-selection.html");return}
+document.body.style.visibility="visible";
+}catch(e){console.error("Ginga FM session check failed",e);location.replace("./login.html")}
+})();
+(function(){
+const root=document.documentElement,button=document.getElementById("themeToggle"),dialogButton=document.getElementById("dialogThemeToggle"),dialog=document.getElementById("settingsDialog");
+function applyTheme(theme,save){root.dataset.theme=theme==="dark"?"dark":"light";const dark=root.dataset.theme==="dark";button.setAttribute("aria-pressed",String(dark));button.title=dark?"Switch to gold light theme":"Switch to red dark theme";if(save){try{localStorage.setItem("ginga-fm-theme",root.dataset.theme)}catch(_){}}}
+applyTheme(root.dataset.theme||"light",false);
+function toggle(){applyTheme(root.dataset.theme==="light"?"dark":"light",true)}
+button.addEventListener("click",toggle);dialogButton.addEventListener("click",toggle);
+document.getElementById("settingsButton").addEventListener("click",()=>{if(dialog.showModal)dialog.showModal();else dialog.setAttribute("open","")});
+document.getElementById("closeSettingsButton").addEventListener("click",()=>{if(dialog.close)dialog.close();else dialog.removeAttribute("open")});
+dialog.addEventListener("click",e=>{if(e.target===dialog&&dialog.close)dialog.close()});
 })();
 </script>
-<script src="./databaseTest.js"></script>
-
-<!-- Existing game scripts are retained. -->
-<script src="./clubs.js"></script>
-<script src="./players.js"></script>
-<script src="./matchEngine.js"></script>
-<script src="./game.js"></script>
-
-<script>
-(function () {
-    "use strict";
-
-    // Theme controls
-    const rootElement = document.documentElement;
-    const themeToggle = document.getElementById("themeToggle");
-    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-
-    function applyTheme(theme, savePreference) {
-        const selectedTheme = theme === "dark" ? "dark" : "light";
-        const isDark = selectedTheme === "dark";
-
-        rootElement.dataset.theme = selectedTheme;
-
-        themeToggle.setAttribute(
-            "aria-label",
-            isDark ? "Switch to gold light theme" : "Switch to red dark theme"
-        );
-        themeToggle.setAttribute(
-            "title",
-            isDark ? "Switch to gold light theme" : "Switch to red dark theme"
-        );
-        themeToggle.setAttribute("aria-pressed", String(isDark));
-
-        if (themeColorMeta) {
-            themeColorMeta.content = isDark ? "#141414" : "#d4a017";
-        }
-
-        if (savePreference) {
-            try {
-                localStorage.setItem("ginga-fm-theme", selectedTheme);
-            } catch (error) {
-                console.warn("Could not save theme preference:", error);
-            }
-        }
-    }
-
-    applyTheme(rootElement.dataset.theme || "light", false);
-
-    themeToggle.addEventListener("click", function () {
-        const currentTheme = rootElement.dataset.theme || "light";
-        applyTheme(currentTheme === "light" ? "dark" : "light", true);
-    });
-
-    // Settings dialog
-    const settingsButton = document.getElementById("settingsButton");
-    const settingsDialog = document.getElementById("settingsDialog");
-    const closeSettingsButton = document.getElementById("closeSettingsButton");
-
-    settingsButton.addEventListener("click", function () {
-        if (typeof settingsDialog.showModal === "function") {
-            if (!settingsDialog.open) settingsDialog.showModal();
-        } else {
-            settingsDialog.setAttribute("open", "");
-        }
-    });
-
-    closeSettingsButton.addEventListener("click", function () {
-        if (typeof settingsDialog.close === "function") {
-            settingsDialog.close();
-        } else {
-            settingsDialog.removeAttribute("open");
-        }
-    });
-
-    settingsDialog.addEventListener("click", function (event) {
-        if (event.target === settingsDialog &&
-            typeof settingsDialog.close === "function") {
-            settingsDialog.close();
-        }
-    });
-
-    // Navigation buttons
-    const navigationButtons = document.querySelectorAll(".nav-button");
-    const navigationMessage = document.getElementById("navigationMessage");
-
-    navigationButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-            navigationButtons.forEach(function (item) {
-                item.classList.remove("active");
-            });
-
-            button.classList.add("active");
-
-            navigationMessage.textContent =
-                button.dataset.page === "dashboard"
-                    ? ""
-                    : button.textContent.trim() +
-                      " will be connected to its game screen in a later step.";
-        });
-    });
-
-    // Report custom font loading in the browser console for diagnosis.
-    if (document.fonts && document.fonts.load) {
-        Promise.all([
-            document.fonts.load('16px "Matcha Mint"'),
-            document.fonts.load('16px "Bigtimes"')
-        ]).then(function (results) {
-            console.info("Ginga FM font loading results:", {
-                matchaMintLoaded: results[0].length > 0,
-                bigtimesLoaded: results[1].length > 0
-            });
-        }).catch(function (error) {
-            console.error("A Ginga FM custom font failed to load:", error);
-        });
-    }
-})();
-</script>
-</body>
-</html>
+<script src="./clubs.js"></script><script src="./players.js"></script><script src="./matchEngine.js"></script><script src="./game.js"></script><script src="./pilot.js"></script>
+</body></html>
