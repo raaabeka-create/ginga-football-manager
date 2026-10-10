@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#d4a017">
+    <title>Ginga FM | Manager Setup</title>
+    <script>
+        try {
+            const theme = localStorage.getItem("ginga-fm-theme");
+            document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+        } catch (error) {
+            document.documentElement.dataset.theme = "light";
+        }
+    </script>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        body { min-height: 100vh; }
+        .manager-page { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+        .manager-card { width: 100%; max-width: 760px; padding: 30px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); color: var(--text); box-shadow: 0 15px 50px rgba(0,0,0,.18); }
+        .manager-brand { text-align: center; margin-bottom: 24px; }
+        .manager-brand h1 { margin: 0; color: var(--accent-hover); font-family: "Matcha Mint", Georgia, serif; font-size: 40px; font-weight: 400; }
+        .manager-brand p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+        .manager-card h2 { margin: 0 0 8px; font-size: 26px; }
+        .manager-intro { margin: 0 0 24px; color: var(--muted); line-height: 1.6; font-size: 14px; }
+        .manager-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+        .manager-field { min-width: 0; margin-bottom: 16px; }
+        .manager-field label, .manager-field .field-label { display: block; margin-bottom: 7px; font-size: 13px; font-weight: bold; }
+        .manager-field input, .manager-field select { box-sizing: border-box; width: 100%; min-height: 46px; padding: 11px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-secondary); color: var(--text); font: inherit; }
+        .manager-field input:focus, .manager-field select:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+        .attribute-row { display: grid; grid-template-columns: 1fr 48px; align-items: center; gap: 12px; }
+        .attribute-row input { min-height: auto; padding: 0; accent-color: var(--accent); }
+        .attribute-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--accent-hover); font-weight: bold; }
+        .manager-submit { width: 100%; min-height: 48px; margin-top: 8px; padding: 12px; border: 0; border-radius: 8px; background: var(--accent); color: var(--accent-contrast); font-weight: bold; cursor: pointer; }
+        .manager-submit:disabled { opacity: .65; cursor: wait; }
+        .manager-message { display: none; margin-top: 18px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+        .manager-message.visible { display: block; }
+        .manager-message.error { border-color: #d34b4b; }
+        .manager-message.success { border-color: #29965b; }
+        .manager-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; }
+        .manager-link { color: var(--accent-hover); font-size: 13px; text-decoration: none; }
+        .manager-link:hover { text-decoration: underline; }
+        .manager-note { margin-top: 18px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+        @media (max-width: 600px) { .manager-card { padding: 22px 18px; } .manager-grid { grid-template-columns: 1fr; gap: 0; } .manager-brand h1 { font-size: 35px; } }
+    </style>
+</head>
+<body>
+    <main class="manager-page">
+        <section class="manager-card">
+            <header class="manager-brand">
+                <h1>GINGA FM</h1>
+                <p>Ghana Football Management Simulation</p>
+            </header>
+
+            <h2>Create your manager</h2>
+            <p class="manager-intro">This is your identity in the football world. Choose your coaching licence and starting strengths carefully. You can change your profile later as the game grows.</p>
+
+            <form id="managerForm">
+                <div class="manager-grid">
+                    <div class="manager-field">
+                        <label for="managerName">Manager name</label>
+                        <input id="managerName" name="managerName" type="text" maxlength="60" placeholder="Enter your manager name" required>
+                    </div>
+                    <div class="manager-field">
+                        <label for="nationality">Nationality</label>
+                        <select id="nationality" name="nationality" required>
+                            <option value="">Choose nationality</option>
+                            <option value="Ghanaian">Ghanaian</option>
+                            <option value="Nigerian">Nigerian</option>
+                            <option value="Ivorian">Ivorian</option>
+                            <option value="Senegalese">Senegalese</option>
+                            <option value="English">English</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="manager-field">
+                        <label for="licence">Coaching licence</label>
+                        <select id="licence" name="licence" required>
+                            <option value="">Choose your licence</option>
+                            <option value="No Licence">No Licence</option>
+                            <option value="National C Licence">National C Licence</option>
+                            <option value="National B Licence">National B Licence</option>
+                            <option value="National A Licence">National A Licence</option>
+                            <option value="CAF Pro Licence">CAF Pro Licence</option>
+                            <option value="UEFA Pro Licence">UEFA Pro Licence</option>
+                        </select>
+                    </div>
+                    <div class="manager-field">
+                        <label for="style">Management style</label>
+                        <select id="style" name="style" required>
+                            <option value="">Choose your style</option>
+                            <option value="Tactical">Tactical — plans and systems</option>
+                            <option value="Motivator">Motivator — morale and confidence</option>
+                            <option value="Developer">Developer — youth and training</option>
+                            <option value="Disciplinarian">Disciplinarian — standards and discipline</option>
+                            <option value="Balanced">Balanced — a bit of everything</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="manager-field">
+                    <label for="tactics">Tactical knowledge <span id="tacticsValue" class="attribute-value">50</span></label>
+                    <div class="attribute-row">
+                        <input id="tactics" name="tactics" type="range" min="1" max="100" value="50">
+                        <span class="attribute-value" id="tacticsNumber">50/100</span>
+                    </div>
+                </div>
+                <div class="manager-field">
+                    <label for="people">Man management <span id="peopleValue" class="attribute-value">50</span></label>
+                    <div class="attribute-row">
+                        <input id="people" name="people" type="range" min="1" max="100" value="50">
+                        <span class="attribute-value" id="peopleNumber">50/100</span>
+                    </div>
+                </div>
+                <div class="manager-field">
+                    <label for="youth">Youth development <span id="youthValue" class="attribute-value">50</span></label>
+                    <div class="attribute-row">
+                        <input id="youth" name="youth" type="range" min="1" max="100" value="50">
+                        <span class="attribute-value" id="youthNumber">50/100</span>
+                    </div>
+                </div>
+
+                <button class="manager-submit" id="saveManagerButton" type="submit">Save manager profile</button>
+            </form>
+
+            <div id="managerMessage" class="manager-message" role="status" aria-live="polite"></div>
+            <div class="manager-actions">
+                <a class="manager-link" href="./login.html" id="logoutLink">Log out</a>
+                <a class="manager-link" href="./index.html">Return to game dashboard</a>
+            </div>
+            <p class="manager-note">Your profile is saved to your signed-in Ginga FM account. Club selection and career progression will be connected in the next stages.</p>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabaseClient.js"></script>
+    <script>
+    (function () {
+        "use strict";
+
+        const form = document.getElementById("managerForm");
+        const saveButton = document.getElementById("saveManagerButton");
+        const message = document.getElementById("managerMessage");
+        let signedInUser = null;
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = "manager-message visible " + type;
+        }
+
+        function setSliderDisplay(id) {
+            const value = document.getElementById(id).value;
+            document.getElementById(id + "Number").textContent = value + "/100";
+            document.getElementById(id + "Value").textContent = value;
+        }
+
+        ["tactics", "people", "youth"].forEach(function (id) {
+            document.getElementById(id).addEventListener("input", function () {
+                setSliderDisplay(id);
+            });
+        });
+
+        async function loadManagerProfile() {
+            const { data, error } = await supabaseClient.auth.getUser();
+            if (error) throw error;
+            if (!data.user) {
+                window.location.replace("./login.html");
+                return;
+            }
+
+            signedInUser = data.user;
+            const profile = data.user.user_metadata || {};
+
+            document.getElementById("managerName").value = profile.manager_name || "";
+            document.getElementById("nationality").value = profile.nationality || "";
+            document.getElementById("licence").value = profile.coaching_licence || "";
+            document.getElementById("style").value = profile.management_style || "";
+
+            ["tactics", "people", "youth"].forEach(function (id) {
+                const key = id === "tactics" ? "tactical_knowledge" :
+                    id === "people" ? "man_management" : "youth_development";
+                if (profile[key] !== undefined) {
+                    document.getElementById(id).value = profile[key];
+                }
+                setSliderDisplay(id);
+            });
+
+            if (profile.manager_name) {
+                showMessage("Your manager profile is loaded. You can update it and save again.", "success");
+            }
+        }
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            if (!signedInUser) {
+                showMessage("Your account session is missing. Please log in again.", "error");
+                return;
+            }
+
+            const profile = {
+                manager_name: document.getElementById("managerName").value.trim(),
+                nationality: document.getElementById("nationality").value,
+                coaching_licence: document.getElementById("licence").value,
+                management_style: document.getElementById("style").value,
+                tactical_knowledge: Number(document.getElementById("tactics").value),
+                man_management: Number(document.getElementById("people").value),
+                youth_development: Number(document.getElementById("youth").value)
+            };
+
+            if (!profile.manager_name) {
+                showMessage("Please enter your manager name.", "error");
+                return;
+            }
+
+            saveButton.disabled = true;
+            saveButton.textContent = "Saving profile...";
+
+            try {
+                const { data, error } = await supabaseClient.auth.updateUser({
+                    data: profile
+                });
+
+                if (error) throw error;
+                signedInUser = data.user || signedInUser;
+                showMessage("Manager profile saved successfully. Your details are attached to your Ginga FM account. Next, we will build club selection.", "success");
+            } catch (error) {
+                console.error("Could not save manager profile:", error);
+                showMessage(error.message || "Could not save your profile. Please try again.", "error");
+            } finally {
+                saveButton.disabled = false;
+                saveButton.textContent = "Save manager profile";
+            }
+        });
+
+        document.getElementById("logoutLink").addEventListener("click", async function (event) {
+            event.preventDefault();
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                showMessage(error.message, "error");
+                return;
+            }
+            window.location.href = "./login.html";
+        });
+
+        loadManagerProfile().catch(function (error) {
+            console.error("Could not load manager setup:", error);
+            showMessage("Could not check your login. Please return to the login screen and sign in again.", "error");
+        });
+    })();
+    </script>
+</body>
+</html>
