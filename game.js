@@ -8,7 +8,7 @@ const game = {
 
     season: 1,
 
-    league: "Ghana Premier Division",
+    league: "Ginga International League",
 
     clubs: clubs,
 
