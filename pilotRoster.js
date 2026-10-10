@@ -48,22 +48,43 @@ players.forEach(player => {
     const generated = [];
 
     const middleNames = ["Avery","Blaise","Cedric","Darian","Elian","Fabian","Gideon","Harlan","Isaiah","Jalen","Kellan","Lucian","Marcel","Nolan","Orion","Paolo","Quentin","Rafael","Simeon","Thiago","Uriah","Victor","Warren","Xavier","Yannick","Zaire","Amari","Bastian","Cyril","Denzel","Emmanuel","Farouk","Gabriel","Hamza","Idris","Joaquin","Kwame","Malik","Nathaniel","Obed","Pascal","Raphael","Samuel","Tariq","Umar","Vincent","Wilfred","Yusuf","Zion","Anders","Benoit","Callum","Dario","Elias","Florian","Henrik","Ibrahim","Javier","Kofi","Lennox","Mikael","Noel","Otto","Parker","Romain","Stefan","Tomas","Ulrich","Wesley","Yohan","Zachary"];
+    const existingNamePairs = new Set(players.map(player => {
+        const parts = String(player.name || "").trim().split(/\\s+/);
+        return (parts[0] + " " + (parts[parts.length - 1] || "")).toLowerCase();
+    }));
     function uniqueName(firstNames, surnames, index) {
-        const first = firstNames[Math.floor(index / surnames.length) % firstNames.length];
-        const last = surnames[index % surnames.length];
-        let middleIndex = (index * 7 + Math.floor(index / 3)) % middleNames.length;
+        const combinations = firstNames.length * surnames.length;
+        let first = "";
+        let last = "";
+        let pair = "";
+        let attempt = 0;
+        while (attempt < combinations) {
+            const candidateIndex = index + attempt;
+            first = firstNames[Math.floor(candidateIndex / surnames.length) % firstNames.length];
+            last = surnames[candidateIndex % surnames.length];
+            pair = (first + " " + last).toLowerCase();
+            if (!existingNamePairs.has(pair)) break;
+            attempt++;
+        }
+        if (attempt >= combinations) {
+            // Only used if a name pool is exhausted: expand the surname to preserve uniqueness.
+            first = firstNames[Math.floor(index / surnames.length) % firstNames.length];
+            last = surnames[index % surnames.length] + " " + middleNames[index % middleNames.length];
+            pair = (first + " " + last).toLowerCase();
+            let suffix = 2;
+            while (existingNamePairs.has(pair)) {
+                last = surnames[index % surnames.length] + " " + middleNames[(index + suffix) % middleNames.length] + " " + suffix;
+                pair = (first + " " + last).toLowerCase();
+                suffix++;
+            }
+        }
+        const middleIndex = (index * 7 + Math.floor(index / 3) + attempt) % middleNames.length;
         let name = first + " " + middleNames[middleIndex] + " " + last;
-        let attempts = 0;
-        while (existingNames.has(name.toLowerCase()) && attempts < middleNames.length) {
-            middleIndex = (middleIndex + 1) % middleNames.length;
-            name = first + " " + middleNames[middleIndex] + " " + last;
-            attempts++;
+        let middleOffset = 0;
+        while (existingNames.has(name.toLowerCase())) {
+            name = first + " " + middleNames[(middleIndex + ++middleOffset) % middleNames.length] + " " + last;
         }
-        if (existingNames.has(name.toLowerCase())) {
-            let variant = 2;
-            while (existingNames.has((name + " " + variant).toLowerCase())) variant++;
-            name += " " + variant;
-        }
+        existingNamePairs.add(pair);
         existingNames.add(name.toLowerCase());
         return name;
     }
