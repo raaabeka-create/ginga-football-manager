@@ -405,7 +405,7 @@
                         );
                     }
                 } else {
-                    const { error } =
+                    const { data: loginData, error } =
                         await supabaseClient.auth.signInWithPassword({
                             email: emailValue,
                             password: passwordValue
@@ -413,8 +413,10 @@
 
                     if (error) throw error;
 
-                    showMessage("Login successful! Opening manager setup...", "success");
-                    window.location.replace("./manager.html");
+                    const metadata = loginData.user && loginData.user.user_metadata ? loginData.user.user_metadata : {};
+                    const destination = !metadata.manager_name ? "manager.html" : (!metadata.club_id ? "club-selection.html" : "index.html");
+                    showMessage("Login successful! Opening your career...", "success");
+                    window.location.replace("./" + destination);
                     return;
                 }
             } catch (error) {
@@ -474,7 +476,9 @@
                 if (error) throw error;
 
                 if (data.session) {
-                    window.location.replace("./manager.html");
+                    const metadata = data.session.user && data.session.user.user_metadata ? data.session.user.user_metadata : {};
+                    const destination = !metadata.manager_name ? "manager.html" : (!metadata.club_id ? "club-selection.html" : "index.html");
+                    window.location.replace("./" + destination);
                     return;
 
                     const signOutButton = document.createElement("button");
