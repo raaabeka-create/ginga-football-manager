@@ -292,5 +292,146 @@ const clubs = [
         city: "Nalerigu",
         finances: { balance: 220000, transferBudget: 42000, wageBudget: 14500 },
         tactics: { formation: "4-4-2", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "Deep" }
+    },
+
+    {
+        id: 21,
+        name: "Thunderhawks",
+        city: "Accra",
+        finances: { balance: 210000, transferBudget: 38000, wageBudget: 13000 },
+        tactics: { formation: "4-3-3", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "Deep" }
+    },
+    {
+        id: 22,
+        name: "Iron Titans",
+        city: "Kumasi",
+        finances: { balance: 227000, transferBudget: 47000, wageBudget: 14200 },
+        tactics: { formation: "4-2-3-1", mentality: "Attacking", tempo: "Slow", pressing: "High", defensiveLine: "Normal" }
+    },
+    {
+        id: 23,
+        name: "Stormbreakers",
+        city: "Takoradi",
+        finances: { balance: 244000, transferBudget: 56000, wageBudget: 15400 },
+        tactics: { formation: "4-4-2", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "High" }
+    },
+    {
+        id: 24,
+        name: "Shadow Wolves",
+        city: "Tamale",
+        finances: { balance: 261000, transferBudget: 65000, wageBudget: 16600 },
+        tactics: { formation: "3-5-2", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "Deep" }
+    },
+    {
+        id: 25,
+        name: "Blaze United",
+        city: "Cape Coast",
+        finances: { balance: 278000, transferBudget: 74000, wageBudget: 17800 },
+        tactics: { formation: "5-3-2", mentality: "Attacking", tempo: "Slow", pressing: "High", defensiveLine: "Normal" }
+    },
+    {
+        id: 26,
+        name: "Frost Giants",
+        city: "Tema",
+        finances: { balance: 295000, transferBudget: 83000, wageBudget: 19000 },
+        tactics: { formation: "4-3-3", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "High" }
+    },
+    {
+        id: 27,
+        name: "Vortex FC",
+        city: "Sunyani",
+        finances: { balance: 312000, transferBudget: 92000, wageBudget: 20200 },
+        tactics: { formation: "4-2-3-1", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "Deep" }
+    },
+    {
+        id: 28,
+        name: "Raging Bulls",
+        city: "Ho",
+        finances: { balance: 329000, transferBudget: 101000, wageBudget: 21400 },
+        tactics: { formation: "4-4-2", mentality: "Attacking", tempo: "Slow", pressing: "High", defensiveLine: "Normal" }
+    },
+    {
+        id: 29,
+        name: "Eclipse Riders",
+        city: "Koforidua",
+        finances: { balance: 346000, transferBudget: 110000, wageBudget: 22600 },
+        tactics: { formation: "3-5-2", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "High" }
+    },
+    {
+        id: 30,
+        name: "Phoenix Flames",
+        city: "Wa",
+        finances: { balance: 363000, transferBudget: 119000, wageBudget: 23800 },
+        tactics: { formation: "5-3-2", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "Deep" }
+    },
+    {
+        id: 31,
+        name: "Apex Predators",
+        city: "Obuasi",
+        finances: { balance: 380000, transferBudget: 43000, wageBudget: 25000 },
+        tactics: { formation: "4-3-3", mentality: "Attacking", tempo: "Slow", pressing: "High", defensiveLine: "Normal" }
+    },
+    {
+        id: 32,
+        name: "Midnight Express",
+        city: "Techiman",
+        finances: { balance: 397000, transferBudget: 52000, wageBudget: 26200 },
+        tactics: { formation: "4-2-3-1", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "High" }
+    },
+    {
+        id: 33,
+        name: "Cascade Crushers",
+        city: "Bolgatanga",
+        finances: { balance: 414000, transferBudget: 61000, wageBudget: 27400 },
+        tactics: { formation: "4-4-2", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "Deep" }
+    },
+    {
+        id: 34,
+        name: "Ember Knights",
+        city: "Keta",
+        finances: { balance: 211000, transferBudget: 70000, wageBudget: 28600 },
+        tactics: { formation: "3-5-2", mentality: "Attacking", tempo: "Slow", pressing: "High", defensiveLine: "Normal" }
+    },
+    {
+        id: 35,
+        name: "Horizon Strikers",
+        city: "Axim",
+        finances: { balance: 228000, transferBudget: 79000, wageBudget: 13800 },
+        tactics: { formation: "5-3-2", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "High" }
+    },
+    {
+        id: 36,
+        name: "Titan Forge",
+        city: "Ejisu",
+        finances: { balance: 245000, transferBudget: 88000, wageBudget: 15000 },
+        tactics: { formation: "4-3-3", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "Deep" }
+    },
+    {
+        id: 37,
+        name: "Nebula Nomads",
+        city: "Berekum",
+        finances: { balance: 262000, transferBudget: 97000, wageBudget: 16200 },
+        tactics: { formation: "4-2-3-1", mentality: "Attacking", tempo: "Slow", pressing: "High", defensiveLine: "Normal" }
+    },
+    {
+        id: 38,
+        name: "Crimson Avalanche",
+        city: "Nkawkaw",
+        finances: { balance: 279000, transferBudget: 106000, wageBudget: 17400 },
+        tactics: { formation: "4-4-2", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "High" }
+    },
+    {
+        id: 39,
+        name: "Quantum Quakes",
+        city: "Nalerigu",
+        finances: { balance: 296000, transferBudget: 115000, wageBudget: 18600 },
+        tactics: { formation: "3-5-2", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "Deep" }
+    },
+    {
+        id: 40,
+        name: "Zenith Zephyrs",
+        city: "Winneba",
+        finances: { balance: 313000, transferBudget: 39000, wageBudget: 19800 },
+        tactics: { formation: "5-3-2", mentality: "Attacking", tempo: "Slow", pressing: "High", defensiveLine: "Normal" }
     }
 ];
