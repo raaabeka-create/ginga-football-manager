@@ -165,18 +165,42 @@ players.forEach(player => {
             player.bio=player.name+" is a "+Number(player.age||22)+"-year-old "+(player.nationality||"football")+" "+role+" currently registered with "+(player.club||"an unlisted club")+". The player's profile reflects their position, attributes, and development in the Ginga FM league.";
         }
     });
-    const seenNames=new Set();
-    players.forEach((player,index)=>{
-        const original=String(player.name||"Player").trim();
-        let candidate=original;
-        if(seenNames.has(candidate.toLowerCase())){
-            const parts=original.split(/\\s+/);
-            const first=parts.shift()||"Player";
-            const rest=parts.join(" ");
-            let suffix=0;
-            do{candidate=first+" "+middleNames[(index*11+suffix)%middleNames.length]+" "+rest+(suffix?" "+suffix:"");suffix++}while(seenNames.has(candidate.toLowerCase()));
-            player.name=candidate;
+    const seenNames = new Set();
+    const seenNamePairs = new Set();
+    players.forEach((player, index) => {
+        const original = String(player.name || "Player").trim();
+        const originalParts = original.split(/\\s+/);
+        let candidate = original;
+        let parts = candidate.split(/\\s+/);
+        let pair = (parts[0] + " " + parts[parts.length - 1]).toLowerCase();
+        if (seenNames.has(candidate.toLowerCase()) || seenNamePairs.has(pair)) {
+            const last = parts[parts.length - 1] || "Player";
+            const rest = parts.slice(1, -1).join(" ");
+            let found = false;
+            for (let offset = 0; offset < middleNames.length; offset++) {
+                const alternativeFirst = middleNames[(index * 11 + offset) % middleNames.length];
+                const alternativePair = (alternativeFirst + " " + last).toLowerCase();
+                const alternativeName = alternativeFirst + (rest ? " " + rest : "") + " " + last;
+                if (!seenNamePairs.has(alternativePair) && !seenNames.has(alternativeName.toLowerCase())) {
+                    candidate = alternativeName;
+                    pair = alternativePair;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                let suffix = 2;
+                do {
+                    const alternativeLast = last + "-" + suffix;
+                    candidate = parts[0] + (rest ? " " + rest : "") + " " + alternativeLast;
+                    pair = (parts[0] + " " + alternativeLast).toLowerCase();
+                    suffix++;
+                } while (seenNamePairs.has(pair) || seenNames.has(candidate.toLowerCase()));
+            }
+            player.name = candidate;
         }
+        parts = String(player.name).trim().split(/\\s+/);
         seenNames.add(String(player.name).toLowerCase());
+        seenNamePairs.add((parts[0] + " " + parts[parts.length - 1]).toLowerCase());
     });
 })();
