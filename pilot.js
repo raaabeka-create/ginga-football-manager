@@ -204,7 +204,7 @@ function updatePlayerCondition(match){
     players.filter(p=>clubForPlayer(p)===club.name).forEach(p=>{
         if(Number(p.injuryWeeks||0)>0){p.injuryWeeks=Math.max(0,Number(p.injuryWeeks)-1);p.fitness=Math.min(100,Number(p.fitness||0)+3);return}
         if(ids.has(p.id)){p.fitness=Math.max(25,Number(p.fitness||90)-(6+Math.floor(Math.random()*6)));p.appearances=Number(p.appearances||0)+1;p.morale=Math.max(20,Math.min(100,Number(p.morale||50)+(won?4:drew?1:-4)));p.form=Math.max(20,Math.min(100,Number(p.form||50)+(won?3:drew?1:-3)));
-            p.goals=Number(p.goals||0)+(result.events||[]).filter(e=>e.type==="goal"&&Number(e.playerId)===Number(p.id)).length;
+            const events=result.events||[];p.goals=Number(p.goals||0)+events.filter(e=>e.type==="goal"&&Number(e.playerId)===Number(p.id)).length;p.assists=Number(p.assists||0)+events.filter(e=>e.type==="goal"&&Number(e.assistPlayerId)===Number(p.id)).length;p.yellowCards=Number(p.yellowCards||0)+events.filter(e=>e.type==="yellow"&&Number(e.playerId)===Number(p.id)).length;p.redCards=Number(p.redCards||0)+events.filter(e=>e.type==="red"&&Number(e.playerId)===Number(p.id)).length;p.minutesPlayed=Number(p.minutesPlayed||0)+90;const conceded=club.id===match.home.id?result.awayGoals:result.homeGoals;if(p.position==="GK"&&conceded===0)p.cleanSheets=Number(p.cleanSheets||0)+1;const performance=Math.max(4,Math.min(10,6.2+(won?0.8:drew?0.2:-0.5)+(events.some(e=>e.type==="goal"&&Number(e.playerId)===Number(p.id))?1.0:0)+(events.some(e=>e.type==="goal"&&Number(e.assistPlayerId)===Number(p.id))?0.6:0)+(events.some(e=>(e.type==="yellow"||e.type==="red")&&Number(e.playerId)===Number(p.id))?-0.7:0)));p.ratingTotal=Number(p.ratingTotal||0)+performance;p.ratedAppearances=Number(p.ratedAppearances||0)+1;
             if(Math.random()<0.018){p.injuryWeeks=1+Math.floor(Math.random()*4);p.fitness=Math.max(20,p.fitness-12);career.news.push({date:"MATCHDAY "+career.currentRound,title:"Injury concern: "+p.name,body:p.name+" has picked up an injury and is expected to miss "+p.injuryWeeks+" matchday(s)."})}
         }else{p.fitness=Math.min(100,Number(p.fitness||75)+5);p.morale=Math.max(20,Math.min(100,Number(p.morale||50)+(won?1:0)))}
     });
@@ -283,6 +283,13 @@ async function handleAction(event){
     if(action==="view-player"){selectedPlayerId=Number(event.currentTarget.dataset.player);playerProfileReturnPage=activePage==="player-profile"?playerProfileReturnPage:activePage;activePage="player-profile";shell();return}
     if(action==="back-to-squad"){activePage=playerProfileReturnPage||"squad";shell();return}
     if(action==="edit-profile"){location.href="./manager.html";return}
+    if(action==="train-squad"){
+        const club=getClub(career.clubId),squad=players.filter(p=>!p.retired&&clubForPlayer(p)===club.name);let improved=0;
+        const keys={technical:["passing","dribbling","shooting","crossing","vision"],physical:["pace","physical","stamina","acceleration","balance"],defending:["defending","tackling","interceptions","heading"],attacking:["shooting","dribbling","longShots","crossing"],balanced:["passing","stamina","composure"]};
+        squad.forEach(p=>{if(Number(p.injuryWeeks||0)>0)return;if(trainingFocus==="fitness"){p.fitness=Math.min(100,Number(p.fitness||0)+8);return}if(trainingFocus==="morale"){p.morale=Math.min(100,Number(p.morale||50)+4);return}p.fitness=Math.max(20,Number(p.fitness||0)-3);const list=keys[trainingFocus]||keys.balanced,key=list[Math.floor(Math.random()*list.length)];if(Number(p.attributes[key]||0)<Number(p.potential||99)&&Math.random()<0.72){p.attributes[key]=Math.min(Number(p.potential||99),Number(p.attributes[key]||40)+1);improved++}ensurePlayerAttributes(p)});
+        career.trainingLog=career.trainingLog||[];career.trainingLog.push({season:career.season,round:career.currentRound,focus:trainingFocus,summary:"Training completed: "+trainingFocus+". "+improved+" attribute improvement(s) recorded."});career.news.push({date:"TRAINING",title:"Squad training completed",body:career.trainingLog[career.trainingLog.length-1].summary});persistPlayerStates(club);
+        try{await saveCareer("Training session completed.");shell()}catch(e){showToast("Training ran but could not be saved: "+e.message,true)}return
+    }
     if(action==="accept-job-offer"){
         const nextClub=getClub(Number(event.currentTarget.dataset.club));
         if(!nextClub){showToast("That club is no longer available.",true);return}
@@ -373,7 +380,7 @@ async function startNextSeason(){
     career.jobOffers=candidates.map(t=>{const target=getClub(t.clubId);return {clubId:target.id,clubName:target.name,position:finalTable.findIndex(x=>x.clubId===target.id)+1,weeklySalary:Math.round(target.finances.wageBudget*0.035/100)*100,transferBudget:target.finances.transferBudget}});
     if(career.jobOffers.length)career.news.push({date:"MANAGER MARKET",title:"New managerial opportunities",body:"Your season performance has attracted "+career.jobOffers.length+" potential job offer(s). Review them in Board Expectations."});
     let retirementCount=0;
-    players.filter(p=>clubForPlayer(p)===club.name).forEach(p=>{
+    players.filter(p=>clubForPlayer(p)===club.name).forEach(p=>{const oldOverall=playerOverall(p);p.developmentHistory=p.developmentHistory||[];p.developmentHistory.push({season:career.season,overall:oldOverall});if(p.developmentHistory.length>12)p.developmentHistory=p.developmentHistory.slice(-12);const contract=career.contracts[p.id];if(contract&&Number(contract.years||0)>0){contract.years=Math.max(0,Number(contract.years)-1);if(contract.years===0){contract.wage=estimateWage(p);contract.years=1;contract.expirySeason=career.season+1;career.news.push({date:"CONTRACTS",title:"Contract renewed: "+p.name,body:p.name+" has entered a one-season rolling renewal at "+money(contract.wage)+" per week."})}}
         p.age=Number(p.age||20)+1;
         if(p.age<=23){const key=["pace","shooting","passing","dribbling","defending","physical","stamina","composure"][Math.floor(Math.random()*8)];p.attributes[key]=Math.min(99,Number(p.attributes[key]||45)+1+Math.floor(Math.random()*2))}
         else if(p.age>=32)["pace","stamina","physical"].forEach(k=>p.attributes[k]=Math.max(20,Number(p.attributes[k]||50)-1));
