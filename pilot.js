@@ -312,8 +312,13 @@ async function startNextSeason(){
 async function signOut(){await supabaseClient.auth.signOut();location.replace("./login.html")}
 async function init(){
     try{
-        const {data,error}=await supabaseClient.auth.getUser();if(error)throw error;
-        authUser=data.user;
+        const {data,error}=await supabaseClient.auth.getUser();
+        if(!error&&data.user)authUser=data.user;
+        else{
+            const {data:sessionData,error:sessionError}=await supabaseClient.auth.getSession();
+            if(sessionError)throw sessionError;
+            authUser=sessionData.session&&sessionData.session.user?sessionData.session.user:null;
+        }
         if(!authUser){location.replace("./login.html");return}
         if(!getManager().manager_name){location.replace("./manager.html");return}
         if(!getManager().club_id){location.replace("./club-selection.html");return}
@@ -322,7 +327,13 @@ async function init(){
         document.body.classList.add("game-ready");
         shell();
         try{await saveCareer();if(status)status.textContent="Career save connected"}catch(e){console.warn("Initial career sync skipped:",e);if(status)status.textContent="Save needs attention";showToast("Your career loaded, but its first save failed: "+e.message,true)}
-    }catch(e){console.error(e);showToast("Could not load your saved career. Please sign in again.",true)}
+    }catch(e){
+        console.error("Ginga FM career initialization failed:",e);
+        document.body.classList.add("game-ready");
+        const view=$("view");
+        if(view)view.innerHTML='<section class="game-panel"><h2>Career could not be loaded</h2><p class="subtle">Your account could not be verified or its career could not be initialized. The page has stopped automatic redirects. Your saved data has not been intentionally changed.</p><div class="hero-actions"><button class="game-btn" type="button" onclick="location.reload()">Try again</button><a class="game-btn secondary" href="./login.html">Go to login</a></div></section>';
+        showToast("Career initialization failed. See the message on this page.",true);
+    }
 }
 init();
 })();
