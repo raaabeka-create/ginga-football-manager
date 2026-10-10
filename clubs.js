@@ -212,6 +212,85 @@ const clubs = [
             pressing: "Low",
             defensiveLine: "Deep"
         }
-    }
+    },
 
+    {
+        id: 11,
+        name: "Accra Hearts Academy",
+        city: "Accra",
+        finances: { balance: 390000, transferBudget: 95000, wageBudget: 23000 },
+        tactics: { formation: "4-2-3-1", mentality: "Attacking", tempo: "Fast", pressing: "High", defensiveLine: "High" }
+    },
+
+    {
+        id: 12,
+        name: "Ashanti Goldfields FC",
+        city: "Obuasi",
+        finances: { balance: 370000, transferBudget: 85000, wageBudget: 22000 },
+        tactics: { formation: "4-4-2", mentality: "Balanced", tempo: "Normal", pressing: "Medium", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 13,
+        name: "Berekum Town FC",
+        city: "Berekum",
+        finances: { balance: 290000, transferBudget: 62000, wageBudget: 18000 },
+        tactics: { formation: "4-3-3", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 14,
+        name: "Bolgatanga United",
+        city: "Bolgatanga",
+        finances: { balance: 240000, transferBudget: 48000, wageBudget: 15500 },
+        tactics: { formation: "5-3-2", mentality: "Defensive", tempo: "Slow", pressing: "Low", defensiveLine: "Deep" }
+    },
+
+    {
+        id: 15,
+        name: "Keta Coastal FC",
+        city: "Keta",
+        finances: { balance: 260000, transferBudget: 52000, wageBudget: 16500 },
+        tactics: { formation: "4-4-2", mentality: "Balanced", tempo: "Normal", pressing: "Medium", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 16,
+        name: "Nkawkaw Athletic",
+        city: "Nkawkaw",
+        finances: { balance: 275000, transferBudget: 57000, wageBudget: 17000 },
+        tactics: { formation: "4-2-3-1", mentality: "Attacking", tempo: "Fast", pressing: "High", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 17,
+        name: "Obuasi Miners FC",
+        city: "Obuasi",
+        finances: { balance: 320000, transferBudget: 70000, wageBudget: 19500 },
+        tactics: { formation: "4-3-3", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "High" }
+    },
+
+    {
+        id: 18,
+        name: "Axim Harbour FC",
+        city: "Axim",
+        finances: { balance: 230000, transferBudget: 45000, wageBudget: 15000 },
+        tactics: { formation: "5-4-1", mentality: "Defensive", tempo: "Slow", pressing: "Low", defensiveLine: "Deep" }
+    },
+
+    {
+        id: 19,
+        name: "Ejisu City FC",
+        city: "Ejisu",
+        finances: { balance: 305000, transferBudget: 68000, wageBudget: 19000 },
+        tactics: { formation: "4-3-3", mentality: "Attacking", tempo: "Normal", pressing: "High", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 20,
+        name: "Nalerigu Stars",
+        city: "Nalerigu",
+        finances: { balance: 220000, transferBudget: 42000, wageBudget: 14500 },
+        tactics: { formation: "4-4-2", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "Deep" }
+    }
 ];
