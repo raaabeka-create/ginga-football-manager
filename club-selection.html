@@ -59,7 +59,7 @@ grid.innerHTML=clubs.map((club,i)=>'<button type="button" class="club-card '+(se
 grid.querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{selectedId=Number(button.dataset.id);const club=clubs.find(c=>c.id===selectedId);status.textContent=club.name+" selected. Starting balance: "+money(club.finances.balance)+".";start.disabled=false;render()}));
 }
 async function init(){
-try{const {data,error}=await supabaseClient.auth.getUser();if(error)throw error;user=data.user;if(!user){location.replace("./login.html");return}if(!user.user_metadata?.manager_name){location.replace("./manager.html");return}if(user.user_metadata?.club_id){location.replace("./index.html");return}render()}catch(e){status.textContent="Could not verify your account. Please log in again.";console.error(e)}
+try{const {data,error}=await supabaseClient.auth.getUser();if(error)throw error;user=data.user;if(!user){location.replace("./login.html");return}if(!user.user_metadata?.manager_name){location.replace("./manager.html");return}render()}catch(e){status.textContent="Could not verify your account. Please log in again.";console.error(e)}
 }
 start.addEventListener("click",async()=>{
 const club=clubs.find(c=>c.id===selectedId);if(!user||!club)return;
