@@ -47,14 +47,26 @@ body{visibility:hidden}.game-ready{visibility:visible}.top-header{position:relat
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabaseClient.js"></script>
 <script>
 (async function(){
+const view=document.getElementById("view");
 try{
-const {data,error}=await supabaseClient.auth.getUser();if(error)throw error;
-if(!data.user){location.replace("./login.html");return}
-const meta=data.user.user_metadata||{};
+let user=null;
+const {data,error}=await supabaseClient.auth.getUser();
+if(!error&&data.user)user=data.user;
+if(!user){
+const {data:sessionData,error:sessionError}=await supabaseClient.auth.getSession();
+if(sessionError)throw sessionError;
+user=sessionData.session&&sessionData.session.user?sessionData.session.user:null;
+}
+if(!user){location.replace("./login.html");return}
+const meta=user.user_metadata||{};
 if(!meta.manager_name){location.replace("./manager.html");return}
 if(!meta.club_id){location.replace("./club-selection.html");return}
 document.body.style.visibility="visible";
-}catch(e){console.error("Ginga FM session check failed",e);location.replace("./login.html")}
+}catch(e){
+console.error("Ginga FM session check failed",e);
+document.body.style.visibility="visible";
+if(view)view.innerHTML='<section class="game-panel"><h2>We could not verify your session</h2><p class="subtle">The game could not confirm your login with Supabase, so it has stopped redirecting between pages. Your saved career has not been deleted.</p><p class="subtle">Check your connection and try again, or return to login.</p><div class="hero-actions"><button class="game-btn" type="button" onclick="location.reload()">Try again</button><a class="game-btn secondary" href="./login.html">Go to login</a></div></section>';
+}
 })();
 (function(){
 const root=document.documentElement,button=document.getElementById("themeToggle"),dialogButton=document.getElementById("dialogThemeToggle"),dialog=document.getElementById("settingsDialog");
