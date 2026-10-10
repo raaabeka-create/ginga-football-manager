@@ -15,69 +15,87 @@ const pilotAdditionalPlayers = [
 ];
 
 /*
- * Expands the fictional player database to 500 total records.
- * Original players.js records and the 11 existing supplemental records are retained.
- * Generated player names are unique full-name combinations.
+ * Ginga FM expanded international roster.
+ * The 10 original players and 11 existing supplemental Ghanaian players are retained.
+ * Adds 1,000 players: exactly 200 Nigerian and 800 from Western/American/European leagues.
+ * Final roster: 1,021 players across 60 clubs.
  */
+players.push(...pilotAdditionalPlayers);
+players.forEach(player => {
+    if (!player.nationality) player.nationality = "Ghanaian";
+});
+
 (function () {
-    const firstNames = [
-        "John","Michael","Jones","Bentil","Daniel","Samuel","Joseph","Richard","Emmanuel","Isaac",
-        "Kwame","Kofi","Kojo","Yaw","Nana","Kwesi","Kwaku","Bright","Felix","Prince",
-        "Abdul","Karim","Issah","Mawuli","Selorm","Ebo","Ekow","Fiifi","Ato","Nii",
-        "Benjamin","David","Andrew","Peter","Paul","Thomas","Francis","Patrick","Stephen","Anthony",
-        "George","Matthew","Jonathan","Christian","Caleb","Nathan","Elijah","Gabriel","Aaron","Joel",
-        "Solomon","Bernard","Kingsley","Lawrence","Dennis","Maxwell","Theophilus","Vincent","Collins","Augustine"
-    ];
-    const surnames = [
-        "Mensah","Boateng","Owusu","Asare","Tetteh","Addo","Ofori","Adu","Amoah","Frimpong",
-        "Antwi","Yeboah","Sarpong","Nartey","Agbeko","Osei","Tettey","Seidu","Karikari","Badu",
-        "Bentil","Jones","Appiah","Acheampong","Agyeman","Amankwah","Annan","Awuah","Baah","Baffour",
-        "Bonsu","Darko","Danso","Donkor","Essien","Fosu","Gyan","Koomson","Koranteng","Kusi",
-        "Lamptey","Lartey","Manu","Minta","Nkrumah","Nyarko","Okyere","Opoku","Quaye","Sackey",
-        "Salia","Sasu","Sowah","Tawiah","Tufuor","Twum","Wiredu","Yankson","Zico","Ababio",
-        "Achebe","Adjei","Agyei","Aidoo","Aikins","Aidoo","Amoako","Armah","Asante","Atta",
-        "Biney","Boakye","Dadzie","Eshun","Gaisie","Gyasi","Kwakye","Mantey","Otoo","Poku"
+    const nigeria = {
+        nationality: "Nigerian",
+        firstNames: ["Chinedu","Emeka","Obinna","Ifeanyi","Chukwudi","Nnamdi","Uche","Kelechi","Tunde","Babatunde","Adebayo","Oluwaseun","Ayodeji","Damilola","Femi","Tobi","Seyi","Chisom","Somto","Ikenna","Oluwatobi","Adekunle","Ibrahim","Musa","Abiola","Oghenekaro","Ebuka","Tochukwu","Nonso","Okiemute"],
+        surnames: ["Okafor","Nwankwo","Eze","Adeyemi","Bello","Ibrahim","Okoye","Obi","Balogun","Afolabi","Oladipo","Onyekachi","Chukwu","Udo","Ojo","Ogunleye","Ogunlana","Nwachukwu","Anichebe","Musa","Abubakar","Sule","Olawale","Okechukwu","Akinyemi","Ezeani","Onoh","Iheanacho","Uche","Oladimeji"]
+    };
+    const internationalPools = [
+        { nationality: "English", firstNames: ["Oliver","Harry","George","Jack","Charlie","Thomas","James","William","Alfie","Henry","Arthur","Freddie"], surnames: ["Bennett","Clarke","Walker","Thompson","Hughes","Edwards","Harris","Cooper","Ward","Foster","Mitchell","Parker"] },
+        { nationality: "Spanish", firstNames: ["Hugo","Mateo","Leo","Daniel","Pablo","Alejandro","Adrian","Alvaro","Diego","Sergio","Marco","Javier"], surnames: ["Garcia","Rodriguez","Martinez","Lopez","Sanchez","Perez","Romero","Torres","Navarro","Vega","Moreno","Castro"] },
+        { nationality: "French", firstNames: ["Lucas","Hugo","Louis","Jules","Nathan","Gabriel","Arthur","Raphael","Theo","Mathis","Enzo","Antoine"], surnames: ["Martin","Bernard","Dubois","Thomas","Robert","Richard","Petit","Durand","Leroy","Moreau","Laurent","Simon"] },
+        { nationality: "German", firstNames: ["Lukas","Leon","Finn","Paul","Jonas","Felix","Noah","Elias","Maximilian","Ben","Niklas","Moritz"], surnames: ["Muller","Schmidt","Schneider","Fischer","Weber","Meyer","Wagner","Becker","Schulz","Hoffmann","Koch","Richter"] },
+        { nationality: "Italian", firstNames: ["Lorenzo","Matteo","Alessandro","Leonardo","Andrea","Riccardo","Tommaso","Gabriele","Federico","Nicolo","Davide","Marco"], surnames: ["Rossi","Russo","Ferrari","Esposito","Bianchi","Romano","Colombo","Ricci","Marino","Greco","Bruno","Gallo"] },
+        { nationality: "Dutch", firstNames: ["Daan","Sem","Lucas","Milan","Levi","Luuk","Jesse","Finn","Thijs","Lars","Mees","Bram"], surnames: ["De Jong","Jansen","De Vries","Van den Berg","Bakker","Visser","Smit","Meijer","De Boer","Mulder","Bos","Vos"] },
+        { nationality: "Portuguese", firstNames: ["Joao","Francisco","Afonso","Martim","Duarte","Santiago","Goncalo","Rafael","Tiago","Diogo","Miguel","Pedro"], surnames: ["Silva","Santos","Ferreira","Pereira","Oliveira","Costa","Rodrigues","Martins","Sousa","Fernandes","Gomes","Lopes"] },
+        { nationality: "American", firstNames: ["Liam","Noah","Mason","Logan","Ethan","Carter","Wyatt","Owen","Caleb","Luke","Dylan","Isaac"], surnames: ["Brooks","Reed","Hayes","Bennett","Collins","Perry","Murphy","Bailey","Foster","Powell","Bryant","Griffin"] },
+        { nationality: "Canadian", firstNames: ["Evan","Logan","Jacob","Liam","Nathan","Owen","Caleb","Ryan","Connor","Mason","Aiden","Cameron"], surnames: ["Wilson","Campbell","Anderson","MacDonald","Fraser","Morrison","Johnston","Murray","Hamilton","Clark","Thompson","Ross"] },
+        { nationality: "Scottish", firstNames: ["Callum","Rory","Ewan","Lewis","Finlay","Alasdair","Angus","Jamie","Blair","Fraser","Kieran","Gregor"], surnames: ["McLeod","Stewart","Graham","Mackenzie","Douglas","Cunningham","Ferguson","Duncan","Wallace","Kerr","Sinclair","Reid"] }
     ];
     const positions = ["GK","RB","CB","LB","DM","CM","AM","RW","LW","ST"];
     const existingNames = new Set(players.map(player => player.name.toLowerCase()));
     const generated = [];
-    let clubCursor = 0;
-    for (let f = 0; f < firstNames.length && generated.length < 479; f++) {
-        for (let s = 0; s < surnames.length && generated.length < 479; s++) {
-            const name = firstNames[f] + " " + surnames[s];
-            if (existingNames.has(name.toLowerCase())) continue;
-            existingNames.add(name.toLowerCase());
-            const id = 22 + generated.length;
-            const position = positions[(id * 7 + f + s) % positions.length];
-            const age = 17 + ((id * 13 + f * 3 + s) % 18);
-            const base = 48 + ((id * 11 + f * 5 + s * 3) % 37);
-            const attributes = {
-                pace: Math.max(30, Math.min(94, base + ((id + 2) % 11) - 5)),
-                shooting: Math.max(25, Math.min(93, base + ((id + 5) % 13) - 6)),
-                passing: Math.max(30, Math.min(94, base + ((id + 7) % 9) - 4)),
-                dribbling: Math.max(25, Math.min(95, base + ((id + 3) % 15) - 7)),
-                defending: Math.max(25, Math.min(95, base + ((id + 9) % 17) - 8)),
-                physical: Math.max(30, Math.min(95, base + ((id + 4) % 12) - 5)),
-                stamina: Math.max(35, Math.min(96, base + ((id + 6) % 14) - 6)),
-                composure: Math.max(30, Math.min(95, base + ((id + 8) % 10) - 4))
-            };
-            if (position === "GK") attributes.goalkeeping = Math.max(45, Math.min(94, base + ((id + 1) % 12)));
-            generated.push({
-                id,
-                name,
-                club: clubs[clubCursor % clubs.length].name,
-                position,
-                age,
-                attributes,
-                fitness: 78 + ((id * 3) % 23),
-                morale: 58 + ((id * 5) % 39),
-                form: 55 + ((id * 7) % 43)
-            });
-            clubCursor++;
+
+    function uniqueName(firstNames, surnames, index) {
+        const first = firstNames[Math.floor(index / surnames.length) % firstNames.length];
+        const last = surnames[index % surnames.length];
+        let name = first + " " + last;
+        let suffix = 2;
+        while (existingNames.has(name.toLowerCase())) {
+            name = first + " " + last + " " + suffix;
+            suffix++;
         }
+        existingNames.add(name.toLowerCase());
+        return name;
     }
-    if (generated.length !== 479) {
-        throw new Error("Player database expansion expected 479 new records, got " + generated.length);
+
+    for (let i = 0; i < 1000; i++) {
+        const isNigerian = i < 200;
+        const profile = isNigerian ? nigeria : internationalPools[Math.floor((i - 200) / 80)];
+        const profileIndex = isNigerian ? i : (i - 200) % 80;
+        const name = uniqueName(profile.firstNames, profile.surnames, profileIndex);
+        const id = 22 + i;
+        const position = positions[(id * 7 + i) % positions.length];
+        const age = 17 + ((id * 13 + i * 3) % 18);
+        const base = 48 + ((id * 11 + i * 5) % 37);
+        const attributes = {
+            pace: Math.max(30, Math.min(94, base + ((id + 2) % 11) - 5)),
+            shooting: Math.max(25, Math.min(93, base + ((id + 5) % 13) - 6)),
+            passing: Math.max(30, Math.min(94, base + ((id + 7) % 9) - 4)),
+            dribbling: Math.max(25, Math.min(95, base + ((id + 3) % 15) - 7)),
+            defending: Math.max(25, Math.min(95, base + ((id + 9) % 17) - 8)),
+            physical: Math.max(30, Math.min(95, base + ((id + 4) % 12) - 5)),
+            stamina: Math.max(35, Math.min(96, base + ((id + 6) % 14) - 6)),
+            composure: Math.max(30, Math.min(95, base + ((id + 8) % 10) - 4))
+        };
+        if (position === "GK") attributes.goalkeeping = Math.max(45, Math.min(94, base + ((id + 1) % 12)));
+        generated.push({
+            id,
+            name,
+            club: clubs[i % clubs.length].name,
+            nationality: profile.nationality,
+            position,
+            age,
+            attributes,
+            fitness: 78 + ((id * 3) % 23),
+            morale: 58 + ((id * 5) % 39),
+            form: 55 + ((id * 7) % 43)
+        });
+    }
+
+    if (generated.length !== 1000) {
+        throw new Error("Expected exactly 1,000 new players, got " + generated.length);
     }
     players.push(...generated);
 })();
