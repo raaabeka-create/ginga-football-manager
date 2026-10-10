@@ -126,13 +126,19 @@ function simulateMatch(homeTeam, awayTeam, options) {
         if (Math.random() < scoreProbability) {
             const scorer = chooseScorer(attackingLineup);
             if (homeAttack) homeGoals.value++; else awayGoals.value++;
-            events.push({ minute, type: "goal", team: attackingTeam.name, playerId: scorer ? scorer.id : null, player: scorer ? scorer.name : "Unknown scorer" });
+            const assistCandidates=attackingLineup.filter(p=>scorer&&Number(p.id)!==Number(scorer.id));
+            const assister=assistCandidates.length&&Math.random()<0.68?assistCandidates[Math.floor(Math.random()*assistCandidates.length)]:null;
+            events.push({ minute, type: "goal", team: attackingTeam.name, playerId: scorer ? scorer.id : null, player: scorer ? scorer.name : "Unknown scorer", assistPlayerId: assister ? assister.id : null, assistPlayer: assister ? assister.name : null });
         } else if (Math.random() < 0.12) {
             events.push({ minute, type: "chance", team: attackingTeam.name, player: chooseScorer(attackingLineup)?.name || "Attacking player" });
         }
         if (Math.random() < 0.025) {
             const booked = defendingLineup[Math.floor(Math.random() * Math.max(1, defendingLineup.length))];
             if (booked) events.push({ minute, type: "yellow", team: homeAttack ? awayTeam.name : homeTeam.name, playerId: booked.id, player: booked.name });
+        }
+        if (Math.random() < 0.0025) {
+            const sentOff = defendingLineup[Math.floor(Math.random() * Math.max(1, defendingLineup.length))];
+            if (sentOff) events.push({ minute, type: "red", team: homeAttack ? awayTeam.name : homeTeam.name, playerId: sentOff.id, player: sentOff.name });
         }
     }
     const totalPossession = 50 + (homeStrength - awayStrength) * 0.45 + (Math.random() * 8 - 4);
