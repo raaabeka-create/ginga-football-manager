@@ -44,10 +44,12 @@ function selectBestLineup(club, requestedLineup) {
         const candidate = sorted.find(p => !selected.some(s => s.id === p.id) && positionGroup(p.position) === group);
         if (candidate) selected.push(candidate);
     };
+    const formation = String((club.tactics || {}).formation || "4-3-3");
+    const shape = formation === "4-4-2" ? [4,4,2] : formation === "4-2-3-1" ? [4,5,1] : formation === "5-3-2" ? [5,3,2] : formation === "5-4-1" ? [5,4,1] : [4,3,3];
     take("GK");
-    for (let i = 0; i < 4; i++) take("DEF");
-    for (let i = 0; i < 3; i++) take("MID");
-    for (let i = 0; i < 3; i++) take("ATT");
+    for (let i = 0; i < shape[0]; i++) take("DEF");
+    for (let i = 0; i < shape[1]; i++) take("MID");
+    for (let i = 0; i < shape[2]; i++) take("ATT");
     for (const p of sorted) if (selected.length < 11 && !selected.some(s => s.id === p.id)) selected.push(p);
     return selected.slice(0, 11);
 }
@@ -75,7 +77,11 @@ function calculateTeamStrength(club, requestedLineup) {
     const lineup = selectBestLineup(club, requestedLineup);
     if (!lineup.length) return 45;
     const total = lineup.reduce((sum, p) => sum + calculatePlayerEffectiveness(p), 0);
-    return total / lineup.length;
+    const formation = String((club.tactics || {}).formation || "4-3-3");
+    const expected = formation === "4-4-2" ? [4,4,2] : formation === "4-2-3-1" ? [4,5,1] : formation === "5-3-2" ? [5,3,2] : formation === "5-4-1" ? [5,4,1] : [4,3,3];
+    const actual = [lineup.filter(p => positionGroup(p.position) === "DEF").length, lineup.filter(p => positionGroup(p.position) === "MID").length, lineup.filter(p => positionGroup(p.position) === "ATT").length];
+    const mismatch = actual.reduce((sum, count, index) => sum + Math.abs(count - expected[index]), 0);
+    return total / lineup.length - mismatch * 1.1;
 }
 
 function calculateGoalChance(teamStrength, opponentStrength) {
