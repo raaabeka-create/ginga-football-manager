@@ -24,7 +24,7 @@ function createFixtures() {
         firstLeg.push.apply(firstLeg, matches);
         rotation = [rotation[0], rotation[rotation.length - 1]].concat(rotation.slice(1, rotation.length - 1));
     }
-    const secondLeg = firstLeg.map((f, i) => ({id: "S" + f.id, round: f.round + 9, homeClubId: f.awayClubId, awayClubId: f.homeClubId, played: false, result: null}));
+    const secondLeg = firstLeg.map((f, i) => ({id: "S" + f.id, round: f.round + (ids.length - 1), homeClubId: f.awayClubId, awayClubId: f.homeClubId, played: false, result: null}));
     return firstLeg.concat(secondLeg);
 }
 function buildTable() {
@@ -46,14 +46,14 @@ function initCareer() {
     if (Number(career.clubId)!==Number(selected.id)) {
         career={version:1,clubId:selected.id,season:1,currentRound:1,fixtures:null,playerClubOverrides:{},balance:selected.finances.balance,transferBudget:selected.finances.transferBudget,tactics:{...selected.tactics},lastResult:null,news:[]};
     }
-    if(!Array.isArray(career.fixtures)||!career.fixtures.length)career.fixtures=createFixtures();
+    if(!Array.isArray(career.fixtures)||career.fixtures.length !== clubs.length * (clubs.length - 1)) career.fixtures=createFixtures();
     if(!career.playerClubOverrides)career.playerClubOverrides={};
     if(!career.tactics)career.tactics={...selected.tactics};
     Object.assign(selected.tactics,career.tactics);
     players.forEach(p=>{if(career.playerClubOverrides[p.id])p.club=career.playerClubOverrides[p.id]});
     const playedRounds=career.fixtures.filter(f=>f.played).map(f=>f.round);
     const firstUnplayed=career.fixtures.find(f=>!f.played);
-    career.currentRound=firstUnplayed?firstUnplayed.round:19;
+    career.currentRound=firstUnplayed?firstUnplayed.round:(clubs.length * 2 - 1);
     if(!career.news)career.news=[];
     return true;
 }
@@ -97,7 +97,7 @@ function renderPage(page) {
         const market=players.filter(p=>clubForPlayer(p)!==club.name);
         return '<div class="view-intro"><p class="panel-eyebrow">RECRUITMENT</p><h1>Transfer market</h1><p>Strengthen your team with players already registered in the Ginga FM world.</p></div><div class="metric-grid compact"><div class="metric-card"><span>TRANSFER BUDGET</span><strong>'+money(career.transferBudget)+'</strong><small>Available to spend</small></div><div class="metric-card"><span>CLUB BALANCE</span><strong>'+money(career.balance)+'</strong><small>Current funds</small></div></div><section class="game-panel"><div class="panel-heading"><div><h2>Available players</h2><p class="subtle">Fees are estimated from player attributes for this pilot.</p></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>PLAYER</th><th>POS</th><th>AGE</th><th>OVR</th><th>CURRENT CLUB</th><th>EST. FEE</th><th></th></tr></thead><tbody>'+market.map(p=>{const fee=transferFee(p);return '<tr><td><strong>'+safe(p.name)+'</strong></td><td>'+safe(p.position)+'</td><td>'+p.age+'</td><td>'+formRating(p)+'</td><td>'+safe(clubForPlayer(p))+'</td><td>'+money(fee)+'</td><td><button class="small-btn" data-action="buy-player" data-player="'+p.id+'" '+(fee>career.transferBudget?'disabled':'')+'>Sign</button></td></tr>'}).join("")+'</tbody></table></div></section>';
     }
-    if(page==="fixtures")return '<div class="view-intro"><p class="panel-eyebrow">SEASON '+career.season+'</p><h1>Fixtures & results</h1><p>Every club plays home and away across an 18-matchday season.</p></div><section class="game-panel"><div class="panel-heading"><div><h2>Matchday '+Math.min(career.currentRound,18)+'</h2><p class="subtle">Simulate a matchday to play all five fixtures and update the table.</p></div><button class="game-btn" id="playRoundButton">Play matchday / next season →</button></div><div class="fixture-list">'+career.fixtures.map(f=>fixtureMarkup(f,club.id)).join("")+'</div></section>';
+    if(page==="fixtures")return '<div class="view-intro"><p class="panel-eyebrow">SEASON '+career.season+'</p><h1>Fixtures & results</h1><p>Every club plays home and away across '+(clubs.length*2-2)+' matchdays.</p></div><section class="game-panel"><div class="panel-heading"><div><h2>Matchday '+Math.min(career.currentRound,clubs.length*2-2)+'</h2><p class="subtle">Simulate a matchday to play all '+(clubs.length/2)+' fixtures and update the table.</p></div><button class="game-btn" id="playRoundButton">Play matchday / next season →</button></div><div class="fixture-list">'+career.fixtures.map(f=>fixtureMarkup(f,club.id)).join("")+'</div></section>';
     if(page==="league")return '<div class="view-intro"><p class="panel-eyebrow">GHANA PREMIER DIVISION</p><h1>League table</h1><p>Points, goal difference, and goals scored determine the standings.</p></div><section class="game-panel"><div class="panel-heading"><div><h2>Season '+career.season+' standings</h2><p class="subtle">'+career.fixtures.filter(f=>f.played).length+' of '+career.fixtures.length+' fixtures completed</p></div></div>'+tableMarkup(table,club.id,false)+'</section>';
     if(page==="finances")return '<div class="view-intro"><p class="panel-eyebrow">CLUB ACCOUNTING</p><h1>Finances</h1><p>Track the money available to run and improve your club.</p></div><div class="metric-grid"><div class="metric-card"><span>CLUB BALANCE</span><strong>'+money(career.balance)+'</strong><small>Current available funds</small></div><div class="metric-card"><span>TRANSFER BUDGET</span><strong>'+money(career.transferBudget)+'</strong><small>Player recruitment allocation</small></div><div class="metric-card"><span>WAGE BUDGET</span><strong>'+money(club.finances.wageBudget)+'</strong><small>Original weekly wage allowance</small></div></div><section class="game-panel"><div class="panel-heading"><div><h2>Season ledger</h2><p class="subtle">Matchday income and costs are recorded as you play.</p></div></div><div class="finance-line"><span>Starting balance</span><strong>'+money(club.finances.balance)+'</strong></div><div class="finance-line"><span>Matchday income / bonuses</span><strong class="positive">'+money(career.totalIncome||0)+'</strong></div><div class="finance-line"><span>Matchday operating costs</span><strong class="negative">−'+money(career.totalCosts||0)+'</strong></div><div class="finance-line total"><span>Current balance</span><strong>'+money(career.balance)+'</strong></div></section>';
     if(page==="board")return '<div class="view-intro"><p class="panel-eyebrow">CLUB LEADERSHIP</p><h1>Board expectations</h1><p>Deliver results and keep the club on a stable footing.</p></div><section class="game-panel"><div class="objective-card"><span class="objective-icon">🏆</span><div><strong>League performance</strong><p>Finish in the top half of the Ghana Premier Division.</p><small>Current position: '+position+' of '+clubs.length+'</small></div></div><div class="objective-card"><span class="objective-icon">₵</span><div><strong>Financial control</strong><p>Keep the club balance above zero while managing recruitment.</p><small>Current balance: '+money(career.balance)+'</small></div></div><div class="objective-card"><span class="objective-icon">⚽</span><div><strong>Build a competitive team</strong><p>Use tactics and recruitment to improve your results.</p><small>Squad size: '+currentPlayers.length+' registered players</small></div></div></section>';
@@ -163,7 +163,7 @@ async function playRound(){
         career.lastResult={homeTeam:match.home.name,awayTeam:match.away.name,homeGoals:res.homeGoals,awayGoals:res.awayGoals,round:round};
         career.news.push({date:"MATCHDAY "+round,title:match.home.name+" "+res.homeGoals+"–"+res.awayGoals+" "+match.away.name,body:match.home.id===club.id?(res.homeGoals>res.awayGoals?"A home win puts points on the board.":res.homeGoals===res.awayGoals?"The points are shared at home.":"The team will need a response after this defeat."):(res.awayGoals>res.homeGoals?"A valuable away victory.":res.awayGoals===res.homeGoals?"A point earned on the road.":"A difficult away result for the squad.")});
     }
-    if(!career.fixtures.some(f=>!f.played))career.news.push({date:"SEASON "+career.season,title:"Season complete",body:"All 90 league fixtures have been played. The final table is ready."});
+    if(!career.fixtures.some(f=>!f.played))career.news.push({date:"SEASON "+career.season,title:"Season complete",body:"All '+(clubs.length*(clubs.length-1))+' league fixtures have been played. The final table is ready."});
     busy=false;
     try{await saveCareer("Matchday "+round+" complete. Results and finances saved.");activePage="dashboard";shell()}catch(e){showToast("Results were played, but saving failed. Keep this page open and retry: "+e.message,true);shell()}
 }
