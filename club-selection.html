@@ -39,9 +39,9 @@ body{min-height:100vh}.choose-wrap{max-width:1200px;margin:auto;padding:28px 20p
 </head>
 <body>
 <main class="choose-wrap">
-<header class="choose-top"><div><p class="choose-brand">GINGA FM</p><p class="choose-sub">GHANA FOOTBALL MANAGEMENT</p></div><button id="logout" class="close-button" type="button" style="padding:0 13px;width:auto;font-size:13px">Log out</button></header>
-<section class="choose-hero"><p class="eyebrow">YOUR CAREER STARTS HERE</p><h1 class="choose-title">Choose your club.<br>Make your mark.</h1><p class="choose-lede">Forty clubs. One league. Your decisions will shape the season. Pick the team you want to lead and take your place in Ghanaian football.</p></section>
-<div class="page-heading"><div><p class="page-eyebrow">GHANA PREMIER DIVISION</p><h2 style="margin:0">Available clubs</h2></div><span id="clubCount" style="color:var(--muted);font-size:13px">40 clubs</span></div>
+<header class="choose-top"><div><p class="choose-brand">GINGA FM</p><p class="choose-sub">INTERNATIONAL FOOTBALL MANAGEMENT</p></div><button id="logout" class="close-button" type="button" style="padding:0 13px;width:auto;font-size:13px">Log out</button></header>
+<section class="choose-hero"><p class="eyebrow">YOUR CAREER STARTS HERE</p><h1 class="choose-title">Choose your club.<br>Make your mark.</h1><p class="choose-lede">Sixty clubs. One international league. Your decisions will shape the season. Choose a club from Nigeria, Europe, the UK, or North America.</p></section>
+<div class="page-heading"><div><p class="page-eyebrow">GINGA INTERNATIONAL LEAGUE</p><h2 style="margin:0">Available clubs</h2></div><span id="clubCount" style="color:var(--muted);font-size:13px">60 clubs</span></div>
 <div id="clubGrid" class="club-grid" aria-label="Choose a club"></div>
 <div class="choose-actions"><p id="status" class="choose-status" role="status" aria-live="polite">Select a club to view your starting position.</p><button id="startCareer" class="primary-btn" type="button" disabled>Take the job →</button></div>
 </main>
@@ -54,7 +54,8 @@ const grid=document.getElementById("clubGrid"),status=document.getElementById("s
 const money=n=>"GH₵ "+Number(n||0).toLocaleString("en-GH");
 function crest(name){return name.split(/\s+/).filter(Boolean).map(w=>w[0]).join("").slice(0,3).toUpperCase()}
 function render(){
-grid.innerHTML=clubs.map((club,i)=>'<button type="button" class="club-card '+(selectedId===club.id?'selected':'')+'" data-id="'+club.id+'" aria-pressed="'+(selectedId===club.id)+'"><div class="club-art" style="--crest:'+["#e8c84a","#d85b43","#56b7a5","#77a7dd","#d6a0dc","#9cc36b","#ef9e50","#79c9ce","#c5a0f0","#e57c91","#e2b84f","#ba6b54","#60a5a0","#7191c9","#a77dbb","#88a85d","#d48b48","#6aafb7","#ab8bce","#d66f7d"][i%20]+'"><span class="club-crest">'+crest(club.name)+'</span><span class="club-city">'+club.city+' · GHANA</span></div><div class="club-card-body"><h3>'+club.name+'</h3><p>Formation · '+club.tactics.formation+'</p><div class="club-data"><span>Starting balance<strong>'+money(club.finances.balance)+'</strong></span><span>Transfer budget<strong>'+money(club.finances.transferBudget)+'</strong></span></div></div></button>').join("");
+document.getElementById("clubCount").textContent=clubs.length+" clubs";
+grid.innerHTML=clubs.map((club,i)=>'<button type="button" class="club-card '+(selectedId===club.id?'selected':'')+'" data-id="'+club.id+'" aria-pressed="'+(selectedId===club.id)+'"><div class="club-art" style="--crest:'+["#e8c84a","#d85b43","#56b7a5","#77a7dd","#d6a0dc","#9cc36b","#ef9e50","#79c9ce","#c5a0f0","#e57c91","#e2b84f","#ba6b54","#60a5a0","#7191c9","#a77dbb","#88a85d","#d48b48","#6aafb7","#ab8bce","#d66f7d"][i%20]+'"><span class="club-crest">'+crest(club.name)+'</span><span class="club-city">'+club.city+' · '+(club.country||'Ghana').toUpperCase()+'</span></div><div class="club-card-body"><h3>'+club.name+'</h3><p>Formation · '+club.tactics.formation+'</p><div class="club-data"><span>Starting balance<strong>'+money(club.finances.balance)+'</strong></span><span>Transfer budget<strong>'+money(club.finances.transferBudget)+'</strong></span></div></div></button>').join("");
 grid.querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{selectedId=Number(button.dataset.id);const club=clubs.find(c=>c.id===selectedId);status.textContent=club.name+" selected. Starting balance: "+money(club.finances.balance)+".";start.disabled=false;render()}));
 }
 async function init(){
