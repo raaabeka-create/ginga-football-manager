@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#d4a017"><title>Choose Your Club | Ginga FM</title>
+<script>
+try { document.documentElement.dataset.theme = localStorage.getItem("ginga-fm-theme") === "dark" ? "dark" : "light"; } catch (_) {}
+</script>
+<link rel="stylesheet" href="./style.css">
+<style>
+body{min-height:100vh}.choose-wrap{max-width:1200px;margin:auto;padding:28px 20px 56px}
+.choose-top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:28px}
+.choose-brand{font-family:"Matcha Mint",Georgia,serif;font-size:34px;color:var(--accent-hover);margin:0}
+.choose-sub{margin:5px 0 0;color:var(--muted);font-size:13px}
+.choose-title{font-size:clamp(28px,4vw,42px);margin:0 0 10px;line-height:1.12}
+.choose-lede{max-width:680px;color:var(--muted);line-height:1.7;margin:0}
+.choose-hero{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:18px;padding:30px;margin-bottom:25px;background:linear-gradient(110deg,rgba(10,10,10,.92),rgba(34,20,22,.72)),url('./images/Muted%20Maroon%20Football%20Motion%20Wallpaper.png') center/cover;color:white}
+.choose-hero:after{content:"";position:absolute;width:230px;height:230px;border:1px solid rgba(255,255,255,.18);border-radius:50%;right:-30px;top:-65px;box-shadow:0 0 0 24px rgba(255,255,255,.035),0 0 0 50px rgba(255,255,255,.025)}
+.choose-hero .eyebrow{color:#eac34e;font-size:11px;font-weight:800;letter-spacing:2px;margin:0 0 12px}
+.club-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.club-card{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:14px;padding:0;background:var(--surface);color:var(--text);text-align:left;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s}
+.club-card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 12px 30px rgba(0,0,0,.13)}
+.club-card.selected{border:2px solid var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.club-art{height:112px;display:flex;align-items:center;justify-content:space-between;padding:16px;background:linear-gradient(120deg,#171717,#3d2426);color:white;position:relative;overflow:hidden}
+.club-art:after{content:"";position:absolute;width:170px;height:170px;border:1px solid rgba(255,255,255,.16);border-radius:50%;right:-25px;top:-75px;box-shadow:0 0 0 16px rgba(255,255,255,.04),0 0 0 34px rgba(255,255,255,.025)}
+.club-crest{width:55px;height:62px;display:grid;place-items:center;clip-path:polygon(8% 0,92% 0,86% 75%,50% 100%,14% 75%);background:var(--crest,#d4a017);color:#171717;font-weight:900;font-size:15px;z-index:1}
+.club-city{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#e8d7a2;z-index:1}
+.club-card-body{padding:18px}
+.club-card h3{font-size:17px;margin:0 0 5px}.club-card p{margin:0;color:var(--muted);font-size:12px}
+.club-data{display:flex;justify-content:space-between;gap:8px;margin-top:18px;padding-top:13px;border-top:1px solid var(--border);font-size:12px}
+.club-data strong{display:block;margin-top:4px;font-size:13px;color:var(--text)}
+.choose-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:24px}
+.choose-status{color:var(--muted);font-size:13px;min-height:20px}
+.primary-btn{border:0;border-radius:9px;padding:14px 22px;background:var(--accent);color:var(--accent-contrast);font-weight:800;cursor:pointer;min-width:210px}
+.primary-btn:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:850px){.club-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.choose-wrap{padding:20px 13px 35px}.choose-top{align-items:flex-start}.choose-hero{padding:22px}.club-grid{grid-template-columns:1fr}.club-art{height:92px}.choose-actions{align-items:stretch;flex-direction:column}.primary-btn{width:100%}}
+</style>
+</head>
+<body>
+<main class="choose-wrap">
+<header class="choose-top"><div><p class="choose-brand">GINGA FM</p><p class="choose-sub">GHANA FOOTBALL MANAGEMENT</p></div><button id="logout" class="close-button" type="button" style="padding:0 13px;width:auto;font-size:13px">Log out</button></header>
+<section class="choose-hero"><p class="eyebrow">YOUR CAREER STARTS HERE</p><h1 class="choose-title">Choose your club.<br>Make your mark.</h1><p class="choose-lede">Ten clubs. One league. Your decisions will shape the season. Pick the team you want to lead and take your place in Ghanaian football.</p></section>
+<div class="page-heading"><div><p class="page-eyebrow">GHANA PREMIER DIVISION</p><h2 style="margin:0">Available clubs</h2></div><span id="clubCount" style="color:var(--muted);font-size:13px">10 clubs</span></div>
+<div id="clubGrid" class="club-grid" aria-label="Choose a club"></div>
+<div class="choose-actions"><p id="status" class="choose-status" role="status" aria-live="polite">Select a club to view your starting position.</p><button id="startCareer" class="primary-btn" type="button" disabled>Take the job →</button></div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabaseClient.js"></script><script src="./clubs.js"></script>
+<script>
+(function(){
+"use strict";
+let user=null,selectedId=null;
+const grid=document.getElementById("clubGrid"),status=document.getElementById("status"),start=document.getElementById("startCareer");
+const money=n=>"GH₵ "+Number(n||0).toLocaleString("en-GH");
+function crest(name){return name.split(/\s+/).filter(Boolean).map(w=>w[0]).join("").slice(0,3).toUpperCase()}
+function render(){
+grid.innerHTML=clubs.map((club,i)=>'<button type="button" class="club-card '+(selectedId===club.id?'selected':'')+'" data-id="'+club.id+'" aria-pressed="'+(selectedId===club.id)+'"><div class="club-art" style="--crest:'+["#e8c84a","#d85b43","#56b7a5","#77a7dd","#d6a0dc","#9cc36b","#ef9e50","#79c9ce","#c5a0f0","#e57c91"][i]+'"><span class="club-crest">'+crest(club.name)+'</span><span class="club-city">'+club.city+' · GHANA</span></div><div class="club-card-body"><h3>'+club.name+'</h3><p>Formation · '+club.tactics.formation+'</p><div class="club-data"><span>Starting balance<strong>'+money(club.finances.balance)+'</strong></span><span>Transfer budget<strong>'+money(club.finances.transferBudget)+'</strong></span></div></div></button>').join("");
+grid.querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{selectedId=Number(button.dataset.id);const club=clubs.find(c=>c.id===selectedId);status.textContent=club.name+" selected. Starting balance: "+money(club.finances.balance)+".";start.disabled=false;render()}));
+}
+async function init(){
+try{const {data,error}=await supabaseClient.auth.getUser();if(error)throw error;user=data.user;if(!user){location.replace("./login.html");return}if(!user.user_metadata?.manager_name){location.replace("./manager.html");return}if(user.user_metadata?.club_id){location.replace("./index.html");return}render()}catch(e){status.textContent="Could not verify your account. Please log in again.";console.error(e)}
+}
+start.addEventListener("click",async()=>{
+const club=clubs.find(c=>c.id===selectedId);if(!user||!club)return;
+start.disabled=true;start.textContent="Preparing your club…";status.textContent="Saving your club and preparing the season.";
+try{
+const metadata={...(user.user_metadata||{}),club_id:club.id,club_name:club.name,ginga_career:{version:1,clubId:club.id,season:1,currentRound:1,fixtures:null,playerClubOverrides:{},balance:club.finances.balance,transferBudget:club.finances.transferBudget,tactics:{...club.tactics},lastResult:null,news:[]}};
+const {data,error}=await supabaseClient.auth.updateUser({data:metadata});if(error)throw error;
+location.replace("./index.html");
+}catch(e){console.error(e);status.textContent=e.message||"Could not save your club. Please try again.";start.disabled=false;start.textContent="Take the job →"}
+});
+document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();location.replace("./login.html")});
+init();
+})();
+</script>
+</body></html>
