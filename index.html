@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#d4a017">
 <title>Ginga FM | Ghana Football Management Simulation</title>
-<meta name="description" content="Lead your club, manage your squad, shape matchdays and compete in the Ghana Premier Division.">
+<meta name="description" content="Lead your club, manage your squad, shape matchdays and compete in the Ginga International League.">
 <script>
 try{document.documentElement.dataset.theme=localStorage.getItem("ginga-fm-theme")==="dark"?"dark":"light"}catch(_){}
 </script>
@@ -40,7 +40,7 @@ body{visibility:hidden}.game-ready{visibility:visible}.top-header{position:relat
 <button class="nav-button" type="button" data-page="staff"><span class="nav-icon icon-staff">♙</span>Manager</button>
 <button class="nav-button" type="button" data-page="news"><span class="nav-icon icon-news">▣</span>Club news</button>
 </nav><div class="sidebar-footer"><span class="online-dot"></span><span id="worldStatus">Connecting to career save…</span></div></aside>
-<main class="main"><div class="page-heading"><div><p class="page-eyebrow">GHANA PREMIER DIVISION</p><h2 id="clubLabel">Your club</h2></div><div style="text-align:right"><span style="display:block;color:var(--muted);font-size:10px;letter-spacing:1px">MANAGER</span><strong id="managerLabel">Manager</strong></div></div><div id="view" aria-live="polite"></div></main>
+<main class="main"><div class="page-heading"><div><p class="page-eyebrow">GINGA INTERNATIONAL LEAGUE</p><h2 id="clubLabel">Your club</h2></div><div style="text-align:right"><span style="display:block;color:var(--muted);font-size:10px;letter-spacing:1px">MANAGER</span><strong id="managerLabel">Manager</strong></div></div><div id="view" aria-live="polite"></div></main>
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <dialog id="settingsDialog" class="settings-dialog"><div class="settings-heading"><div><p class="page-eyebrow">PREFERENCES</p><h2>Settings</h2></div><button id="closeSettingsButton" class="close-button" type="button" aria-label="Close settings">×</button></div><p>Make Ginga FM comfortable for your next matchday.</p><div class="settings-item"><span>Display theme</span><button id="dialogThemeToggle" class="small-btn" type="button">Switch theme</button></div><div class="settings-item"><span>Manager profile</span><a href="./manager.html" style="color:var(--accent-hover)">Edit profile ↗</a></div><div class="settings-item"><span>Account</span><button class="small-btn" type="button" data-signout>Log out</button></div></dialog>
