@@ -222,7 +222,7 @@
             <div class="manager-actions">
                 <a class="manager-link" href="./login.html" id="logoutLink">Log out</a>
             </div>
-            <p class="manager-note">Your profile is saved to your signed-in Ginga FM account. Club selection and career progression will be connected in the next stages.</p>
+            <p class="manager-note">Your manager profile is saved to your Ginga FM account.</p>
         </section>
     </main>
 
@@ -424,7 +424,7 @@
 
                 if (error) throw error;
                 signedInUser = data.user || signedInUser;
-                showMessage("Manager profile saved successfully. Your details are attached to your Ginga FM account. Next, we will build club selection.", "success");
+                showMessage("Manager profile saved successfully.", "success");
             } catch (error) {
                 console.error("Could not save manager profile:", error);
                 showMessage(error.message || "Could not save your profile. Please try again.", "error");
