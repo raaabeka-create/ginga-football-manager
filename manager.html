@@ -23,7 +23,12 @@
         .manager-brand p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
         .manager-card h2 { margin: 0 0 8px; font-size: 26px; }
         .manager-intro { margin: 0 0 18px; color: var(--muted); line-height: 1.6; font-size: 14px; }
-        .pitch-banner { display: grid; grid-template-columns: 1fr 140px; align-items: center; gap: 16px; margin: 0 0 24px; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: linear-gradient(120deg, rgba(34,139,87,.12), rgba(212,160,23,.10)); }
+        .pitch-banner { display: grid; grid-template-columns: 1fr 140px; align-items: center; gap: 16px; margin: 0 0 24px; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-secondary); }
+        .manager-hero { display: block; width: 100%; height: auto; border-radius: 10px; margin-bottom: 22px; }
+        .slider-locked { opacity: .58; }
+        .slider-locked .attribute-row { cursor: not-allowed; }
+        .slider-locked input[type="range"] { cursor: not-allowed; }
+        .slider-lock-note { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; font-weight: normal; }
         .pitch-banner strong { display: block; margin-bottom: 5px; font-size: 14px; }
         .pitch-banner p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
         .pitch-art { display: block; width: 100%; height: auto; border-radius: 8px; }
@@ -48,7 +53,7 @@
         .manager-link { color: var(--accent-hover); font-size: 13px; text-decoration: none; }
         .manager-link:hover { text-decoration: underline; }
         .manager-note { margin-top: 18px; color: var(--muted); font-size: 12px; line-height: 1.6; }
-        @media (max-width: 600px) { .manager-card { padding: 22px 18px; } .manager-grid { grid-template-columns: 1fr; gap: 0; } .manager-brand h1 { font-size: 35px; } .pitch-banner { grid-template-columns: 1fr 100px; gap: 10px; padding: 12px; } }
+        @media (max-width: 600px) { .manager-card { padding: 22px 18px; } .manager-grid { grid-template-columns: 1fr; gap: 0; } .manager-brand h1 { font-size: 35px; } .pitch-banner { grid-template-columns: 1fr; gap: 10px; padding: 12px; } .pitch-art { max-height: 130px; } }
     </style>
 </head>
 <body>
@@ -62,15 +67,22 @@
             <h2>Create your manager</h2>
             <p class="manager-intro">Build your manager identity. Your licence sets your experience level, while your management style shapes your strengths. You can still move every slider yourself.</p>
 
-            <div class="pitch-banner" aria-label="Football pitch illustration and manager profile tip">
-                <div><strong>Every manager has a different edge.</strong><p>Higher licences give stronger starting ratings. Your chosen style decides where those points go. Final ratings are capped between 1 and 100.</p></div>
-                <svg class="pitch-art" viewBox="0 0 180 112" role="img" aria-label="Illustration of a football pitch">
-                    <rect x="1" y="1" width="178" height="110" rx="7" fill="#176b43" stroke="#f5f4df" stroke-width="2"/>
-                    <path d="M90 2 V110 M2 56 H178" stroke="#f5f4df" stroke-width="1.5" fill="none"/>
-                    <circle cx="90" cy="56" r="20" stroke="#f5f4df" stroke-width="1.5" fill="none"/>
-                    <rect x="2" y="27" width="24" height="58" stroke="#f5f4df" stroke-width="1.5" fill="none"/><rect x="154" y="27" width="24" height="58" stroke="#f5f4df" stroke-width="1.5" fill="none"/>
-                    <rect x="2" y="40" width="10" height="32" stroke="#f5f4df" stroke-width="1.5" fill="none"/><rect x="168" y="40" width="10" height="32" stroke="#f5f4df" stroke-width="1.5" fill="none"/>
-                    <circle cx="90" cy="56" r="2" fill="#f5f4df"/><circle cx="19" cy="56" r="2" fill="#f5f4df"/><circle cx="161" cy="56" r="2" fill="#f5f4df"/>
+            <svg class="manager-hero" viewBox="0 0 680 170" role="img" aria-label="Ginga FM football stadium banner">
+                <defs><linearGradient id="stadiumSky" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#123d2c"/><stop offset="100%" stop-color="#23834d"/></linearGradient><linearGradient id="stadiumGrass" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4fa85c"/><stop offset="100%" stop-color="#17633b"/></linearGradient></defs>
+                <rect width="680" height="170" rx="10" fill="url(#stadiumSky)"/>
+                <path d="M0 45 Q170 -5 340 38 T680 35 V94 H0Z" fill="#0b2b20" opacity=".7"/>
+                <g fill="#f5d66f" opacity=".9"><circle cx="52" cy="31" r="2"/><circle cx="84" cy="22" r="2"/><circle cx="116" cy="29" r="2"/><circle cx="148" cy="18" r="2"/><circle cx="532" cy="25" r="2"/><circle cx="564" cy="18" r="2"/><circle cx="596" cy="28" r="2"/><circle cx="628" cy="20" r="2"/></g>
+                <path d="M0 94 L110 58 L220 94 L330 58 L440 94 L550 58 L680 94 V170 H0Z" fill="#143e2c"/>
+                <path d="M0 112 L170 85 L340 112 L510 85 L680 112 V170 H0Z" fill="url(#stadiumGrass)"/>
+                <path d="M0 140 H680 M340 112 V170 M280 170 L310 112 M400 170 L370 112" stroke="#e6f5d9" stroke-width="1.5" opacity=".65" fill="none"/>
+                <ellipse cx="340" cy="141" rx="80" ry="27" stroke="#e6f5d9" stroke-width="1.5" opacity=".65" fill="none"/>
+                <g transform="translate(340 105)"><circle r="28" fill="#f5d66f"/><path d="M-28 0 L-14 -24 L14 -24 L28 0 L14 24 L-14 24Z" fill="#f5d66f" stroke="#123d2c" stroke-width="3"/><path d="M-10 -9 L0 -17 L10 -9 L7 3 L-7 3Z M-10 -9 L-22 -2 M10 -9 L22 -2 M7 3 L14 17 M-7 3 L-14 17" stroke="#123d2c" stroke-width="3" fill="none"/></g>
+                <text x="24" y="62" fill="#ffffff" font-size="19" font-weight="700" letter-spacing="2">GINGA FM</text><text x="24" y="82" fill="#d8f0d8" font-size="10" letter-spacing="1.3">YOUR TOUCHLINE. YOUR LEGACY.</text>
+            </svg>
+            <div class="pitch-banner" aria-label="Manager rating information">
+                <div><strong>Your licence sets your level. Your style sets your strengths.</strong><p>Choose both to calculate your starting ratings. Once calculated, the sliders lock so each manager keeps the strengths and weaknesses of their chosen profile.</p></div>
+                <svg class="pitch-art" viewBox="0 0 180 112" role="img" aria-label="Football pitch diagram">
+                    <rect x="1" y="1" width="178" height="110" rx="7" fill="#176b43" stroke="#f5f4df" stroke-width="2"/><path d="M90 2 V110 M2 56 H178" stroke="#f5f4df" stroke-width="1.5" fill="none"/><circle cx="90" cy="56" r="20" stroke="#f5f4df" stroke-width="1.5" fill="none"/><rect x="2" y="27" width="24" height="58" stroke="#f5f4df" stroke-width="1.5" fill="none"/><rect x="154" y="27" width="24" height="58" stroke="#f5f4df" stroke-width="1.5" fill="none"/><circle cx="90" cy="56" r="2" fill="#f5f4df"/>
                 </svg>
             </div>
 
@@ -167,42 +179,44 @@
 
                 <p class="rating-explainer" id="ratingExplainer">All six ratings start at 50/100. Select a coaching licence and management style to calculate your starting profile. The sliders remain editable after calculation.</p>
 
-                <div class="manager-field">
+                <div class="rating-explainer" id="ratingExplainer">All six ratings start at 50/100. Choose a coaching licence and management style to calculate your starting profile. The sliders lock after both choices are made.</div>
+
+                <div class="manager-field" id="tacticsField">
                     <label for="tactics">Tactical knowledge <span id="tacticsValue" class="attribute-value">50</span></label>
                     <div class="attribute-row">
                         <input id="tactics" name="tactics" type="range" min="1" max="100" value="50">
                         <span class="attribute-value" id="tacticsNumber">50/100</span>
                     </div>
                 </div>
-                <div class="manager-field">
+                <div class="manager-field" id="peopleField">
                     <label for="people">Man management <span id="peopleValue" class="attribute-value">50</span></label>
                     <div class="attribute-row">
                         <input id="people" name="people" type="range" min="1" max="100" value="50">
                         <span class="attribute-value" id="peopleNumber">50/100</span>
                     </div>
                 </div>
-                <div class="manager-field">
+                <div class="manager-field" id="youthField">
                     <label for="youth">Youth development <span id="youthValue" class="attribute-value">50</span></label>
                     <div class="attribute-row">
                         <input id="youth" name="youth" type="range" min="1" max="100" value="50">
                         <span class="attribute-value" id="youthNumber">50/100</span>
                     </div>
                 </div>
-                <div class="manager-field">
+                <div class="manager-field" id="motivationField">
                     <label for="motivation">Motivational ability</label>
                     <div class="attribute-row">
                         <input id="motivation" name="motivation" type="range" min="1" max="100" value="50">
                         <span class="attribute-value" id="motivationNumber">50/100</span>
                     </div>
                 </div>
-                <div class="manager-field">
+                <div class="manager-field" id="disciplineField">
                     <label for="discipline">Discipline</label>
                     <div class="attribute-row">
                         <input id="discipline" name="discipline" type="range" min="1" max="100" value="50">
                         <span class="attribute-value" id="disciplineNumber">50/100</span>
                     </div>
                 </div>
-                <div class="manager-field">
+                <div class="manager-field" id="scoutingField">
                     <label for="scouting">Recruitment &amp; scouting</label>
                     <div class="attribute-row">
                         <input id="scouting" name="scouting" type="range" min="1" max="100" value="50">
@@ -216,7 +230,6 @@
             <div id="managerMessage" class="manager-message" role="status" aria-live="polite"></div>
             <div class="manager-actions">
                 <a class="manager-link" href="./login.html" id="logoutLink">Log out</a>
-                <a class="manager-link" href="./index.html">Return to game dashboard</a>
             </div>
             <p class="manager-note">Your profile is saved to your signed-in Ginga FM account. Club selection and career progression will be connected in the next stages.</p>
         </section>
@@ -286,22 +299,38 @@
             return result;
         }
 
+        function setSlidersLocked(locked) {
+            sliderIds.forEach(function (id) {
+                const slider = document.getElementById(id);
+                const field = document.getElementById(id + "Field");
+                slider.disabled = locked;
+                if (field) {
+                    field.classList.toggle("slider-locked", locked);
+                    let note = field.querySelector(".slider-lock-note");
+                    if (locked && !note) {
+                        note = document.createElement("span");
+                        note.className = "slider-lock-note";
+                        note.textContent = "Locked by your licence and style";
+                        field.appendChild(note);
+                    } else if (!locked && note) {
+                        note.remove();
+                    }
+                }
+            });
+        }
+
         function applyCalculatedRatings(reason) {
             const styleName = document.getElementById("style").value;
             const licenceName = document.getElementById("licence").value;
 
             // A fresh profile deliberately stays neutral until a style is chosen.
-            if (!styleName) {
+            if (!styleName || !licenceName) {
+                setSlidersLocked(false);
                 sliderIds.forEach(function (id) {
                     document.getElementById(id).value = 50;
                     setSliderDisplay(id);
                 });
-                ratingExplainer.textContent = "All six ratings start at 50/100. Choose a management style to calculate your ratings. Your licence will adjust those ratings, and you can then fine-tune every slider.";
-                return;
-            }
-
-            if (!licenceName) {
-                ratingExplainer.textContent = "Choose a coaching licence as well to calculate the final starting ratings. You can still adjust every slider.";
+                ratingExplainer.textContent = "All six ratings start at 50/100. Choose both a coaching licence and management style to calculate and lock your starting profile.";
                 return;
             }
 
@@ -312,6 +341,7 @@
                 document.getElementById(id).value = ratings[id];
                 setSliderDisplay(id);
             });
+            setSlidersLocked(true);
 
             const licenceSummary = {
                 "Professional": "strongest overall boost",
@@ -321,9 +351,9 @@
                 "Coast League": "grassroots U10/U13/U15 profile: weaker overall ratings, with a small youth-development edge and upset potential"
             };
 
-            ratingExplainer.textContent = styleName + " + " + licenceName + ": " + licenceSummary[licenceName] + ". Ratings are calculated as style base + licence modifier, capped at 1–100. You can now adjust each slider freely; changing style or licence recalculates the suggested starting profile.";
+            ratingExplainer.textContent = styleName + " + " + licenceName + ": " + licenceSummary[licenceName] + ". Ratings are calculated as style base + licence modifier, capped at 1–100. Sliders are now locked. Change the licence or style to recalculate the profile.";
             if (reason) {
-                showMessage("Ratings recalculated for " + styleName + " style and " + licenceName + " licence. Every slider is still editable.", "success");
+                showMessage("Ratings calculated for " + styleName + " style and " + licenceName + " licence. Sliders are now locked to this profile.", "success");
             }
         }
 
@@ -368,15 +398,17 @@
 
             sliderIds.forEach(function (id) {
                 const key = profileKeys[id];
-                // Existing saved ratings are preserved. New profiles keep the neutral 50/100 values.
                 document.getElementById(id).value = profile[key] !== undefined ? profile[key] : 50;
                 setSliderDisplay(id);
             });
-            if (!profile.management_style) {
-                document.getElementById("style").value = "";
-                ratingExplainer.textContent = "All six ratings are currently neutral at 50/100. Choose a style and licence to calculate your suggested starting ratings. You can then fine-tune every slider.";
-            } else if (profile.management_style && profile.coaching_licence) {
-                ratingExplainer.textContent = "Your saved ratings have been loaded. You can adjust any slider directly. Changing your style or licence will recalculate the suggested starting profile.";
+            if (profile.management_style && profile.coaching_licence) {
+                // Existing profiles keep their saved ratings, and those ratings are locked on load.
+                setSlidersLocked(true);
+                ratingExplainer.textContent = "Your saved manager profile is loaded and its ratings are locked. Change the licence or style to recalculate the full profile.";
+            } else {
+                setSlidersLocked(false);
+                document.getElementById("style").value = profile.management_style || "";
+                ratingExplainer.textContent = "All six ratings start at 50/100. Choose both a licence and management style to calculate and lock the starting profile.";
             }
 
             if (profile.manager_name) {
