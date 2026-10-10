@@ -177,10 +177,10 @@ async function init(){
         if(!getManager().manager_name){location.replace("./manager.html");return}
         if(!getManager().club_id){location.replace("./club-selection.html");return}
         if(!initCareer())return;
-        const status=$("worldStatus");if(status)status.textContent="Career save connected";
+        const status=$("worldStatus");if(status)status.textContent="Syncing career save…";
         document.body.classList.add("game-ready");
         shell();
-        try{await saveCareer()}catch(e){console.warn("Initial career sync skipped:",e)}
+        try{await saveCareer();if(status)status.textContent="Career save connected"}catch(e){console.warn("Initial career sync skipped:",e);if(status)status.textContent="Save needs attention";showToast("Your career loaded, but its first save failed: "+e.message,true)}
     }catch(e){console.error(e);showToast("Could not load your saved career. Please sign in again.",true)}
 }
 init();
