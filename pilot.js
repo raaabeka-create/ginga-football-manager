@@ -393,7 +393,8 @@ async function startNextSeason(){
     const aiMoves=runAITransferWindow();
     const positions=["GK","CB","LB","RB","CM","DM","AM","LW","RW","ST"],first=["Kofi","Kwame","Daniel","Samuel","Michael","Abdul","Emmanuel","Isaac","Nana","Joseph","Bright","Kojo"],last=["Mensah","Boateng","Asare","Owusu","Addo","Tetteh","Osei","Antwi","Adu","Frimpong","Yeboah","Sarpong"];
     let nextId=Math.max(0,...players.map(p=>Number(p.id)||0))+1;
-    for(let i=0;i<3;i++){
+    const youthSlots=Math.max(0,33-players.filter(p=>!p.retired&&clubForPlayer(p)===club.name).length);
+    for(let i=0;i<Math.min(3,youthSlots);i++){
         const position=positions[Math.floor(Math.random()*positions.length)],attributes={};
         ["pace","shooting","passing","dribbling","defending","physical","stamina","composure"].forEach(k=>attributes[k]=40+Math.floor(Math.random()*26));
         if(position==="GK")attributes.goalkeeping=45+Math.floor(Math.random()*26);
