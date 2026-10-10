@@ -394,11 +394,9 @@
                     if (error) throw error;
 
                     if (data.session) {
-                        showMessage(
-                            "Your account has been created and you are logged in. " +
-                            "Next, we will build your manager profile.",
-                            "success"
-                        );
+                        showMessage("Account created. Opening manager setup...", "success");
+                        window.location.replace("./manager.html");
+                        return;
                     } else {
                         showMessage(
                             "Account created. Check your email and click the " +
@@ -416,11 +414,9 @@
 
                     if (error) throw error;
 
-                    showMessage(
-                        "Login successful! Your account is ready. " +
-                        "The manager setup screen will be our next step.",
-                        "success"
-                    );
+                    showMessage("Login successful! Opening manager setup...", "success");
+                    window.location.replace("./manager.html");
+                    return;
                 }
             } catch (error) {
                 console.error("Ginga FM account error:", error);
@@ -479,10 +475,8 @@
                 if (error) throw error;
 
                 if (data.session) {
-                    showMessage(
-                        "You are already logged in. Your manager setup screen will be added next.",
-                        "success"
-                    );
+                    window.location.replace("./manager.html");
+                    return;
 
                     const signOutButton = document.createElement("button");
                     signOutButton.type = "button";
