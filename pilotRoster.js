@@ -47,14 +47,22 @@ players.forEach(player => {
     const existingNames = new Set(players.map(player => player.name.toLowerCase()));
     const generated = [];
 
+    const middleNames = ["Avery","Blaise","Cedric","Darian","Elian","Fabian","Gideon","Harlan","Isaiah","Jalen","Kellan","Lucian","Marcel","Nolan","Orion","Paolo","Quentin","Rafael","Simeon","Thiago","Uriah","Victor","Warren","Xavier","Yannick","Zaire","Amari","Bastian","Cyril","Denzel","Emmanuel","Farouk","Gabriel","Hamza","Idris","Joaquin","Kwame","Malik","Nathaniel","Obed","Pascal","Raphael","Samuel","Tariq","Umar","Vincent","Wilfred","Yusuf","Zion","Anders","Benoit","Callum","Dario","Elias","Florian","Henrik","Ibrahim","Javier","Kofi","Lennox","Mikael","Noel","Otto","Parker","Romain","Stefan","Tomas","Ulrich","Wesley","Yohan","Zachary"];
     function uniqueName(firstNames, surnames, index) {
         const first = firstNames[Math.floor(index / surnames.length) % firstNames.length];
         const last = surnames[index % surnames.length];
-        let name = first + " " + last;
-        let suffix = 2;
-        while (existingNames.has(name.toLowerCase())) {
-            name = first + " " + last + " " + suffix;
-            suffix++;
+        let middleIndex = (index * 7 + Math.floor(index / 3)) % middleNames.length;
+        let name = first + " " + middleNames[middleIndex] + " " + last;
+        let attempts = 0;
+        while (existingNames.has(name.toLowerCase()) && attempts < middleNames.length) {
+            middleIndex = (middleIndex + 1) % middleNames.length;
+            name = first + " " + middleNames[middleIndex] + " " + last;
+            attempts++;
+        }
+        if (existingNames.has(name.toLowerCase())) {
+            let variant = 2;
+            while (existingNames.has((name + " " + variant).toLowerCase())) variant++;
+            name += " " + variant;
         }
         existingNames.add(name.toLowerCase());
         return name;
@@ -98,4 +106,56 @@ players.forEach(player => {
         throw new Error("Expected exactly 1,000 new players, got " + generated.length);
     }
     players.push(...generated);
+    let nextPlayerId = players.reduce((highest, player) => Math.max(highest, Number(player.id) || 0), 0) + 1;
+    const ghana = {nationality:"Ghanaian",firstNames:["Kwame","Kofi","Yaw","Kojo","Kwesi","Kwaku","Fiifi","Nii","Tetteh","Kweku","Ato","Nana","Ebo","Selorm","Mawuli","Dzifa","Kwadwo","Kobina","Yao","Ekow","Akua","Abena","Adwoa","Ama","Efua","Esi","Araba","Mansa","Afia","Naa"],surnames:["Mensah","Owusu","Asare","Boateng","Osei","Agyeman","Antwi","Appiah","Addo","Tetteh","Quaye","Amankwah","Acheampong","Sarpong","Nartey","Bonsu","Darko","Yeboah","Adjei","Frimpong","Koomson","Amoah","Nyarko","Badu","Gyamfi","Ofori","Kwarteng","Ababio","Tawiah","Adu"]};
+    function profileForClub(club) {
+        const country=String(club.country||"Ghana");
+        if(country==="Nigeria")return nigeria;
+        if(country==="England")return internationalPools[0];
+        if(country==="Spain")return internationalPools[1];
+        if(country==="France")return internationalPools[2];
+        if(country==="Germany")return internationalPools[3];
+        if(country==="Italy")return internationalPools[4];
+        if(country==="Netherlands")return internationalPools[5];
+        if(country==="Portugal")return internationalPools[6];
+        if(country==="United States")return internationalPools[7];
+        if(country==="Canada")return internationalPools[8];
+        if(country==="Scotland")return internationalPools[9];
+        return ghana;
+    }
+    clubs.forEach((club,clubIndex)=>{
+        const clubPlayers=players.filter(player=>player.club===club.name&&!player.retired);
+        let localIndex=0;
+        while(clubPlayers.length<30){
+            const profile=profileForClub(club);
+            const name=uniqueName(profile.firstNames,profile.surnames,nextPlayerId+clubIndex*31+localIndex*17);
+            const position=positions[(nextPlayerId*7+clubIndex+localIndex*3)%positions.length];
+            const age=18+((nextPlayerId*11+clubIndex*3+localIndex*5)%17);
+            const base=48+((nextPlayerId*13+clubIndex*7+localIndex*5)%37);
+            const attributes={pace:Math.max(30,Math.min(94,base+((nextPlayerId+2)%11)-5)),shooting:Math.max(25,Math.min(93,base+((nextPlayerId+5)%13)-6)),passing:Math.max(30,Math.min(94,base+((nextPlayerId+7)%9)-4)),dribbling:Math.max(25,Math.min(95,base+((nextPlayerId+3)%15)-7)),defending:Math.max(25,Math.min(95,base+((nextPlayerId+9)%17)-8)),physical:Math.max(30,Math.min(95,base+((nextPlayerId+4)%12)-5)),stamina:Math.max(35,Math.min(96,base+((nextPlayerId+6)%14)-6)),composure:Math.max(30,Math.min(95,base+((nextPlayerId+8)%10)-4))};
+            if(position==="GK")attributes.goalkeeping=Math.max(45,Math.min(94,base+((nextPlayerId+1)%12)));
+            const player={id:nextPlayerId++,name,club:club.name,nationality:profile.nationality||"Ghanaian",position,age,attributes,fitness:78+((nextPlayerId*3)%23),morale:58+((nextPlayerId*5)%39),form:55+((nextPlayerId*7)%43),appearances:0,goals:0,bio:name+" is a "+age+"-year-old "+(profile.nationality||"Ghanaian")+" footballer who represents "+club.name+". Playing as a "+position+", the player is developing through competitive league football and training."};
+            players.push(player);clubPlayers.push(player);localIndex++;
+        }
+    });
+    players.forEach(player=>{
+        if(!player.bio){
+            const role=player.position==="GK"?"goalkeeper":["CB","LB","RB"].includes(player.position)?"defender":["DM","CM","AM","LM","RM"].includes(player.position)?"midfielder":"attacking player";
+            player.bio=player.name+" is a "+Number(player.age||22)+"-year-old "+(player.nationality||"football")+" "+role+" currently registered with "+(player.club||"an unlisted club")+". The player's profile reflects their position, attributes, and development in the Ginga FM league.";
+        }
+    });
+    const seenNames=new Set();
+    players.forEach((player,index)=>{
+        const original=String(player.name||"Player").trim();
+        let candidate=original;
+        if(seenNames.has(candidate.toLowerCase())){
+            const parts=original.split(/\\s+/);
+            const first=parts.shift()||"Player";
+            const rest=parts.join(" ");
+            let suffix=0;
+            do{candidate=first+" "+middleNames[(index*11+suffix)%middleNames.length]+" "+rest+(suffix?" "+suffix:"");suffix++}while(seenNames.has(candidate.toLowerCase()));
+            player.name=candidate;
+        }
+        seenNames.add(String(player.name).toLowerCase());
+    });
 })();
