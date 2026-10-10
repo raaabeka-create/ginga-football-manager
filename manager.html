@@ -22,7 +22,14 @@
         .manager-brand h1 { margin: 0; color: var(--accent-hover); font-family: "Matcha Mint", Georgia, serif; font-size: 40px; font-weight: 400; }
         .manager-brand p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
         .manager-card h2 { margin: 0 0 8px; font-size: 26px; }
-        .manager-intro { margin: 0 0 24px; color: var(--muted); line-height: 1.6; font-size: 14px; }
+        .manager-intro { margin: 0 0 18px; color: var(--muted); line-height: 1.6; font-size: 14px; }
+        .pitch-banner { display: grid; grid-template-columns: 1fr 140px; align-items: center; gap: 16px; margin: 0 0 24px; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: linear-gradient(120deg, rgba(34,139,87,.12), rgba(212,160,23,.10)); }
+        .pitch-banner strong { display: block; margin-bottom: 5px; font-size: 14px; }
+        .pitch-banner p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+        .pitch-art { display: block; width: 100%; height: auto; border-radius: 8px; }
+        .rating-explainer { margin: 0 0 18px; padding: 11px 13px; border-left: 3px solid var(--accent); background: var(--surface-secondary); color: var(--muted); font-size: 12px; line-height: 1.6; }
+        .manager-field input[type="range"] { cursor: pointer; }
+        .manager-field input[type="range"]:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
         .manager-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
         .manager-field { min-width: 0; margin-bottom: 16px; }
         .manager-field label, .manager-field .field-label { display: block; margin-bottom: 7px; font-size: 13px; font-weight: bold; }
@@ -41,7 +48,7 @@
         .manager-link { color: var(--accent-hover); font-size: 13px; text-decoration: none; }
         .manager-link:hover { text-decoration: underline; }
         .manager-note { margin-top: 18px; color: var(--muted); font-size: 12px; line-height: 1.6; }
-        @media (max-width: 600px) { .manager-card { padding: 22px 18px; } .manager-grid { grid-template-columns: 1fr; gap: 0; } .manager-brand h1 { font-size: 35px; } }
+        @media (max-width: 600px) { .manager-card { padding: 22px 18px; } .manager-grid { grid-template-columns: 1fr; gap: 0; } .manager-brand h1 { font-size: 35px; } .pitch-banner { grid-template-columns: 1fr 100px; gap: 10px; padding: 12px; } }
     </style>
 </head>
 <body>
@@ -53,7 +60,19 @@
             </header>
 
             <h2>Create your manager</h2>
-            <p class="manager-intro">This is your identity in the football world. Choose your coaching licence and starting strengths carefully. You can change your profile later as the game grows.</p>
+            <p class="manager-intro">Build your manager identity. Your licence sets your experience level, while your management style shapes your strengths. You can still move every slider yourself.</p>
+
+            <div class="pitch-banner" aria-label="Football pitch illustration and manager profile tip">
+                <div><strong>Every manager has a different edge.</strong><p>Higher licences give stronger starting ratings. Your chosen style decides where those points go. Final ratings are capped between 1 and 100.</p></div>
+                <svg class="pitch-art" viewBox="0 0 180 112" role="img" aria-label="Illustration of a football pitch">
+                    <rect x="1" y="1" width="178" height="110" rx="7" fill="#176b43" stroke="#f5f4df" stroke-width="2"/>
+                    <path d="M90 2 V110 M2 56 H178" stroke="#f5f4df" stroke-width="1.5" fill="none"/>
+                    <circle cx="90" cy="56" r="20" stroke="#f5f4df" stroke-width="1.5" fill="none"/>
+                    <rect x="2" y="27" width="24" height="58" stroke="#f5f4df" stroke-width="1.5" fill="none"/><rect x="154" y="27" width="24" height="58" stroke="#f5f4df" stroke-width="1.5" fill="none"/>
+                    <rect x="2" y="40" width="10" height="32" stroke="#f5f4df" stroke-width="1.5" fill="none"/><rect x="168" y="40" width="10" height="32" stroke="#f5f4df" stroke-width="1.5" fill="none"/>
+                    <circle cx="90" cy="56" r="2" fill="#f5f4df"/><circle cx="19" cy="56" r="2" fill="#f5f4df"/><circle cx="161" cy="56" r="2" fill="#f5f4df"/>
+                </svg>
+            </div>
 
             <form id="managerForm">
                 <div class="manager-grid">
@@ -126,11 +145,11 @@
                         <label for="licence">Coaching licence</label>
                         <select id="licence" name="licence" required>
                             <option value="" disabled selected>Choose your licence</option>
-                            <option value="Professional">Professional</option>
-                            <option value="Regional">Regional</option>
-                            <option value="Municipal">Municipal</option>
-                            <option value="Locale">Locale</option>
-                            <option value="Coast League">Coast League</option>
+                            <option value="Professional">Professional — senior / elite football</option>
+                            <option value="Regional">Regional — regional and competitive teams</option>
+                            <option value="Municipal">Municipal — district and community teams</option>
+                            <option value="Locale">Locale — local grassroots football</option>
+                            <option value="Coast League">Coast League — under-10s / upset specialist</option>
                         </select>
                     </div>
                     <div class="manager-field">
@@ -145,6 +164,8 @@
                         </select>
                     </div>
                 </div>
+
+                <p class="rating-explainer" id="ratingExplainer">All six ratings start at 50/100. Select a coaching licence and management style to calculate your starting profile. The sliders remain editable after calculation.</p>
 
                 <div class="manager-field">
                     <label for="tactics">Tactical knowledge <span id="tacticsValue" class="attribute-value">50</span></label>
@@ -229,27 +250,82 @@
             "tactics", "people", "youth", "motivation", "discipline", "scouting"
         ];
 
+        // These are game-balancing values for Ginga FM, not real-world licence scoring.
+        // Each style sets a base profile; each licence adds its own mathematical modifier.
         const stylePresets = {
-            Tactical:       { tactics: 88, people: 52, youth: 55, motivation: 58, discipline: 68, scouting: 72 },
-            Motivator:      { tactics: 58, people: 88, youth: 62, motivation: 92, discipline: 55, scouting: 55 },
-            Developer:      { tactics: 62, people: 72, youth: 92, motivation: 72, discipline: 60, scouting: 78 },
-            Disciplinarian: { tactics: 68, people: 58, youth: 55, motivation: 52, discipline: 92, scouting: 62 },
-            Balanced:       { tactics: 65, people: 65, youth: 65, motivation: 65, discipline: 65, scouting: 65 }
+            Tactical:       { tactics: 82, people: 48, youth: 48, motivation: 50, discipline: 58, scouting: 62 },
+            Motivator:      { tactics: 50, people: 80, youth: 55, motivation: 84, discipline: 48, scouting: 48 },
+            Developer:      { tactics: 54, people: 62, youth: 84, motivation: 62, discipline: 52, scouting: 70 },
+            Disciplinarian: { tactics: 60, people: 50, youth: 48, motivation: 46, discipline: 84, scouting: 54 },
+            Balanced:       { tactics: 58, people: 58, youth: 58, motivation: 58, discipline: 58, scouting: 58 }
         };
 
-        function applyStylePreset(styleName) {
-            const preset = stylePresets[styleName];
-            if (!preset) return;
+        const licenceModifiers = {
+            "Professional": { tactics: 12, people: 10, youth: 8, motivation: 8, discipline: 10, scouting: 12 },
+            "Regional":     { tactics: 6, people: 5, youth: 5, motivation: 4, discipline: 5, scouting: 5 },
+            "Municipal":    { tactics: 0, people: 0, youth: 0, motivation: 0, discipline: 0, scouting: 0 },
+            "Locale":       { tactics: -6, people: -5, youth: -3, motivation: -4, discipline: -5, scouting: -6 },
+            "Coast League": { tactics: -12, people: -8, youth: 2, motivation: -5, discipline: -7, scouting: -10 }
+        };
+
+        const ratingExplainer = document.getElementById("ratingExplainer");
+        let hasLoadedProfile = false;
+
+        function clampRating(value) {
+            return Math.max(1, Math.min(100, Math.round(value)));
+        }
+
+        function calculateRatings(styleName, licenceName) {
+            const style = stylePresets[styleName];
+            const licence = licenceModifiers[licenceName];
+            if (!style || !licence) return null;
+
+            const result = {};
+            sliderIds.forEach(function (id) {
+                result[id] = clampRating(style[id] + licence[id]);
+            });
+            return result;
+        }
+
+        function applyCalculatedRatings(reason) {
+            const styleName = document.getElementById("style").value;
+            const licenceName = document.getElementById("licence").value;
+
+            // A fresh profile deliberately stays neutral until a style is chosen.
+            if (!styleName) {
+                sliderIds.forEach(function (id) {
+                    document.getElementById(id).value = 50;
+                    setSliderDisplay(id);
+                });
+                ratingExplainer.textContent = "All six ratings start at 50/100. Choose a management style to calculate your ratings. Your licence will adjust those ratings, and you can then fine-tune every slider.";
+                return;
+            }
+
+            if (!licenceName) {
+                ratingExplainer.textContent = "Choose a coaching licence as well to calculate the final starting ratings. You can still adjust every slider.";
+                return;
+            }
+
+            const ratings = calculateRatings(styleName, licenceName);
+            if (!ratings) return;
 
             sliderIds.forEach(function (id) {
-                document.getElementById(id).value = preset[id];
+                document.getElementById(id).value = ratings[id];
                 setSliderDisplay(id);
             });
 
-            showMessage(
-                styleName + " style selected. Suggested starting attributes have been applied; you can adjust any slider.",
-                "success"
-            );
+            const licenceSummary = {
+                "Professional": "strongest overall boost",
+                "Regional": "moderate boost",
+                "Municipal": "neutral baseline",
+                "Locale": "modest experience penalty",
+                "Coast League": "grassroots under-10s profile, with a small youth-development edge"
+            };
+
+            ratingExplainer.textContent = styleName + " + " + licenceName + ": " + licenceSummary[licenceName] + ". Ratings are calculated as style base + licence modifier, capped at 1–100. You can now adjust each slider freely; changing style or licence recalculates the suggested starting profile.";
+            if (reason) {
+                showMessage("Ratings recalculated for " + styleName + " style and " + licenceName + " licence. Every slider is still editable.", "success");
+            }
         }
 
         sliderIds.forEach(function (id) {
@@ -258,8 +334,12 @@
             });
         });
 
-        document.getElementById("style").addEventListener("change", function (event) {
-            applyStylePreset(event.target.value);
+        document.getElementById("style").addEventListener("change", function () {
+            applyCalculatedRatings(true);
+        });
+
+        document.getElementById("licence").addEventListener("change", function () {
+            applyCalculatedRatings(true);
         });
 
         async function loadManagerProfile() {
@@ -289,11 +369,17 @@
 
             sliderIds.forEach(function (id) {
                 const key = profileKeys[id];
-                if (profile[key] !== undefined) {
-                    document.getElementById(id).value = profile[key];
-                }
+                // Existing saved ratings are preserved. New profiles keep the neutral 50/100 values.
+                document.getElementById(id).value = profile[key] !== undefined ? profile[key] : 50;
                 setSliderDisplay(id);
             });
+            hasLoadedProfile = true;
+            if (!profile.management_style) {
+                document.getElementById("style").value = "";
+                ratingExplainer.textContent = "All six ratings are currently neutral at 50/100. Choose a style and licence to calculate your suggested starting ratings. You can then fine-tune every slider.";
+            } else if (profile.management_style && profile.coaching_licence) {
+                ratingExplainer.textContent = "Your saved ratings have been loaded. You can adjust any slider directly. Changing your style or licence will recalculate the suggested starting profile.";
+            }
 
             if (profile.manager_name) {
                 showMessage("Your manager profile is loaded. You can update it and save again.", "success");
@@ -322,6 +408,10 @@
 
             if (!profile.manager_name) {
                 showMessage("Please enter your manager name.", "error");
+                return;
+            }
+            if (!profile.coaching_licence || !profile.management_style) {
+                showMessage("Please choose both a coaching licence and a management style before saving your profile.", "error");
                 return;
             }
 
