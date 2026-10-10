@@ -102,11 +102,12 @@ function initCareer() {
     const firstUnplayed=career.fixtures.find(f=>!f.played);
     career.currentRound=firstUnplayed?firstUnplayed.round:(clubs.length * 2 - 1);
     if(!career.news)career.news=[];
+    if(!Number.isFinite(Number(career.newsSeenCount)))career.newsSeenCount=career.news.length;
     return true;
 }
 async function saveCareer(message) {
     if(!authUser)return;
-    if(Array.isArray(career.news)&&career.news.length>150)career.news=career.news.slice(-150);
+    if(Array.isArray(career.news)&&career.news.length>150){const removed=career.news.length-150;career.news=career.news.slice(-150);career.newsSeenCount=Math.max(0,Number(career.newsSeenCount||0)-removed);}
     const meta={...(authUser.user_metadata||{}),club_id:career.clubId,club_name:getClub(career.clubId).name,ginga_career:career};
     const {data,error}=await supabaseClient.auth.updateUser({data:meta});
     if(error)throw error;
