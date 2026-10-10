@@ -350,7 +350,7 @@ function renderPage(page) {
         const wageBudget=Math.max(1,Number(club.finances.wageBudget||0));
         const topHalf=Math.ceil(clubs.length/2),leagueProgress=standing.played?Math.min(100,Math.round(standing.points/Math.max(1,standing.played*3)*100)):0;
         const objectives=[
-          {title:"League performance",description:"Finish in the top half of the league.",status:position<=topHalf?"On track":standing.played===0?"Awaiting first result":"Below target",detail:"Position #"+position+" · target top "+topHalf,ok:position<=topHalf},
+          {title:"League performance",description:"Finish in the top half of the league.",status:standing.played===0?"Awaiting first result":position<=topHalf?"On track":"Below target",detail:"Position #"+position+" · target top "+topHalf,ok:standing.played===0||position<=topHalf},
           {title:"Financial discipline",description:"Keep club funds above zero and control weekly wages.",status:Number(career.balance)>0&&wages<=wageBudget?"On track":"Action required",detail:"Balance "+money(career.balance)+" · wages "+Math.round(wages/wageBudget*100)+"% of allowance",ok:Number(career.balance)>0&&wages<=wageBudget},
           {title:"Squad registration",description:"Maintain a registered squad of 25–33 players.",status:currentPlayers.length>=25&&currentPlayers.length<=33?"On track":"Action required",detail:currentPlayers.length+" registered players",ok:currentPlayers.length>=25&&currentPlayers.length<=33},
           {title:"Starting XI",description:"Select exactly 11 players for the next match.",status:(career.startingXI||[]).length===11?"Lineup selected":"Select 11 players",detail:(career.startingXI||[]).length+" of 11 selected",ok:(career.startingXI||[]).length===11}
@@ -451,7 +451,7 @@ function transferFee(player){const a=player.attributes||{},keys=["pace","shootin
 async function handleTacticChange(event){
     const key=event.target.dataset.tactic;if(!key)return;
     career.tactics[key]=event.target.value;Object.assign(getClub(career.clubId).tactics,career.tactics);
-    try{await saveCareer("Tactics saved.");}catch(e){showToast("Could not save tactics: "+e.message,true)}
+    try{await saveCareer("Tactics saved.");shell()}catch(e){showToast("Could not save tactics: "+e.message,true)}
 }
 async function handleAction(event){
     const action=event.currentTarget.dataset.action;
