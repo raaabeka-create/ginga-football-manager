@@ -68,7 +68,26 @@ function initCareer() {
         const state=career.playerStates[p.id];
         if(state&&clubForPlayer(p)===selected.name){["fitness","morale","form","injuryWeeks","age","appearances","goals"].forEach(k=>{if(state[k]!==undefined)p[k]=state[k]});if(state.attributes)p.attributes={...state.attributes}}
     });
-    const ownSquad=players.filter(p=>clubForPlayer(p)===selected.name);
+    // Migrate older career saves into the required 25-33 player range without deleting players.
+    const registeredCount = clubName => players.filter(p=>!p.retired&&clubForPlayer(p)===clubName).length;
+    clubs.forEach(target=>{
+        let count=registeredCount(target.name);
+        while(count<25){
+            const donor=clubs.map(c=>({club:c,count:registeredCount(c.name)})).filter(x=>x.club.id!==target.id&&x.count>25).sort((a,b)=>b.count-a.count)[0];
+            if(!donor)break;
+            const candidate=players.filter(p=>!p.retired&&clubForPlayer(p)===donor.club.name).sort((a,b)=>Number(b.age||0)-Number(a.age||0))[0];
+            if(!candidate)break;
+            candidate.club=target.name;career.playerClubOverrides[candidate.id]=target.name;count++;
+        }
+        while(count>33){
+            const recipient=clubs.map(c=>({club:c,count:registeredCount(c.name)})).filter(x=>x.club.id!==target.id&&x.count<33).sort((a,b)=>a.count-b.count)[0];
+            if(!recipient)break;
+            const candidate=players.filter(p=>!p.retired&&clubForPlayer(p)===target.name).sort((a,b)=>Number(b.age||0)-Number(a.age||0))[0];
+            if(!candidate)break;
+            candidate.club=recipient.club.name;career.playerClubOverrides[candidate.id]=recipient.club.name;count--;
+        }
+    });
+    const ownSquad=players.filter(p=>!p.retired&&clubForPlayer(p)===selected.name);
     ownSquad.forEach(p=>{if(!career.contracts[p.id])career.contracts[p.id]={wage:estimateWage(p),years:2}});
     if(!Array.isArray(career.startingXI)||career.startingXI.length!==11||career.startingXI.some(id=>!ownSquad.some(p=>Number(p.id)===Number(id)&&Number(p.injuryWeeks||0)<=0)))career.startingXI=bestStartingXI(selected).map(p=>p.id);
     const playedRounds=career.fixtures.filter(f=>f.played).map(f=>f.round);
@@ -179,7 +198,7 @@ function renderPage(page) {
     }
     if(page==="tactics")return '<div class="view-intro"><p class="panel-eyebrow">MATCH PREPARATION</p><h1>Tactics board</h1><p>Choose the approach your team will take into the next match.</p></div><section class="game-panel"><div class="tactics-layout"><div class="pitch-visual"><div class="pitch-half"></div><div class="pitch-circle"></div><div class="pitch-box top"></div><div class="pitch-box bottom"></div><span class="pitch-label">GINGA FM · TOUCHLINE</span></div><div class="tactics-form"><label>Formation<select data-tactic="formation">'+options(["4-3-3","4-4-2","4-2-3-1","5-3-2","5-4-1"],career.tactics.formation)+'</select></label><label>Team mentality<select data-tactic="mentality">'+options(["Balanced","Attacking","Defensive"],career.tactics.mentality)+'</select></label><label>Tempo<select data-tactic="tempo">'+options(["Slow","Normal","Fast"],career.tactics.tempo)+'</select></label><label>Pressing<select data-tactic="pressing">'+options(["Low","Medium","High"],career.tactics.pressing)+'</select></label><label>Defensive line<select data-tactic="defensiveLine">'+options(["Deep","Normal","High"],career.tactics.defensiveLine)+'</select></label><p class="subtle">Changes are saved to your manager career and affect the club match calculations.</p></div></div></section>';
     if(page==="transfers"){
-        const market=players.filter(p=>clubForPlayer(p)!==club.name&&(!marketSearch||[p.name,p.club,p.nationality||""].join(" ").toLowerCase().includes(marketSearch.toLowerCase()))&&(marketPosition==="ALL"||p.position===marketPosition)).sort((a,b)=>playerOverall(b)-playerOverall(a));
+        const market=players.filter(p=>!p.retired&&clubForPlayer(p)!==club.name&&(!marketSearch||[p.name,p.club,p.nationality||""].join(" ").toLowerCase().includes(marketSearch.toLowerCase()))&&(marketPosition==="ALL"||p.position===marketPosition)).sort((a,b)=>playerOverall(b)-playerOverall(a));
         const pageSize=40,pages=Math.max(1,Math.ceil(market.length/pageSize));marketPage=Math.min(marketPage,pages-1);
         const shown=market.slice(marketPage*pageSize,(marketPage+1)*pageSize);
         return '<div class="view-intro"><p class="panel-eyebrow">RECRUITMENT</p><h1>Transfer market</h1><p>Search the international player pool and recruit within your transfer and wage budgets.</p></div><div class="metric-grid compact"><div class="metric-card"><span>TRANSFER BUDGET</span><strong>'+money(career.transferBudget)+'</strong><small>Available to spend</small></div><div class="metric-card"><span>CLUB BALANCE</span><strong>'+money(career.balance)+'</strong><small>Current funds</small></div></div><section class="game-panel"><div class="panel-heading"><div><h2>Available players</h2><p class="subtle">Estimated fees and wages · '+market.length+' players match your filters</p></div></div><div class="market-filters"><input type="search" data-market-search value="'+safe(marketSearch)+'" placeholder="Search player, club or nationality" aria-label="Search transfer market"><select data-market-position aria-label="Filter by position">'+options(["ALL","GK","CB","LB","RB","CM","DM","AM","LM","RM","LW","RW","CF","ST"],marketPosition).replace('>ALL</option>','>All positions</option>')+'</select></div><div class="table-scroll"><table class="data-table"><thead><tr><th>PLAYER</th><th>POS</th><th>AGE</th><th>OVR</th><th>CURRENT CLUB</th><th>EST. FEE</th><th>EST. WEEKLY WAGE</th><th></th></tr></thead><tbody>'+(shown.length?shown.map(p=>{const fee=transferFee(p),wage=estimateWage(p);return '<tr><td><button type="button" class="player-name-link" data-action="view-player" data-player="'+p.id+'" aria-label="Open profile for '+safe(p.name)+'">'+safe(p.name)+'</button><small class="cell-sub">'+safe(p.nationality||"Nationality not listed")+'</small></td><td>'+safe(p.position)+'</td><td>'+p.age+'</td><td>'+playerOverall(p)+'</td><td>'+safe(clubForPlayer(p))+'</td><td>'+money(fee)+'</td><td>'+money(wage)+'</td><td><button class="small-btn" data-action="buy-player" data-player="'+p.id+'" '+(fee>career.transferBudget||fee>career.balance?'disabled':'')+'>Sign</button></td></tr>'}).join(""):'<tr><td colspan="8">No players match these filters.</td></tr>')+'</tbody></table></div><div class="panel-heading" style="margin-top:16px;margin-bottom:0"><span class="subtle">Page '+(marketPage+1)+' of '+pages+'</span><div><button class="small-btn" data-action="market-prev" '+(marketPage===0?'disabled':'')+'>Previous</button> <button class="small-btn" data-action="market-next" '+(marketPage>=pages-1?'disabled':'')+'>Next</button></div></div></section>';
@@ -223,7 +242,7 @@ async function handleAction(event){
         try{await saveCareer("You are now managing "+nextClub.name+".");activePage="dashboard";shell()}catch(e){showToast("The appointment could not be saved: "+e.message,true)}return
     }
     if(action==="auto-lineup"){career.startingXI=bestStartingXI(getClub(career.clubId)).map(p=>p.id);try{await saveCareer("Best available starting XI selected.");shell()}catch(e){showToast("Could not save lineup: "+e.message,true)}return}
-    if(action==="market-next"||action==="market-prev"){const count=players.filter(p=>clubForPlayer(p)!==getClub(career.clubId).name&&(!marketSearch||[p.name,p.club,p.nationality||""].join(" ").toLowerCase().includes(marketSearch.toLowerCase()))&&(marketPosition==="ALL"||p.position===marketPosition)).length;const pages=Math.max(1,Math.ceil(count/40));marketPage=Math.max(0,Math.min(pages-1,marketPage+(action==="market-next"?1:-1)));shell();return}
+    if(action==="market-next"||action==="market-prev"){const count=players.filter(p=>!p.retired&&clubForPlayer(p)!==getClub(career.clubId).name&&(!marketSearch||[p.name,p.club,p.nationality||""].join(" ").toLowerCase().includes(marketSearch.toLowerCase()))&&(marketPosition==="ALL"||p.position===marketPosition)).length;const pages=Math.max(1,Math.ceil(count/40));marketPage=Math.max(0,Math.min(pages-1,marketPage+(action==="market-next"?1:-1)));shell();return}
     if(action==="sell-player"){
         const id=Number(event.currentTarget.dataset.player),player=players.find(p=>Number(p.id)===id),club=getClub(career.clubId),squad=players.filter(p=>clubForPlayer(p)===club.name);
         if(!player||squad.length<=11){showToast("Keep at least 11 registered players.",true);return}
@@ -236,8 +255,11 @@ async function handleAction(event){
         try{persistPlayerStates(club);await saveCareer(player.name+" sold.");shell()}catch(e){showToast("Sale could not be saved: "+e.message,true)}return
     }
     if(action==="buy-player"){
-        const id=Number(event.currentTarget.dataset.player),player=players.find(p=>p.id===id);if(!player)return;
-        const fee=transferFee(player),club=getClub(career.clubId),wage=estimateWage(player),squad=players.filter(p=>clubForPlayer(p)===club.name);
+        const id=Number(event.currentTarget.dataset.player),player=players.find(p=>p.id===id);if(!player||player.retired)return;
+        const sellerClubName=clubForPlayer(player);
+        const sellerSquad=players.filter(p=>!p.retired&&clubForPlayer(p)===sellerClubName);
+        if(sellerSquad.length<=25){showToast("That club must retain at least 25 registered players. Choose another player.",true);return}
+        const fee=transferFee(player),club=getClub(career.clubId),wage=estimateWage(player),squad=players.filter(p=>!p.retired&&clubForPlayer(p)===club.name);
         const weeklyWages=squad.reduce((sum,p)=>sum+Number((career.contracts[p.id]||{}).wage||estimateWage(p)),0);
         if(fee>career.transferBudget||fee>career.balance){showToast("This transfer exceeds your available funds.",true);return}
         if(weeklyWages+wage>club.finances.wageBudget){showToast("The player's estimated wage would exceed your weekly wage budget.",true);return}
@@ -304,7 +326,7 @@ async function startNextSeason(){
         if(p.age<=23){const key=["pace","shooting","passing","dribbling","defending","physical","stamina","composure"][Math.floor(Math.random()*8)];p.attributes[key]=Math.min(99,Number(p.attributes[key]||45)+1+Math.floor(Math.random()*2))}
         else if(p.age>=32)["pace","stamina","physical"].forEach(k=>p.attributes[k]=Math.max(20,Number(p.attributes[k]||50)-1));
         p.fitness=Math.min(100,Number(p.fitness||80)+15);p.morale=Math.max(25,Math.min(100,Number(p.morale||50)+2));p.injuryWeeks=0;
-        if(p.age>=35&&players.filter(x=>clubForPlayer(x)===club.name).length-retirementCount>14&&Math.random()<0.22){p.retired=true;p.club="Retired Players";career.playerClubOverrides[p.id]="Retired Players";retirementCount++;career.news.push({date:"SEASON "+career.season+" FINAL",title:"Retirement announced",body:p.name+" has retired from professional football at age "+p.age+"."})}
+        if(p.age>=35&&players.filter(x=>!x.retired&&clubForPlayer(x)===club.name).length-retirementCount>25&&Math.random()<0.22){p.retired=true;p.club="Retired Players";career.playerClubOverrides[p.id]="Retired Players";retirementCount++;career.news.push({date:"SEASON "+career.season+" FINAL",title:"Retirement announced",body:p.name+" has retired from professional football at age "+p.age+"."})}
     });
     persistPlayerStates(club);
     const aiMoves=runAITransferWindow();
