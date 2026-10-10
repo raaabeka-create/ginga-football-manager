@@ -136,7 +136,7 @@
                     <div class="manager-field">
                         <label for="style">Management style</label>
                         <select id="style" name="style" required>
-                            <option value="">Choose your style</option>
+                            <option value="" disabled selected>Choose your style</option>
                             <option value="Tactical">Tactical — plans and systems</option>
                             <option value="Motivator">Motivator — morale and confidence</option>
                             <option value="Developer">Developer — youth and training</option>
@@ -165,6 +165,27 @@
                     <div class="attribute-row">
                         <input id="youth" name="youth" type="range" min="1" max="100" value="50">
                         <span class="attribute-value" id="youthNumber">50/100</span>
+                    </div>
+                </div>
+                <div class="manager-field">
+                    <label for="motivation">Motivational ability</label>
+                    <div class="attribute-row">
+                        <input id="motivation" name="motivation" type="range" min="1" max="100" value="50">
+                        <span class="attribute-value" id="motivationNumber">50/100</span>
+                    </div>
+                </div>
+                <div class="manager-field">
+                    <label for="discipline">Discipline</label>
+                    <div class="attribute-row">
+                        <input id="discipline" name="discipline" type="range" min="1" max="100" value="50">
+                        <span class="attribute-value" id="disciplineNumber">50/100</span>
+                    </div>
+                </div>
+                <div class="manager-field">
+                    <label for="scouting">Recruitment &amp; scouting</label>
+                    <div class="attribute-row">
+                        <input id="scouting" name="scouting" type="range" min="1" max="100" value="50">
+                        <span class="attribute-value" id="scoutingNumber">50/100</span>
                     </div>
                 </div>
 
@@ -198,14 +219,47 @@
 
         function setSliderDisplay(id) {
             const value = document.getElementById(id).value;
-            document.getElementById(id + "Number").textContent = value + "/100";
-            document.getElementById(id + "Value").textContent = value;
+            const number = document.getElementById(id + "Number");
+            const labelValue = document.getElementById(id + "Value");
+            if (number) number.textContent = value + "/100";
+            if (labelValue) labelValue.textContent = value;
         }
 
-        ["tactics", "people", "youth"].forEach(function (id) {
+        const sliderIds = [
+            "tactics", "people", "youth", "motivation", "discipline", "scouting"
+        ];
+
+        const stylePresets = {
+            Tactical:       { tactics: 88, people: 52, youth: 55, motivation: 58, discipline: 68, scouting: 72 },
+            Motivator:      { tactics: 58, people: 88, youth: 62, motivation: 92, discipline: 55, scouting: 55 },
+            Developer:      { tactics: 62, people: 72, youth: 92, motivation: 72, discipline: 60, scouting: 78 },
+            Disciplinarian: { tactics: 68, people: 58, youth: 55, motivation: 52, discipline: 92, scouting: 62 },
+            Balanced:       { tactics: 65, people: 65, youth: 65, motivation: 65, discipline: 65, scouting: 65 }
+        };
+
+        function applyStylePreset(styleName) {
+            const preset = stylePresets[styleName];
+            if (!preset) return;
+
+            sliderIds.forEach(function (id) {
+                document.getElementById(id).value = preset[id];
+                setSliderDisplay(id);
+            });
+
+            showMessage(
+                styleName + " style selected. Suggested starting attributes have been applied; you can adjust any slider.",
+                "success"
+            );
+        }
+
+        sliderIds.forEach(function (id) {
             document.getElementById(id).addEventListener("input", function () {
                 setSliderDisplay(id);
             });
+        });
+
+        document.getElementById("style").addEventListener("change", function (event) {
+            applyStylePreset(event.target.value);
         });
 
         async function loadManagerProfile() {
@@ -224,9 +278,17 @@
             document.getElementById("licence").value = profile.coaching_licence || "";
             document.getElementById("style").value = profile.management_style || "";
 
-            ["tactics", "people", "youth"].forEach(function (id) {
-                const key = id === "tactics" ? "tactical_knowledge" :
-                    id === "people" ? "man_management" : "youth_development";
+            const profileKeys = {
+                tactics: "tactical_knowledge",
+                people: "man_management",
+                youth: "youth_development",
+                motivation: "motivational_ability",
+                discipline: "discipline",
+                scouting: "recruitment_scouting"
+            };
+
+            sliderIds.forEach(function (id) {
+                const key = profileKeys[id];
                 if (profile[key] !== undefined) {
                     document.getElementById(id).value = profile[key];
                 }
@@ -252,7 +314,10 @@
                 management_style: document.getElementById("style").value,
                 tactical_knowledge: Number(document.getElementById("tactics").value),
                 man_management: Number(document.getElementById("people").value),
-                youth_development: Number(document.getElementById("youth").value)
+                youth_development: Number(document.getElementById("youth").value),
+                motivational_ability: Number(document.getElementById("motivation").value),
+                discipline: Number(document.getElementById("discipline").value),
+                recruitment_scouting: Number(document.getElementById("scouting").value)
             };
 
             if (!profile.manager_name) {
