@@ -163,7 +163,7 @@ async function playRound(){
         career.lastResult={homeTeam:match.home.name,awayTeam:match.away.name,homeGoals:res.homeGoals,awayGoals:res.awayGoals,round:round};
         career.news.push({date:"MATCHDAY "+round,title:match.home.name+" "+res.homeGoals+"–"+res.awayGoals+" "+match.away.name,body:match.home.id===club.id?(res.homeGoals>res.awayGoals?"A home win puts points on the board.":res.homeGoals===res.awayGoals?"The points are shared at home.":"The team will need a response after this defeat."):(res.awayGoals>res.homeGoals?"A valuable away victory.":res.awayGoals===res.homeGoals?"A point earned on the road.":"A difficult away result for the squad.")});
     }
-    if(!career.fixtures.some(f=>!f.played))career.news.push({date:"SEASON "+career.season,title:"Season complete",body:"All '+(clubs.length*(clubs.length-1))+' league fixtures have been played. The final table is ready."});
+    if(!career.fixtures.some(f=>!f.played))career.news.push({date:"SEASON "+career.season,title:"Season complete",body:"All "+(clubs.length*(clubs.length-1))+" league fixtures have been played. The final table is ready."});
     busy=false;
     try{await saveCareer("Matchday "+round+" complete. Results and finances saved.");activePage="dashboard";shell()}catch(e){showToast("Results were played, but saving failed. Keep this page open and retry: "+e.message,true);shell()}
 }
