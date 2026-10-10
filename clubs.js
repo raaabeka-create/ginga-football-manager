@@ -433,5 +433,185 @@ const clubs = [
         city: "Winneba",
         finances: { balance: 313000, transferBudget: 39000, wageBudget: 19800 },
         tactics: { formation: "5-3-2", mentality: "Attacking", tempo: "Slow", pressing: "High", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 41,
+        name: "Lagos Crown FC",
+        city: "Lagos",
+        country: "Nigeria",
+        finances: { balance: 220000, transferBudget: 45000, wageBudget: 15000 },
+        tactics: { formation: "4-3-3", mentality: "Attacking", tempo: "Fast", pressing: "High", defensiveLine: "High" }
+    },
+
+    {
+        id: 42,
+        name: "Abuja Capital FC",
+        city: "Abuja",
+        country: "Nigeria",
+        finances: { balance: 232500, transferBudget: 54000, wageBudget: 16800 },
+        tactics: { formation: "4-2-3-1", mentality: "Balanced", tempo: "Normal", pressing: "Medium", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 43,
+        name: "Kano Falcons",
+        city: "Kano",
+        country: "Nigeria",
+        finances: { balance: 245000, transferBudget: 63000, wageBudget: 18600 },
+        tactics: { formation: "4-4-2", mentality: "Defensive", tempo: "Fast", pressing: "Low", defensiveLine: "High" }
+    },
+
+    {
+        id: 44,
+        name: "Port Harcourt United",
+        city: "Port Harcourt",
+        country: "Nigeria",
+        finances: { balance: 257500, transferBudget: 72000, wageBudget: 20400 },
+        tactics: { formation: "3-5-2", mentality: "Attacking", tempo: "Normal", pressing: "High", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 45,
+        name: "London Borough FC",
+        city: "London",
+        country: "England",
+        finances: { balance: 270000, transferBudget: 81000, wageBudget: 22200 },
+        tactics: { formation: "5-3-2", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "High" }
+    },
+
+    {
+        id: 46,
+        name: "Manchester Forge",
+        city: "Manchester",
+        country: "England",
+        finances: { balance: 282500, transferBudget: 90000, wageBudget: 24000 },
+        tactics: { formation: "4-3-3", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 47,
+        name: "Madrid Atletico City",
+        city: "Madrid",
+        country: "Spain",
+        finances: { balance: 295000, transferBudget: 99000, wageBudget: 25800 },
+        tactics: { formation: "4-2-3-1", mentality: "Attacking", tempo: "Fast", pressing: "High", defensiveLine: "High" }
+    },
+
+    {
+        id: 48,
+        name: "Barcelona Coast FC",
+        city: "Barcelona",
+        country: "Spain",
+        finances: { balance: 307500, transferBudget: 108000, wageBudget: 15000 },
+        tactics: { formation: "4-4-2", mentality: "Balanced", tempo: "Normal", pressing: "Medium", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 49,
+        name: "Paris Saint Union",
+        city: "Paris",
+        country: "France",
+        finances: { balance: 320000, transferBudget: 45000, wageBudget: 16800 },
+        tactics: { formation: "3-5-2", mentality: "Defensive", tempo: "Fast", pressing: "Low", defensiveLine: "High" }
+    },
+
+    {
+        id: 50,
+        name: "Lyon Royals",
+        city: "Lyon",
+        country: "France",
+        finances: { balance: 332500, transferBudget: 54000, wageBudget: 18600 },
+        tactics: { formation: "5-3-2", mentality: "Attacking", tempo: "Normal", pressing: "High", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 51,
+        name: "Berlin Dynamo",
+        city: "Berlin",
+        country: "Germany",
+        finances: { balance: 345000, transferBudget: 63000, wageBudget: 20400 },
+        tactics: { formation: "4-3-3", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "High" }
+    },
+
+    {
+        id: 52,
+        name: "Munich Blau FC",
+        city: "Munich",
+        country: "Germany",
+        finances: { balance: 357500, transferBudget: 72000, wageBudget: 22200 },
+        tactics: { formation: "4-2-3-1", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 53,
+        name: "Milan Rossoneri",
+        city: "Milan",
+        country: "Italy",
+        finances: { balance: 370000, transferBudget: 81000, wageBudget: 24000 },
+        tactics: { formation: "4-4-2", mentality: "Attacking", tempo: "Fast", pressing: "High", defensiveLine: "High" }
+    },
+
+    {
+        id: 54,
+        name: "Rome Gladiators",
+        city: "Rome",
+        country: "Italy",
+        finances: { balance: 382500, transferBudget: 90000, wageBudget: 25800 },
+        tactics: { formation: "3-5-2", mentality: "Balanced", tempo: "Normal", pressing: "Medium", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 55,
+        name: "Amsterdam Canals FC",
+        city: "Amsterdam",
+        country: "Netherlands",
+        finances: { balance: 395000, transferBudget: 99000, wageBudget: 15000 },
+        tactics: { formation: "5-3-2", mentality: "Defensive", tempo: "Fast", pressing: "Low", defensiveLine: "High" }
+    },
+
+    {
+        id: 56,
+        name: "Lisbon Mariners",
+        city: "Lisbon",
+        country: "Portugal",
+        finances: { balance: 407500, transferBudget: 108000, wageBudget: 16800 },
+        tactics: { formation: "4-3-3", mentality: "Attacking", tempo: "Normal", pressing: "High", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 57,
+        name: "New York Empire FC",
+        city: "New York",
+        country: "United States",
+        finances: { balance: 420000, transferBudget: 45000, wageBudget: 18600 },
+        tactics: { formation: "4-2-3-1", mentality: "Balanced", tempo: "Fast", pressing: "Medium", defensiveLine: "High" }
+    },
+
+    {
+        id: 58,
+        name: "Los Angeles Comets",
+        city: "Los Angeles",
+        country: "United States",
+        finances: { balance: 432500, transferBudget: 54000, wageBudget: 20400 },
+        tactics: { formation: "4-4-2", mentality: "Defensive", tempo: "Normal", pressing: "Low", defensiveLine: "Normal" }
+    },
+
+    {
+        id: 59,
+        name: "Toronto Northstars",
+        city: "Toronto",
+        country: "Canada",
+        finances: { balance: 445000, transferBudget: 63000, wageBudget: 22200 },
+        tactics: { formation: "3-5-2", mentality: "Attacking", tempo: "Fast", pressing: "High", defensiveLine: "High" }
+    },
+
+    {
+        id: 60,
+        name: "Glasgow Thistle FC",
+        city: "Glasgow",
+        country: "Scotland",
+        finances: { balance: 457500, transferBudget: 72000, wageBudget: 24000 },
+        tactics: { formation: "5-3-2", mentality: "Balanced", tempo: "Normal", pressing: "Medium", defensiveLine: "Normal" }
     }
 ];
