@@ -157,22 +157,22 @@
                         <label for="licence">Coaching licence</label>
                         <select id="licence" name="licence" required>
                             <option value="" disabled selected>Choose your licence</option>
-                            <option value="Professional">Professional — senior / elite football</option>
-                            <option value="Regional">Regional — regional and competitive teams</option>
-                            <option value="Municipal">Municipal — district and community teams</option>
-                            <option value="Locale">Locale — local grassroots football</option>
-                            <option value="Coast League">Coast League — U10 / U13 / U15, upset specialist</option>
+                            <option value="Professional">Professional</option>
+                            <option value="Regional">Regional</option>
+                            <option value="Municipal">Municipal</option>
+                            <option value="Locale">Locale</option>
+                            <option value="Coast League">Coast League</option>
                         </select>
                     </div>
                     <div class="manager-field">
                         <label for="style">Management style</label>
                         <select id="style" name="style" required>
                             <option value="" disabled selected>Choose your style</option>
-                            <option value="Tactical">Tactical — plans and systems</option>
-                            <option value="Motivator">Motivator — morale and confidence</option>
-                            <option value="Developer">Developer — youth and training</option>
-                            <option value="Disciplinarian">Disciplinarian — standards and discipline</option>
-                            <option value="Balanced">Balanced — a bit of everything</option>
+                            <option value="Tactical">Tactical</option>
+                            <option value="Motivator">Motivator</option>
+                            <option value="Developer">Developer</option>
+                            <option value="Disciplinarian">Disciplinarian</option>
+                            <option value="Balanced">Balanced</option>
                         </select>
                     </div>
                 </div>
@@ -353,7 +353,7 @@
 
             ratingExplainer.textContent = styleName + " + " + licenceName + ": " + licenceSummary[licenceName] + ". Ratings are calculated as style base + licence modifier, capped at 1–100. Sliders are now locked. Change the licence or style to recalculate the profile.";
             if (reason) {
-                showMessage("Ratings calculated for " + styleName + " style and " + licenceName + " licence. Sliders are now locked to this profile.", "success");
+                showMessage("Profile ratings updated.", "success");
             }
         }
 
