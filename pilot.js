@@ -20,6 +20,8 @@ let fixtureFilter = "ALL";
 let newsSearch = "";
 let newsCategory = "ALL";
 let newsPage = 0;
+let matchdaySubOut = "";
+let matchdaySubIn = "";
 const money = n => "GH₵ " + Math.round(Number(n || 0)).toLocaleString("en-GH");
 const safe = value => String(value == null ? "" : value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const getClub = id => clubs.find(c => Number(c.id) === Number(id));
@@ -128,6 +130,7 @@ function showToast(message,isError) {
     window.clearTimeout(showToast.timer);showToast.timer=window.setTimeout(()=>el.className="toast",3500);
 }
 function shell() {
+    document.body.classList.toggle("matchday-mode",activePage==="matchday");
     const meta=getManager(), club=getClub(career.clubId);
     $("managerLabel").textContent=meta.manager_name||"Manager";
     $("clubLabel").textContent=club.name;
@@ -156,7 +159,10 @@ function shell() {
     document.querySelectorAll("[data-fixture-filter]").forEach(el=>el.addEventListener("change",()=>{fixtureFilter=el.value;shell()}));
     document.querySelectorAll("[data-news-search]").forEach(el=>el.addEventListener("input",()=>{newsSearch=el.value;newsPage=0;const caret=el.selectionStart;shell();const next=$("[data-news-search]");if(next){next.focus();try{next.setSelectionRange(caret,caret)}catch(_){}}}));
     document.querySelectorAll("[data-news-category]").forEach(el=>el.addEventListener("change",()=>{newsCategory=el.value;newsPage=0;shell()}));
-    const next=$("playRoundButton");if(next)next.addEventListener("click",career.fixtures.some(f=>!f.played)?playRound:startNextSeason);
+    document.querySelectorAll("[data-match-tactic]").forEach(el=>el.addEventListener("change",()=>{if(career.pendingMatchday){career.pendingMatchday.tactics=career.pendingMatchday.tactics||{...career.tactics};career.pendingMatchday.tactics[el.dataset.matchTactic]=el.value;}}));
+    document.querySelectorAll("[data-sub-out]").forEach(el=>el.addEventListener("change",()=>{matchdaySubOut=el.value;if(career.pendingMatchday)career.pendingMatchday.subOutId=el.value;}));
+    document.querySelectorAll("[data-sub-in]").forEach(el=>el.addEventListener("change",()=>{matchdaySubIn=el.value;if(career.pendingMatchday)career.pendingMatchday.subInId=el.value;}));
+    const next=$("playRoundButton");if(next)next.addEventListener("click",career.fixtures.some(f=>!f.played)?openMatchday:startNextSeason);
     const choose=$("changeClubButton");if(choose)choose.addEventListener("click",async()=>{if(confirm("Starting a different club will begin a new career for that club. Continue?")){location.href="./club-selection.html"}});
     document.querySelectorAll("[data-signout]").forEach(el=>el.addEventListener("click",signOut));
 }
@@ -258,11 +264,13 @@ function runAITransferWindow(){
 function persistPlayerStates(club){players.filter(p=>clubForPlayer(p)===club.name).forEach(p=>{career.playerStates[p.id]={fitness:p.fitness,morale:p.morale,form:p.form,injuryWeeks:Number(p.injuryWeeks||0),age:p.age,appearances:Number(p.appearances||0),goals:Number(p.goals||0),assists:Number(p.assists||0),minutesPlayed:Number(p.minutesPlayed||0),yellowCards:Number(p.yellowCards||0),redCards:Number(p.redCards||0),cleanSheets:Number(p.cleanSheets||0),ratingTotal:Number(p.ratingTotal||0),ratedAppearances:Number(p.ratedAppearances||0),potential:p.potential,attributes:{...(p.attributes||{})},physicalDetails:{...(p.physicalDetails||{})},positions:[...(p.positions||[])],developmentHistory:[...(p.developmentHistory||[])]}})}
 function updatePlayerCondition(match){
     if(!match)return;const club=getClub(career.clubId),result=match.result,ids=new Set((club.id===match.home.id?result.homeLineup:result.awayLineup)||[]);
+    const minutesByPlayer=result.minutesByPlayer||{};
     const won=(club.id===match.home.id&&result.homeGoals>result.awayGoals)||(club.id===match.away.id&&result.awayGoals>result.homeGoals),drew=result.homeGoals===result.awayGoals;
     players.filter(p=>clubForPlayer(p)===club.name).forEach(p=>{
         if(Number(p.injuryWeeks||0)>0){p.injuryWeeks=Math.max(0,Number(p.injuryWeeks)-1);p.fitness=Math.min(100,Number(p.fitness||0)+3);return}
-        if(ids.has(p.id)){p.fitness=Math.max(25,Number(p.fitness||90)-(6+Math.floor(Math.random()*6)));p.appearances=Number(p.appearances||0)+1;p.morale=Math.max(20,Math.min(100,Number(p.morale||50)+(won?4:drew?1:-4)));p.form=Math.max(20,Math.min(100,Number(p.form||50)+(won?3:drew?1:-3)));
-            const events=result.events||[];p.goals=Number(p.goals||0)+events.filter(e=>e.type==="goal"&&Number(e.playerId)===Number(p.id)).length;p.assists=Number(p.assists||0)+events.filter(e=>e.type==="goal"&&Number(e.assistPlayerId)===Number(p.id)).length;p.yellowCards=Number(p.yellowCards||0)+events.filter(e=>e.type==="yellow"&&Number(e.playerId)===Number(p.id)).length;p.redCards=Number(p.redCards||0)+events.filter(e=>e.type==="red"&&Number(e.playerId)===Number(p.id)).length;p.minutesPlayed=Number(p.minutesPlayed||0)+90;const conceded=club.id===match.home.id?result.awayGoals:result.homeGoals;if(p.position==="GK"&&conceded===0)p.cleanSheets=Number(p.cleanSheets||0)+1;const performance=Math.max(4,Math.min(10,6.2+(won?0.8:drew?0.2:-0.5)+(events.some(e=>e.type==="goal"&&Number(e.playerId)===Number(p.id))?1.0:0)+(events.some(e=>e.type==="goal"&&Number(e.assistPlayerId)===Number(p.id))?0.6:0)+(events.some(e=>(e.type==="yellow"||e.type==="red")&&Number(e.playerId)===Number(p.id))?-0.7:0)));p.ratingTotal=Number(p.ratingTotal||0)+performance;p.ratedAppearances=Number(p.ratedAppearances||0)+1;
+        const playedMinutes=Number(minutesByPlayer[p.id]||(ids.has(p.id)?90:0));
+        if(playedMinutes>0){p.fitness=Math.max(25,Number(p.fitness||90)-Math.max(2,Math.round((6+Math.floor(Math.random()*6))*playedMinutes/90)));p.appearances=Number(p.appearances||0)+1;p.morale=Math.max(20,Math.min(100,Number(p.morale||50)+(won?4:drew?1:-4)));p.form=Math.max(20,Math.min(100,Number(p.form||50)+(won?3:drew?1:-3)));
+            const events=result.events||[];p.goals=Number(p.goals||0)+events.filter(e=>e.type==="goal"&&Number(e.playerId)===Number(p.id)).length;p.assists=Number(p.assists||0)+events.filter(e=>e.type==="goal"&&Number(e.assistPlayerId)===Number(p.id)).length;p.yellowCards=Number(p.yellowCards||0)+events.filter(e=>e.type==="yellow"&&Number(e.playerId)===Number(p.id)).length;p.redCards=Number(p.redCards||0)+events.filter(e=>e.type==="red"&&Number(e.playerId)===Number(p.id)).length;p.minutesPlayed=Number(p.minutesPlayed||0)+playedMinutes;const conceded=club.id===match.home.id?result.awayGoals:result.homeGoals;if(p.position==="GK"&&conceded===0)p.cleanSheets=Number(p.cleanSheets||0)+1;const performance=Math.max(4,Math.min(10,6.2+(won?0.8:drew?0.2:-0.5)+(events.some(e=>e.type==="goal"&&Number(e.playerId)===Number(p.id))?1.0:0)+(events.some(e=>e.type==="goal"&&Number(e.assistPlayerId)===Number(p.id))?0.6:0)+(events.some(e=>(e.type==="yellow"||e.type==="red")&&Number(e.playerId)===Number(p.id))?-0.7:0)));p.ratingTotal=Number(p.ratingTotal||0)+performance;p.ratedAppearances=Number(p.ratedAppearances||0)+1;
             if(Math.random()<0.018){p.injuryWeeks=1+Math.floor(Math.random()*4);p.fitness=Math.max(20,p.fitness-12);career.news.push({date:"MATCHDAY "+career.currentRound,title:"Injury concern: "+p.name,body:p.name+" has picked up an injury and is expected to miss "+p.injuryWeeks+" matchday(s)."})}
         }else{p.fitness=Math.min(100,Number(p.fitness||75)+5);p.morale=Math.max(20,Math.min(100,Number(p.morale||50)+(won?1:0)))}
     });
@@ -279,6 +287,207 @@ function ensurePlayerDetails(player){
 }
 function playerDevelopmentTrend(player){const h=player.developmentHistory||[];if(h.length<2)return "No history yet";const d=Number(h[h.length-1].overall)-Number(h[h.length-2].overall);return d>0?"Improving":d<0?"Declining":"Stable"}
 
+
+function matchEventText(event){
+    if(event.type==="goal")return "⚽ "+event.minute+"' GOAL — "+event.player+(event.assistPlayer?" (assist: "+event.assistPlayer+")":"")+" · "+event.team;
+    if(event.type==="yellow")return "🟨 "+event.minute+"' Yellow card — "+event.player+" · "+event.team;
+    if(event.type==="red")return "🟥 "+event.minute+"' Red card — "+event.player+" · "+event.team;
+    if(event.type==="chance")return "◉ "+event.minute+"' Chance — "+event.player+" · "+event.team;
+    return event.minute+"' "+event.type+" — "+(event.player||event.team||"Match event");
+}
+function matchEventsMarkup(events){
+    const list=(events||[]).slice().sort((a,b)=>Number(a.minute||0)-Number(b.minute||0));
+    return list.length?'<div class="match-event-list">'+list.map(ev=>'<article class="match-event event-'+safe(ev.type)+'"><span class="event-minute">'+Number(ev.minute||0)+"'</span><span>"+safe(matchEventText(ev))+"</span></article>").join("")+'</div>':'<p class="empty-state">The match has been quiet so far. There are no major incidents to report.</p>';
+}
+function openMatchday(){
+    if(busy)return;
+    if(career.pendingMatchday){activePage="matchday";shell();return}
+    const next=career.fixtures.find(f=>!f.played);
+    if(!next){startNextSeason();return}
+    const round=Number(next.round),own=career.fixtures.find(f=>!f.played&&Number(f.round)===round&&(Number(f.homeClubId)===Number(career.clubId)||Number(f.awayClubId)===Number(career.clubId)));
+    if(!own){showToast("Your club's fixture could not be found for this matchday.",true);return}
+    const club=getClub(career.clubId),squad=players.filter(p=>!p.retired&&clubForPlayer(p)===club.name);
+    const selected=(career.startingXI||[]).map(id=>squad.find(p=>Number(p.id)===Number(id)));
+    if(selected.length!==11||selected.some(p=>!p||Number(p.injuryWeeks||0)>0)){
+        showToast("Select 11 registered, available players before entering matchday.",true);activePage="squad";shell();return;
+    }
+    activePage="matchday";matchdaySubOut="";matchdaySubIn="";shell();
+}
+function renderMatchdayScreen(){
+    const club=getClub(career.clubId),pending=career.pendingMatchday||null;
+    const next=career.fixtures.find(f=>!f.played);
+    const round=pending?Number(pending.round):Number(next&&next.round||1);
+    const fixture=pending?career.fixtures.find(f=>String(f.id)===String(pending.fixtureId)):career.fixtures.find(f=>!f.played&&Number(f.round)===round&&(Number(f.homeClubId)===Number(club.id)||Number(f.awayClubId)===Number(club.id)));
+    if(!fixture)return '<section class="matchday-screen"><div class="game-panel"><h1>No match scheduled</h1><p class="subtle">There are no remaining fixtures for this season.</p><button class="game-btn" data-action="finish-matchday">Return to dashboard</button></div></section>';
+    const home=getClub(fixture.homeClubId),away=getClub(fixture.awayClubId),isHome=Number(home.id)===Number(club.id),opponent=isHome?away:home;
+    const table=buildTable(),myPosition=table.findIndex(t=>Number(t.clubId)===Number(club.id))+1,oppPosition=table.findIndex(t=>Number(t.clubId)===Number(opponent.id))+1;
+    const squad=players.filter(p=>!p.retired&&clubForPlayer(p)===club.name),lineupIds=pending&&Array.isArray(pending.lineup)?pending.lineup:(career.startingXI||[]);
+    const lineup=lineupIds.map(id=>squad.find(p=>Number(p.id)===Number(id))).filter(Boolean);
+    const bench=squad.filter(p=>Number(p.injuryWeeks||0)<=0&&!lineupIds.some(id=>Number(id)===Number(p.id))).sort((a,b)=>playerOverall(b)-playerOverall(a));
+    const stage=pending?pending.stage:"PREMATCH";
+    const first=pending&&pending.firstHalf;
+    const full=pending&&pending.fullResult;
+    const score=pending?(stage==="FULLTIME"?full:{homeGoals:first.homeGoals,awayGoals:first.awayGoals}):null;
+    const scoreLine=score?'<div class="matchday-score"><span>'+safe(home.name)+'</span><strong>'+Number(score.homeGoals||0)+' <i>–</i> '+Number(score.awayGoals||0)+'</strong><span>'+safe(away.name)+'</span></div>':'<div class="matchday-score pre-match-score"><span>'+safe(home.name)+'</span><strong>VS</strong><span>'+safe(away.name)+'</span></div>';
+    const tacticValues=pending&&pending.tactics?pending.tactics:career.tactics;
+    const tacticControls='<div class="matchday-tactics"><label>Team mentality<select data-match-tactic="mentality">'+options(["Balanced","Attacking","Defensive"],tacticValues.mentality)+'</select></label><label>Tempo<select data-match-tactic="tempo">'+options(["Slow","Normal","Fast"],tacticValues.tempo)+'</select></label><label>Pressing<select data-match-tactic="pressing">'+options(["Low","Medium","High"],tacticValues.pressing)+'</select></label><label>Defensive line<select data-match-tactic="defensiveLine">'+options(["Deep","Normal","High"],tacticValues.defensiveLine)+'</select></label></div>';
+    const readiness=lineup.length===11&&lineup.every(p=>Number(p.injuryWeeks||0)<=0);
+    const lineupRows=lineup.map((p,i)=>'<div class="matchday-lineup-row"><span class="lineup-number">'+String(i+1).padStart(2,"0")+'</span><span class="lineup-position">'+safe(p.position)+'</span><button class="player-name-link" data-action="view-player" data-player="'+p.id+'">'+safe(p.name)+'</button><strong>'+playerOverall(p)+'</strong><span class="'+(Number(p.fitness||0)>=70?"condition-good":Number(p.fitness||0)>=50?"condition-mid":"condition-low")+'">'+Math.round(Number(p.fitness||0))+'%</span></div>').join("");
+    if(!pending||stage==="PREMATCH"){
+        return '<div class="matchday-screen"><div class="matchday-topbar"><button class="text-btn" data-page="dashboard">← Manager office</button><span class="matchday-stage stage-pre">PRE-MATCH · MD '+round+'</span></div><section class="matchday-hero"><div><p class="panel-eyebrow">MATCH CENTRE · SEASON '+career.season+'</p><h1>Matchday preparation</h1><p>Review the opponent, settle your tactical approach and confirm your starting eleven before kick-off.</p></div><div class="matchday-venue"><span>'+(isHome?"HOME FIXTURE":"AWAY FIXTURE")+'</span><strong>'+safe(home.city||"Home ground")+'</strong><small>'+safe(home.name)+" vs "+safe(away.name)+'</small></div></section>'+scoreLine+'<div class="matchday-context-grid"><article class="game-panel"><p class="panel-eyebrow">OPPOSITION SCOUTING</p><h2>'+safe(opponent.name)+'</h2><div class="scout-metrics"><div><small>LEAGUE POSITION</small><strong>#'+oppPosition+'</strong></div><div><small>VENUE</small><strong>'+(isHome?"Home":"Away")+'</strong></div><div><small>YOUR POSITION</small><strong>#'+myPosition+'</strong></div></div><p class="subtle">'+safe(opponent.name)+' will be managed by the match engine using its current squad, fitness and tactical setup. Home teams receive a modest home advantage.</p><div class="opponent-form"><span>YOUR APPROACH</span><b>'+safe(career.tactics.formation||"4-3-3")+' · '+safe(career.tactics.mentality||"Balanced")+'</b></div></article><article class="game-panel"><p class="panel-eyebrow">MATCH PLAN</p><h2>Set your approach</h2><p class="subtle">Tactical changes here are applied to this match and saved to your career.</p>'+tacticControls+'<div class="matchday-checklist"><span class="'+(readiness?"check-good":"check-bad")+'">'+(readiness?"✓":"!")+'</span><div><strong>'+lineup.length+'/11 players selected</strong><small>'+(readiness?"All selected players are registered and available.":"Return to Squad and choose 11 available players.")+'</small></div></div><button class="game-btn matchday-primary" data-action="kickoff-matchday" '+(!readiness?'disabled':'')+'>Kick off · Start first half <span>→</span></button></article></div><section class="game-panel"><div class="panel-heading"><div><p class="panel-eyebrow">TEAM SHEET</p><h2>Starting XI</h2><p class="subtle">Your selected players enter the match with their current fitness, form and morale.</p></div><button class="small-btn" data-page="squad">Edit squad selection</button></div><div class="matchday-lineup">'+(lineupRows||'<p class="empty-state">No valid starting players selected.</p>')+'</div></section></div>';
+    }
+    const currentScore=stage==="FULLTIME"?full:first;
+    const events=stage==="FULLTIME"?(full.events||[]):(first.events||[]);
+    const homeLineup=isHome?lineupIds:(pending.opponentLineup||[]);
+    const homeScore=Number(currentScore.homeGoals||0),awayScore=Number(currentScore.awayGoals||0);
+    const status=stage==="HALFTIME"?"HALF-TIME":"FULL-TIME";
+    const shotsHome=Number(currentScore.homeShots||0),shotsAway=Number(currentScore.awayShots||0);
+    const statsMarkup='<div class="matchday-stat-row"><span>Shots</span><strong>'+shotsHome+'</strong><div class="stat-track"><i style="width:'+Math.round(shotsHome/Math.max(1,shotsHome+shotsAway)*100)+'%"></i></div><strong>'+shotsAway+'</strong></div><div class="matchday-stat-row"><span>Possession</span><strong>'+Number(currentScore.homePossession||50)+'%</strong><div class="stat-track"><i style="width:'+Number(currentScore.homePossession||50)+'%"></i></div><strong>'+Number(currentScore.awayPossession||50)+'%</strong></div>';
+    const substitutionPanel=stage==="HALFTIME"?'<section class="game-panel"><div class="panel-heading"><div><p class="panel-eyebrow">BENCH MANAGEMENT</p><h2>Half-time substitutions</h2><p class="subtle">'+Number(pending.subsUsed||0)+' of 5 substitutions used. Substitutions are applied to the second half.</p></div></div><div class="matchday-sub-grid"><label>Player coming off<select data-sub-out><option value="">Select starter</option>'+lineup.filter(p=>pending.lineup.some(id=>Number(id)===Number(p.id))).map(p=>'<option value="'+p.id+'" '+(String(pending.subOutId||matchdaySubOut)===String(p.id)?"selected":"")+'>'+safe(p.position)+' · '+safe(p.name)+'</option>').join("")+'</select></label><label>Player coming on<select data-sub-in><option value="">Select available substitute</option>'+bench.map(p=>'<option value="'+p.id+'" '+(String(pending.subInId||matchdaySubIn)===String(p.id)?"selected":"")+'>'+safe(p.position)+' · '+safe(p.name)+' · OVR '+playerOverall(p)+'</option>').join("")+'</select></label><button class="small-btn" data-action="make-substitution" '+(Number(pending.subsUsed||0)>=5||!bench.length?'disabled':'')+'>Confirm substitution</button></div></section>':'';
+    const talkPanel=stage==="HALFTIME"?'<section class="game-panel"><p class="panel-eyebrow">DRESSING ROOM</p><h2>Half-time team talk</h2><p class="subtle">'+(pending.teamTalk?"Team talk delivered: "+safe(pending.teamTalk)+".":"Choose one team talk. It can influence player morale for the second half.")+'</p><div class="team-talk-options"><button class="team-talk '+(pending.teamTalk==="Encourage"?"talk-selected":"")+'" data-action="deliver-team-talk" data-talk="Encourage" '+(pending.teamTalkDelivered?'disabled':'')+'>✊ Encourage <small>Lift confidence and morale</small></button><button class="team-talk '+(pending.teamTalk==="Demand more"?"talk-selected":"")+'" data-action="deliver-team-talk" data-talk="Demand more" '+(pending.teamTalkDelivered?'disabled':'')+'>⚡ Demand more <small>Raise intensity; modest morale risk</small></button><button class="team-talk '+(pending.teamTalk==="Calm heads"?"talk-selected":"")+'" data-action="deliver-team-talk" data-talk="Calm heads" '+(pending.teamTalkDelivered?'disabled':'')+'>🧠 Calm heads <small>Reduce pressure and restore composure</small></button></div></section>':'';
+    const eventMarkup=matchEventsMarkup(events);
+    return '<div class="matchday-screen"><div class="matchday-topbar"><button class="text-btn" data-page="dashboard">← Manager office</button><span class="matchday-stage '+(stage==="HALFTIME"?"stage-half":"stage-full")+'">'+status+' · MD '+round+'</span></div><section class="matchday-hero live-match-hero"><div><p class="panel-eyebrow">LIVE MATCH CENTRE</p><h1>'+(stage==="HALFTIME"?"The interval":"Full-time report")+'</h1><p>'+(stage==="HALFTIME"?"The first 45 minutes are complete. Make tactical changes, deliver a team talk and use up to five substitutions before the second half.":"The final whistle has gone. Review the result, key incidents and match statistics.")+'</p></div><div class="matchday-venue"><span>'+(isHome?"HOME":"AWAY")+' · SEASON '+career.season+'</span><strong>'+safe(home.city||"Match venue")+'</strong><small>'+safe(home.name)+" vs "+safe(away.name)+'</small></div></section><section class="matchday-scoreboard"><div class="score-team"><span class="mini-crest">'+safe(home.name.split(/\s+/).map(w=>w[0]).join("").slice(0,3))+'</span><strong>'+safe(home.name)+'</strong><small>HOME</small></div><div class="score-centre"><span class="matchday-live-status">'+status+'</span><strong>'+homeScore+' <i>–</i> '+awayScore+'</strong><small>Matchday '+round+' · '+(stage==="HALFTIME"?"45 minutes played":"90 minutes played")+'</small></div><div class="score-team"><span class="mini-crest">'+safe(away.name.split(/\s+/).map(w=>w[0]).join("").slice(0,3))+'</span><strong>'+safe(away.name)+'</strong><small>AWAY</small></div></section><div class="matchday-live-grid"><section class="game-panel"><div class="panel-heading"><div><p class="panel-eyebrow">MATCH STATISTICS</p><h2>Match momentum</h2></div><span class="live-pill">'+status+'</span></div>'+statsMarkup+'<div class="panel-divider"></div><p class="panel-eyebrow">MATCH COMMENTARY</p><h2>Key incidents</h2>'+eventMarkup+'</section><div>'+substitutionPanel+talkPanel+(stage==="HALFTIME"?'<section class="game-panel"><p class="panel-eyebrow">TACTICAL ADJUSTMENTS</p><h2>Change the plan</h2><p class="subtle">Changes affect the second half and will become your saved tactical setup.</p>'+tacticControls+'<button class="game-btn matchday-primary" data-action="play-second-half">Start second half →</button></section>':'<section class="game-panel"><p class="panel-eyebrow">MATCHDAY COMPLETE</p><h2>Post-match briefing</h2><p class="subtle">League results, player condition, finances and board confidence have been updated and saved to your career.</p><button class="game-btn matchday-primary" data-action="finish-matchday">Return to dashboard →</button><button class="game-btn secondary" data-page="league">View league table</button></section>')+'</div></div></div>';
+}
+function mergeMatchHalves(first,second,pending){
+    const allEvents=(first.events||[]).concat(second.events||[]).sort((a,b)=>Number(a.minute||0)-Number(b.minute||0));
+    const club=getClub(career.clubId),isHome=Number(pending.homeClubId)===Number(club.id);
+    const firstUserLineup=isHome?(first.homeLineup||[]):(first.awayLineup||[]);
+    const secondUserLineup=isHome?(second.homeLineup||[]):(second.awayLineup||[]);
+    const firstOppLineup=isHome?(first.awayLineup||[]):(first.homeLineup||[]);
+    const secondOppLineup=isHome?(second.awayLineup||[]):(second.homeLineup||[]);
+    const allHome=Array.from(new Set((first.homeLineup||[]).concat(second.homeLineup||[])));
+    const allAway=Array.from(new Set((first.awayLineup||[]).concat(second.awayLineup||[])));
+    const minutesByPlayer={};
+    const original=new Set(pending.initialLineup||[]);
+    const finalUser=new Set(pending.lineup||[]);
+    original.forEach(id=>{minutesByPlayer[id]=finalUser.has(id)?90:45});
+    finalUser.forEach(id=>{if(!original.has(id))minutesByPlayer[id]=45});
+    const combined={
+        homeGoals:Math.min(6,Number(first.homeGoals||0)+Number(second.homeGoals||0)),
+        awayGoals:Math.min(6,Number(first.awayGoals||0)+Number(second.awayGoals||0)),
+        homeStrength:Math.round((Number(first.homeStrength||0)+Number(second.homeStrength||0))/2),
+        awayStrength:Math.round((Number(first.awayStrength||0)+Number(second.awayStrength||0))/2),
+        homeShots:Number(first.homeShots||0)+Number(second.homeShots||0),
+        awayShots:Number(first.awayShots||0)+Number(second.awayShots||0),
+        homePossession:Math.round((Number(first.homePossession||50)+Number(second.homePossession||50))/2),
+        awayPossession:Math.round((Number(first.awayPossession||50)+Number(second.awayPossession||50))/2),
+        homeLineup:allHome,awayLineup:allAway,minutesByPlayer,events:allEvents
+    };
+    // Keep possession totals internally consistent after rounding.
+    combined.awayPossession=100-combined.homePossession;
+    return combined;
+}
+async function kickoffMatchday(){
+    if(busy||career.pendingMatchday)return;
+    const firstFixture=career.fixtures.find(f=>!f.played);if(!firstFixture){startNextSeason();return}
+    const round=Number(firstFixture.round),fixtures=career.fixtures.filter(f=>Number(f.round)===round&&!f.played);
+    const club=getClub(career.clubId),ownFixture=fixtures.find(f=>Number(f.homeClubId)===Number(club.id)||Number(f.awayClubId)===Number(club.id));
+    if(!ownFixture){showToast("Your fixture could not be found for this matchday.",true);return}
+    const selected=(career.startingXI||[]).map(id=>players.find(p=>Number(p.id)===Number(id)));
+    if(selected.length!==11||selected.some(p=>!p||clubForPlayer(p)!==club.name||Number(p.injuryWeeks||0)>0)){
+        showToast("Your starting XI must contain exactly 11 available players from your squad.",true);activePage="squad";shell();return;
+    }
+    busy=true;
+    try{
+        const otherResults=fixtures.filter(f=>String(f.id)!==String(ownFixture.id)).map(f=>{const h=getClub(f.homeClubId),a=getClub(f.awayClubId);return {fixtureId:f.id,result:simulateMatch(h,a)}});
+        const home=getClub(ownFixture.homeClubId),away=getClub(ownFixture.awayClubId);
+        const tactics={...career.tactics};
+        Object.assign(club.tactics,tactics);
+        const firstHalf=simulateMatch(home,away,{
+            homeLineup:home.id===club.id?career.startingXI:undefined,
+            awayLineup:away.id===club.id?career.startingXI:undefined,
+            startMinute:4,endMinute:44
+        });
+        career.pendingMatchday={
+            round,fixtureId:ownFixture.id,homeClubId:home.id,awayClubId:away.id,
+            stage:"HALFTIME",firstHalf,otherResults,lineup:[...career.startingXI],initialLineup:[...career.startingXI],
+            opponentLineup:home.id===club.id?firstHalf.awayLineup:firstHalf.homeLineup,
+            tactics,subsUsed:0,teamTalk:"",teamTalkDelivered:false
+        };
+        activePage="matchday";
+        await saveCareer("Kick-off complete. Half-time decisions are ready.");
+        showToast("Half-time: make your tactical decisions.");
+        shell();
+    }catch(e){
+        showToast("The first half could not be saved: "+e.message,true);
+    }finally{busy=false}
+}
+function deliverTeamTalk(talk){
+    const pending=career.pendingMatchday;if(!pending||pending.stage!=="HALFTIME")return;
+    if(pending.teamTalkDelivered){showToast("You have already delivered the half-time team talk.",true);return}
+    const choices={"Encourage":{morale:3,form:1},"Demand more":{morale:-1,form:2},"Calm heads":{morale:2,form:0}};
+    const effect=choices[talk];if(!effect)return;
+    const ids=new Set(pending.lineup||[]);
+    players.filter(p=>ids.has(p.id)).forEach(p=>{p.morale=Math.max(20,Math.min(100,Number(p.morale||50)+effect.morale));p.form=Math.max(20,Math.min(100,Number(p.form||50)+effect.form))});
+    pending.teamTalk=talk;pending.teamTalkDelivered=true;
+    persistPlayerStates(getClub(career.clubId));
+    saveCareer("Half-time team talk delivered: "+talk+".").then(()=>{shell()}).catch(e=>showToast("Team talk applied, but could not be saved: "+e.message,true));
+}
+function makeMatchdaySubstitution(){
+    const pending=career.pendingMatchday;if(!pending||pending.stage!=="HALFTIME")return;
+    if(Number(pending.subsUsed||0)>=5){showToast("The five-substitution limit has been reached.",true);return}
+    const outId=Number(pending.subOutId||matchdaySubOut),inId=Number(pending.subInId||matchdaySubIn);
+    if(!outId||!inId||outId===inId){showToast("Choose one starting player to replace and one substitute to bring on.",true);return}
+    const lineup=new Set(pending.lineup||[]),club=getClub(career.clubId);
+    const outgoing=players.find(p=>Number(p.id)===outId),incoming=players.find(p=>Number(p.id)===inId);
+    if(!outgoing||!incoming||!lineup.has(outId)||lineup.has(inId)||clubForPlayer(outgoing)!==club.name||clubForPlayer(incoming)!==club.name||Number(incoming.injuryWeeks||0)>0){
+        showToast("That substitution is no longer valid. Refresh your selection and try again.",true);return;
+    }
+    pending.lineup=pending.lineup.filter(id=>Number(id)!==outId);pending.lineup.push(inId);pending.subsUsed=Number(pending.subsUsed||0)+1;
+    pending.substitutions=pending.substitutions||[];pending.substitutions.push({minute:45,outId,inId,outName:outgoing.name,inName:incoming.name});
+    pending.subOutId="";pending.subInId="";matchdaySubOut="";matchdaySubIn="";
+    try{saveCareer("Substitution made: "+outgoing.name+" off, "+incoming.name+" on.").then(()=>shell()).catch(e=>showToast("Substitution applied, but save failed: "+e.message,true))}
+    catch(e){showToast("Could not save substitution: "+e.message,true)}
+}
+async function playSecondHalf(){
+    const pending=career.pendingMatchday;if(busy||!pending||pending.stage!=="HALFTIME")return;
+    busy=true;
+    try{
+        const club=getClub(career.clubId),home=getClub(pending.homeClubId),away=getClub(pending.awayClubId);
+        const tactics={...(pending.tactics||career.tactics)};
+        career.tactics={...tactics};Object.assign(club.tactics,tactics);
+        const secondHalf=simulateMatch(home,away,{
+            homeLineup:Number(home.id)===Number(club.id)?pending.lineup:undefined,
+            awayLineup:Number(away.id)===Number(club.id)?pending.lineup:undefined,
+            startMinute:48,endMinute:90
+        });
+        const fullResult=mergeMatchHalves(pending.firstHalf,secondHalf,pending);
+        fullResult.events=fullResult.events.concat((pending.substitutions||[]).map(sub=>({minute:sub.minute,type:"substitution",team:club.name,player:sub.inName,playerOut:sub.outName,playerId:sub.inId}))).sort((a,b)=>Number(a.minute||0)-Number(b.minute||0));
+        const allFixtures=career.fixtures.filter(f=>Number(f.round)===Number(pending.round)&&!f.played);
+        allFixtures.forEach(f=>{
+            let result;
+            if(String(f.id)===String(pending.fixtureId))result=fullResult;
+            else {const stored=(pending.otherResults||[]).find(x=>String(x.fixtureId)===String(f.id));result=stored&&stored.result}
+            if(!result)return;
+            f.played=true;f.result={homeGoals:result.homeGoals,awayGoals:result.awayGoals,homeStrength:result.homeStrength,awayStrength:result.awayStrength,homeShots:result.homeShots,awayShots:result.awayShots,homePossession:result.homePossession,awayPossession:result.awayPossession};
+        });
+        const match={fixture:career.fixtures.find(f=>String(f.id)===String(pending.fixtureId)),home,away,result:fullResult};
+        const matchIncome=allFixtures.reduce((total,f)=>total+(Number(f.homeClubId)===Number(club.id)?Math.round(5000+Number(club.finances.balance||0)*0.004):(Number(f.awayClubId)===Number(club.id)?2200:0)),0);
+        const squadWages=players.filter(p=>clubForPlayer(p)===club.name).reduce((sum,p)=>sum+Number((career.contracts[p.id]||{}).wage||estimateWage(p)),0);
+        const matchCost=Math.round(Math.max(club.finances.wageBudget*0.12,squadWages*0.7)+Number(career.managerSalary||0)*0.7);
+        const won=(Number(home.id)===Number(club.id)?fullResult.homeGoals>fullResult.awayGoals:fullResult.awayGoals>fullResult.homeGoals);
+        const drew=fullResult.homeGoals===fullResult.awayGoals,bonus=won?5000:drew?2000:0;
+        career.totalIncome=Number(career.totalIncome||0)+matchIncome+bonus;career.totalCosts=Number(career.totalCosts||0)+matchCost;
+        career.balance=Number(career.balance||0)+matchIncome+bonus-matchCost;
+        recordFinancialTransaction("income","Matchday income and bonuses",matchIncome+bonus);
+        recordFinancialTransaction("expense","Matchday operating costs",matchCost);
+        career.transferBudget=Math.max(0,Number(career.transferBudget||0)+Math.round((matchIncome+bonus-matchCost)*0.15));
+        career.currentRound=Number(pending.round)+1;
+        updatePlayerCondition(match);
+        const scorers=fullResult.events.filter(e=>e.type==="goal").map(e=>e.minute+"' "+e.player).slice(0,8);
+        career.lastResult={homeTeam:home.name,awayTeam:away.name,homeGoals:fullResult.homeGoals,awayGoals:fullResult.awayGoals,round:Number(pending.round),homeShots:fullResult.homeShots,awayShots:fullResult.awayShots,homePossession:fullResult.homePossession,awayPossession:fullResult.awayPossession,events:fullResult.events.slice(0,40),scorers};
+        career.boardConfidence=Math.max(0,Math.min(100,Number(career.boardConfidence||70)+(drew?0:won?3:-4)));
+        career.boardHistory=career.boardHistory||[];career.boardHistory.push({season:career.season,round:Number(pending.round),confidence:career.boardConfidence});if(career.boardHistory.length>60)career.boardHistory=career.boardHistory.slice(-60);
+        career.news.push({date:"MATCHDAY "+pending.round,title:home.name+" "+fullResult.homeGoals+"–"+fullResult.awayGoals+" "+away.name,body:"Shots "+fullResult.homeShots+"–"+fullResult.awayShots+" · Possession "+fullResult.homePossession+"%–"+fullResult.awayPossession+"%. "+(scorers.length?"Goals: "+scorers.join(", ")+".":"No goals were scored.")});
+        if(!career.fixtures.some(f=>!f.played))career.news.push({date:"SEASON "+career.season,title:"Season complete",body:"All "+(clubs.length*(clubs.length-1))+" league fixtures have been played. The final table is ready."});
+        pending.fullResult=fullResult;pending.stage="FULLTIME";pending.secondHalf=secondHalf;
+        persistPlayerStates(club);
+        await saveCareer("Full-time: "+home.name+" "+fullResult.homeGoals+"–"+fullResult.awayGoals+" "+away.name+". Results and finances saved.");
+        activePage="matchday";shell();
+    }catch(e){showToast("The second half or final report could not be saved: "+e.message,true);shell()}
+    finally{busy=false}
+}
+
 function renderPage(page) {
     const club=getClub(career.clubId), manager=getManager(), table=buildTable(), standing=table.find(t=>t.clubId===club.id), position=table.indexOf(standing)+1;
     const upcoming=career.fixtures.find(f=>!f.played);
@@ -287,6 +496,7 @@ function renderPage(page) {
     const currentPlayers=players.filter(p=>clubForPlayer(p)===club.name);
     const formRating=player=>Math.round(Object.values(player.attributes).reduce((a,b)=>a+b,0)/Object.values(player.attributes).length);
     if(page==="dashboard")return renderDashboard({club,manager,table,standing,position,currentPlayers});
+    if(page==="matchday")return renderMatchdayScreen();
     if(page==="squad"){
         const starting=new Set(career.startingXI||[]);
         const registered=currentPlayers,available=registered.filter(p=>Number(p.injuryWeeks||0)<=0),wages=registered.reduce((sum,p)=>sum+Number((career.contracts[p.id]||{}).wage||estimateWage(p)),0),squadValue=registered.reduce((sum,p)=>sum+playerMarketValue(p),0);
@@ -326,7 +536,7 @@ function renderPage(page) {
         const filteredFixtures=roundFixtures.filter(f=>fixtureFilter==="CLUB"?(Number(f.homeClubId)===Number(club.id)||Number(f.awayClubId)===Number(club.id)):fixtureFilter==="PLAYED"?!!f.played:fixtureFilter==="UPCOMING"?!f.played:true);
         const playedCount=roundFixtures.filter(f=>f.played).length;
         const roundOptions=Array.from({length:allRounds},(_,i)=>i+1).map(r=>'<option value="'+r+'" '+(r===selectedRound?'selected':'')+'>Matchday '+r+'</option>').join("");
-        return '<div class="view-intro"><p class="panel-eyebrow">SEASON '+career.season+'</p><h1>Fixtures & results</h1><p>Follow the full home-and-away league schedule, filter results and jump directly to a matchday.</p></div><div class="metric-grid"><div class="metric-card"><span>SEASON PROGRESS</span><strong>'+career.fixtures.filter(f=>f.played).length+' / '+career.fixtures.length+'</strong><small>Fixtures completed league-wide</small></div><div class="metric-card"><span>YOUR NEXT MATCHDAY</span><strong>'+(nextRound?Number(nextRound.round):"—")+'</strong><small>'+(nextRound?"Matchday "+nextRound.round:"Season complete")+'</small></div><div class="metric-card"><span>SELECTED MATCHDAY</span><strong>'+playedCount+' / '+roundFixtures.length+'</strong><small>Fixtures completed on this matchday</small></div><div class="metric-card"><span>YOUR MATCH</span><strong>'+(roundFixtures.some(f=>(Number(f.homeClubId)===Number(club.id)||Number(f.awayClubId)===Number(club.id))&&f.played)?"Played":roundFixtures.some(f=>Number(f.homeClubId)===Number(club.id)||Number(f.awayClubId)===Number(club.id))?"Scheduled":"Not in this round")+'</strong><small>Selected club match status</small></div></div><section class="game-panel"><div class="panel-heading"><div><p class="panel-eyebrow">MATCH CENTRE</p><h2>Matchday '+selectedRound+'</h2><p class="subtle">Showing '+filteredFixtures.length+' of '+roundFixtures.length+' fixtures. '+(nextRound?"Next unplayed matchday: "+nextRound.round+".":"All league fixtures are complete.")+'</p></div><button class="game-btn" id="playRoundButton">'+(nextRound?'Simulate next matchday '+nextRound.round:'Start next season')+' →</button></div><div class="fixture-controls"><label>Matchday<select data-fixture-round>'+roundOptions+'</select></label><label>Show<select data-fixture-filter>'+options(["ALL","CLUB","PLAYED","UPCOMING"],fixtureFilter).replace('>ALL</option>','>All fixtures</option>').replace('>CLUB</option>','>My club</option>').replace('>PLAYED</option>','>Played results</option>').replace('>UPCOMING</option>','>Upcoming only</option>')+'</select></label><button class="small-btn" data-action="fixtures-next">Jump to next matchday</button></div><div class="fixture-list">'+(filteredFixtures.length?filteredFixtures.map(f=>fixtureMarkup(f,club.id)).join(""):'<p class="empty-state">No fixtures match this filter on the selected matchday.</p>')+'</div><div class="fixture-footer"><span class="subtle">Matchday '+selectedRound+' of '+allRounds+'</span><div><button class="small-btn" data-action="fixtures-prev" '+(selectedRound<=1?'disabled':'')+'>← Previous</button> <button class="small-btn" data-action="fixtures-next-round" '+(selectedRound>=allRounds?'disabled':'')+'>Next matchday →</button></div></div></section>';
+        return '<div class="view-intro"><p class="panel-eyebrow">SEASON '+career.season+'</p><h1>Fixtures & results</h1><p>Follow the full home-and-away league schedule, filter results and jump directly to a matchday.</p></div><div class="metric-grid"><div class="metric-card"><span>SEASON PROGRESS</span><strong>'+career.fixtures.filter(f=>f.played).length+' / '+career.fixtures.length+'</strong><small>Fixtures completed league-wide</small></div><div class="metric-card"><span>YOUR NEXT MATCHDAY</span><strong>'+(nextRound?Number(nextRound.round):"—")+'</strong><small>'+(nextRound?"Matchday "+nextRound.round:"Season complete")+'</small></div><div class="metric-card"><span>SELECTED MATCHDAY</span><strong>'+playedCount+' / '+roundFixtures.length+'</strong><small>Fixtures completed on this matchday</small></div><div class="metric-card"><span>YOUR MATCH</span><strong>'+(roundFixtures.some(f=>(Number(f.homeClubId)===Number(club.id)||Number(f.awayClubId)===Number(club.id))&&f.played)?"Played":roundFixtures.some(f=>Number(f.homeClubId)===Number(club.id)||Number(f.awayClubId)===Number(club.id))?"Scheduled":"Not in this round")+'</strong><small>Selected club match status</small></div></div><section class="game-panel"><div class="panel-heading"><div><p class="panel-eyebrow">MATCH CENTRE</p><h2>Matchday '+selectedRound+'</h2><p class="subtle">Showing '+filteredFixtures.length+' of '+roundFixtures.length+' fixtures. '+(nextRound?"Next unplayed matchday: "+nextRound.round+".":"All league fixtures are complete.")+'</p></div><button class="game-btn" id="playRoundButton">'+(nextRound?(career.pendingMatchday?'Resume matchday '+nextRound.round:'Enter matchday '+nextRound.round):'Start next season')+' →</button></div><div class="fixture-controls"><label>Matchday<select data-fixture-round>'+roundOptions+'</select></label><label>Show<select data-fixture-filter>'+options(["ALL","CLUB","PLAYED","UPCOMING"],fixtureFilter).replace('>ALL</option>','>All fixtures</option>').replace('>CLUB</option>','>My club</option>').replace('>PLAYED</option>','>Played results</option>').replace('>UPCOMING</option>','>Upcoming only</option>')+'</select></label><button class="small-btn" data-action="fixtures-next">Jump to next matchday</button></div><div class="fixture-list">'+(filteredFixtures.length?filteredFixtures.map(f=>fixtureMarkup(f,club.id)).join(""):'<p class="empty-state">No fixtures match this filter on the selected matchday.</p>')+'</div><div class="fixture-footer"><span class="subtle">Matchday '+selectedRound+' of '+allRounds+'</span><div><button class="small-btn" data-action="fixtures-prev" '+(selectedRound<=1?'disabled':'')+'>← Previous</button> <button class="small-btn" data-action="fixtures-next-round" '+(selectedRound>=allRounds?'disabled':'')+'>Next matchday →</button></div></div></section>';
     }
     if(page==="league"){
         const completed=career.fixtures.filter(f=>f.played).length,total=career.fixtures.length;
@@ -429,7 +639,7 @@ function renderDashboard(context) {
     const alertMarkup=alerts.slice(0,6).map(a=>'<article class="dashboard-alert alert-'+a.level+'"><span class="alert-symbol">'+(a.level==="danger"?"!":a.level==="warning"?"⚠":"✓")+'</span><div><strong>'+safe(a.title)+'</strong><p>'+safe(a.body)+'</p><button class="text-btn" data-page="'+a.page+'">'+safe(a.action)+' ↗</button></div></article>').join("");
     const newsMarkup=latestNews.length?latestNews.map(n=>'<article class="news-item"><span class="news-dot"></span><div><small>'+safe(n.date||"SEASON "+career.season)+'</small><h3>'+safe(n.title)+'</h3><p>'+safe(n.body)+'</p></div></article>').join(""):'<p class="empty-state">Club updates will appear here as you play matches, train and make transfers.</p>';
     const formStats=recentClub.reduce((acc,f)=>{const gf=Number(f.homeClubId)===Number(club.id)?f.result.homeGoals:f.result.awayGoals;const ga=Number(f.homeClubId)===Number(club.id)?f.result.awayGoals:f.result.homeGoals;acc[gf>ga?"w":gf===ga?"d":"l"]++;return acc},{w:0,d:0,l:0});
-    return '<div class="hero-panel"><div class="hero-copy"><p class="hero-kicker">THE TOUCHLINE IS YOURS</p><h1>Welcome back, '+safe(manager.manager_name||"Gaffer")+'.</h1><p>'+safe(club.name)+' · Season '+career.season+'. Your next decisions start here.</p><div class="hero-actions"><button class="game-btn" id="playRoundButton">'+(nextOpponentFixture?'Simulate Matchday '+nextOpponentFixture.round:'Start next season')+' <span>→</span></button><button class="game-btn secondary" data-page="squad">View squad</button><button class="game-btn secondary" data-page="tactics">Tactics</button></div></div><div class="hero-emblem"><div class="big-crest">'+crest+'</div><span>'+safe(String(club.city||"").toUpperCase())+' · '+safe(String(club.country||"Ghana").toUpperCase())+'</span></div></div>'+
+    return '<div class="hero-panel"><div class="hero-copy"><p class="hero-kicker">THE TOUCHLINE IS YOURS</p><h1>Welcome back, '+safe(manager.manager_name||"Gaffer")+'.</h1><p>'+safe(club.name)+' · Season '+career.season+'. Your next decisions start here.</p><div class="hero-actions"><button class="game-btn" id="playRoundButton">'+(nextOpponentFixture?(career.pendingMatchday?'Resume matchday':'Enter matchday '+nextOpponentFixture.round):'Start next season')+' <span>→</span></button><button class="game-btn secondary" data-page="squad">View squad</button><button class="game-btn secondary" data-page="tactics">Tactics</button></div></div><div class="hero-emblem"><div class="big-crest">'+crest+'</div><span>'+safe(String(club.city||"").toUpperCase())+' · '+safe(String(club.country||"Ghana").toUpperCase())+'</span></div></div>'+
     '<div class="metric-grid dashboard-key-metrics"><div class="metric-card"><span>LEAGUE POSITION</span><strong>#'+position+'</strong><small>'+Number(standing.points||0)+' points · '+Number(standing.played||0)+' played</small><em class="metric-trend">'+safe(movementLabel)+'</em></div><div class="metric-card"><span>CLUB BALANCE</span><strong>'+money(career.balance)+'</strong><small>Current available funds</small><em class="metric-trend '+(Number(career.balance||0)<=0?"negative":"positive")+'">'+(Number(career.balance||0)<=0?"Financial risk":"Available cash")+'</em></div><div class="metric-card"><span>TRANSFER BUDGET</span><strong>'+money(career.transferBudget)+'</strong><small>Recruitment funds remaining</small><em class="metric-trend">'+(Number(career.transferBudget||0)>0?"Available to spend":"No transfer allocation")+'</em></div><div class="metric-card"><span>SQUAD AVAILABILITY</span><strong>'+matchFit.length+' / '+currentPlayers.length+'</strong><small>'+injured.length+' injured · '+lowFitness.length+' low fitness</small><em class="metric-trend '+(matchFit.length<11?"negative":"positive")+'">'+(matchFit.length<11?"Fewer than 11 match-fit":"11+ match-fit players")+'</em></div></div>'+
     '<section class="game-panel"><div class="panel-heading"><div><p class="panel-eyebrow">SEASON PERFORMANCE</p><h2>Club form and league progress</h2></div><button class="text-btn" data-page="league">Full table ↗</button></div><div class="dashboard-performance-grid"><div class="dashboard-performance-stat"><span>RECORD</span><strong>'+standing.wins+'–'+standing.draws+'–'+standing.losses+'</strong><small>Wins · Draws · Losses</small></div><div class="dashboard-performance-stat"><span>GOALS</span><strong>'+goalsFor+' : '+goalsAgainst+'</strong><small>Scored : Conceded</small></div><div class="dashboard-performance-stat"><span>GOAL DIFFERENCE</span><strong class="'+(goalDifference>0?"positive":goalDifference<0?"negative":"")+'">'+(goalDifference>0?"+":"")+goalDifference+'</strong><small>Across '+played.length+' played</small></div><div class="dashboard-performance-stat"><span>GAP TO TOP</span><strong>'+titleGap+'</strong><small>Points behind 1st place</small></div></div><div class="dashboard-form-line"><strong>LAST FIVE</strong><div class="dashboard-form-chips">'+formMarkup+'</div><small>'+formStats.w+'W · '+formStats.d+'D · '+formStats.l+'L</small></div><div class="dashboard-progress"><div><span>League fixtures completed</span><strong>'+played.length+' / '+clubFixtures.length+'</strong></div><div class="dashboard-progress-track"><i style="width:'+Math.round(played.length/Math.max(1,clubFixtures.length)*100)+'%"></i></div></div></section>'+
     (matchReport||"")+
@@ -455,6 +665,12 @@ async function handleTacticChange(event){
 }
 async function handleAction(event){
     const action=event.currentTarget.dataset.action;
+    if(action==="open-matchday"){openMatchday();return}
+    if(action==="kickoff-matchday"){await kickoffMatchday();return}
+    if(action==="deliver-team-talk"){deliverTeamTalk(event.currentTarget.dataset.talk);return}
+    if(action==="make-substitution"){makeMatchdaySubstitution();return}
+    if(action==="play-second-half"){await playSecondHalf();return}
+    if(action==="finish-matchday"){career.pendingMatchday=null;matchdaySubOut="";matchdaySubIn="";activePage="dashboard";try{await saveCareer("Matchday report saved.");shell()}catch(e){showToast("Report is ready, but the save failed: "+e.message,true);shell()}return}
     if(action==="fixtures-next"){const next=career.fixtures.find(f=>!f.played);fixtureRound=next?String(next.round):String(clubs.length*2-2);shell();return}
     if(action==="fixtures-prev"||action==="fixtures-next-round"){const total=clubs.length*2-2,current=fixtureRound==="NEXT"?(career.fixtures.find(f=>!f.played)?.round||total):Number(fixtureRound)||1;fixtureRound=String(Math.max(1,Math.min(total,current+(action==="fixtures-next-round"?1:-1))));shell();return}
     if(action==="news-prev"||action==="news-next"){newsPage=Math.max(0,newsPage+(action==="news-next"?1:-1));shell();return}
@@ -507,47 +723,7 @@ async function handleAction(event){
         try{await saveCareer(player.name+" signed successfully.");shell()}catch(e){showToast("Signing could not be saved: "+e.message,true)}
     }
 }
-async function playRound(){
-    if(busy)return;
-    const round=career.fixtures.find(f=>!f.played)?.round;
-    if(!round){showToast("The season is complete.");return}
-    if(!Array.isArray(career.startingXI)||career.startingXI.length!==11){showToast("Select exactly 11 available players in Squad Room before playing.",true);activePage="squad";shell();return}
-    const fixtures=career.fixtures.filter(f=>f.round===round&&!f.played);
-    if(!fixtures.length){showToast("No fixtures found for this matchday.",true);return}
-    busy=true;const button=$("playRoundButton");if(button){button.disabled=true;button.textContent="Simulating matchday…"}
-    let selectedOutcome=null,roundGoals=0;
-    fixtures.forEach(f=>{
-        const home=getClub(f.homeClubId),away=getClub(f.awayClubId);
-        const result=simulateMatch(home,away,{homeLineup:home.id===career.clubId?career.startingXI:undefined,awayLineup:away.id===career.clubId?career.startingXI:undefined});
-        f.played=true;f.result={homeGoals:result.homeGoals,awayGoals:result.awayGoals,homeStrength:result.homeStrength,awayStrength:result.awayStrength,homeShots:result.homeShots,awayShots:result.awayShots,homePossession:result.homePossession,awayPossession:result.awayPossession};
-        roundGoals+=result.homeGoals+result.awayGoals;
-        if(home.id===career.clubId||away.id===career.clubId)selectedOutcome={fixture:f,home,away,result};
-    });
-    const club=getClub(career.clubId),match=selectedOutcome;
-    const matchIncome=fixtures.reduce((total,f)=>total+(f.homeClubId===club.id?Math.round(5000+club.finances.balance*0.004):(f.awayClubId===club.id?2200:0)),0);
-    const squadWages=players.filter(p=>clubForPlayer(p)===club.name).reduce((sum,p)=>sum+Number((career.contracts[p.id]||{}).wage||estimateWage(p)),0);
-    const matchCost=Math.round(Math.max(club.finances.wageBudget*0.12,squadWages*0.7)+Number(career.managerSalary||0)*0.7);
-    let bonus=0;
-    if(match){const score=match.fixture.result;if((match.home.id===club.id&&score.homeGoals>score.awayGoals)||(match.away.id===club.id&&score.awayGoals>score.homeGoals))bonus=5000;else if(score.homeGoals===score.awayGoals)bonus=2000}
-    career.totalIncome=Number(career.totalIncome||0)+matchIncome+bonus;career.totalCosts=Number(career.totalCosts||0)+matchCost;
-    career.balance=Number(career.balance||0)+matchIncome+bonus-matchCost;
-    recordFinancialTransaction("income","Matchday income and bonuses",matchIncome+bonus);
-    recordFinancialTransaction("expense","Matchday operating costs",matchCost);
-    career.transferBudget=Math.max(0,Number(career.transferBudget||0)+Math.round((matchIncome+bonus-matchCost)*0.15));
-    career.currentRound=round+1;
-    if(match){
-        const res=match.fixture.result,engineResult=match.result;
-        updatePlayerCondition(match);
-        const scorers=(engineResult.events||[]).filter(e=>e.type==="goal").map(e=>e.minute+"' "+e.player).slice(0,6);
-        career.lastResult={homeTeam:match.home.name,awayTeam:match.away.name,homeGoals:res.homeGoals,awayGoals:res.awayGoals,round:round,homeShots:res.homeShots,awayShots:res.awayShots,homePossession:res.homePossession,awayPossession:res.awayPossession,events:(engineResult.events||[]).slice(0,30),scorers};
-        const won=(match.home.id===club.id?res.homeGoals>res.awayGoals:res.awayGoals>res.homeGoals);
-        career.boardConfidence=Math.max(0,Math.min(100,Number(career.boardConfidence||70)+(res.homeGoals===res.awayGoals?0:won?3:-4)));career.boardHistory=career.boardHistory||[];career.boardHistory.push({season:career.season,round,confidence:career.boardConfidence});if(career.boardHistory.length>60)career.boardHistory=career.boardHistory.slice(-60);
-        career.news.push({date:"MATCHDAY "+round,title:match.home.name+" "+res.homeGoals+"–"+res.awayGoals+" "+match.away.name,body:"Shots "+(res.homeShots||0)+"–"+(res.awayShots||0)+" · Possession "+(res.homePossession||50)+"%–"+(res.awayPossession||50)+"%. "+(scorers.length?"Goals: "+scorers.join(", ")+".":"No goals were scored.")});
-    }
-    if(!career.fixtures.some(f=>!f.played))career.news.push({date:"SEASON "+career.season,title:"Season complete",body:"All "+(clubs.length*(clubs.length-1))+" league fixtures have been played. The final table is ready."});
-    busy=false;
-    try{await saveCareer("Matchday "+round+" complete. Results and finances saved.");activePage="dashboard";shell()}catch(e){showToast("Results were played, but saving failed. Keep this page open and retry: "+e.message,true);shell()}
-}
+async function playRound(){openMatchday()}
 async function startNextSeason(){
     if(busy||career.fixtures.some(f=>!f.played))return;
     if(!confirm("Start a new season? Your current season summary will remain in club news."))return;
@@ -598,6 +774,7 @@ async function init(){
         if(!getManager().manager_name){location.replace("./manager.html");return}
         if(!getManager().club_id){location.replace("./club-selection.html");return}
         if(!initCareer())return;
+        if(career.pendingMatchday)activePage="matchday";
         const status=$("worldStatus");if(status)status.textContent="Syncing career save…";
         document.body.classList.add("game-ready");
         shell();
