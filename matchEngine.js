@@ -34,9 +34,9 @@ function positionGroup(position) {
 function selectBestLineup(club, requestedLineup) {
     const squad = (typeof players !== "undefined" ? players : []).filter(p => p.club === club.name);
     const eligible = squad.filter(p => Number(p.injuryWeeks || 0) <= 0);
-    if (Array.isArray(requestedLineup) && requestedLineup.length === 11) {
+    if (Array.isArray(requestedLineup) && requestedLineup.length >= 7 && requestedLineup.length <= 11) {
         const selected = requestedLineup.map(id => eligible.find(p => Number(p.id) === Number(id))).filter(Boolean);
-        if (selected.length === 11) return selected;
+        if (selected.length === requestedLineup.length) return selected;
     }
     const sorted = eligible.slice().sort((a, b) => playerOverall(b) - playerOverall(a));
     const selected = [];
@@ -81,7 +81,7 @@ function calculateTeamStrength(club, requestedLineup) {
     const expected = formation === "4-4-2" ? [4,4,2] : formation === "4-2-3-1" ? [4,5,1] : formation === "5-3-2" ? [5,3,2] : formation === "5-4-1" ? [5,4,1] : [4,3,3];
     const actual = [lineup.filter(p => positionGroup(p.position) === "DEF").length, lineup.filter(p => positionGroup(p.position) === "MID").length, lineup.filter(p => positionGroup(p.position) === "ATT").length];
     const mismatch = actual.reduce((sum, count, index) => sum + Math.abs(count - expected[index]), 0);
-    return total / lineup.length - mismatch * 1.1;
+    return total / lineup.length - mismatch * 1.1 - Math.max(0, 11 - lineup.length) * 3.2;
 }
 
 function calculateGoalChance(teamStrength, opponentStrength) {
@@ -121,7 +121,12 @@ function simulateMatch(homeTeam, awayTeam, options) {
     let homeShots = 0, awayShots = 0, homePossession = 50;
     const startMinute = Math.max(1, Number(options.startMinute || 4));
     const endMinute = Math.max(startMinute, Math.min(90, Number(options.endMinute || 90)));
-    for (let minute = startMinute; minute <= endMinute; minute += 4) {
+    const minuteMarks=[];
+    for (let minute = startMinute; minute <= endMinute; minute += 4) minuteMarks.push(minute);
+    if(endMinute===45&&!minuteMarks.includes(45))minuteMarks.push(45);
+    if(endMinute===90&&!minuteMarks.includes(90))minuteMarks.push(90);
+    minuteMarks.sort((a,b)=>a-b);
+    for (const minute of minuteMarks) {
         const homeAttack = Math.random() < Math.min(0.82, Math.max(0.25, 0.52 + (homeStrength - awayStrength) * 0.006));
         const attackingTeam = homeAttack ? homeTeam : awayTeam;
         const attackingLineup = homeAttack ? homeLineup : awayLineup;
