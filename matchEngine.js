@@ -119,7 +119,9 @@ function simulateMatch(homeTeam, awayTeam, options) {
     const awayGoals = { value: 0 };
     const events = [];
     let homeShots = 0, awayShots = 0, homePossession = 50;
-    for (let minute = 4; minute <= 90; minute += 4) {
+    const startMinute = Math.max(1, Number(options.startMinute || 4));
+    const endMinute = Math.max(startMinute, Math.min(90, Number(options.endMinute || 90)));
+    for (let minute = startMinute; minute <= endMinute; minute += 4) {
         const homeAttack = Math.random() < Math.min(0.82, Math.max(0.25, 0.52 + (homeStrength - awayStrength) * 0.006));
         const attackingTeam = homeAttack ? homeTeam : awayTeam;
         const attackingLineup = homeAttack ? homeLineup : awayLineup;
