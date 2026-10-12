@@ -159,7 +159,7 @@ function shell() {
     document.querySelectorAll("[data-fixture-filter]").forEach(el=>el.addEventListener("change",()=>{fixtureFilter=el.value;shell()}));
     document.querySelectorAll("[data-news-search]").forEach(el=>el.addEventListener("input",()=>{newsSearch=el.value;newsPage=0;const caret=el.selectionStart;shell();const next=$("[data-news-search]");if(next){next.focus();try{next.setSelectionRange(caret,caret)}catch(_){}}}));
     document.querySelectorAll("[data-news-category]").forEach(el=>el.addEventListener("change",()=>{newsCategory=el.value;newsPage=0;shell()}));
-    document.querySelectorAll("[data-match-tactic]").forEach(el=>el.addEventListener("change",()=>{if(career.pendingMatchday){career.pendingMatchday.tactics=career.pendingMatchday.tactics||{...career.tactics};career.pendingMatchday.tactics[el.dataset.matchTactic]=el.value;}}));
+    document.querySelectorAll("[data-match-tactic]").forEach(el=>el.addEventListener("change",()=>{const key=el.dataset.matchTactic;if(!key)return;if(career.pendingMatchday){career.pendingMatchday.tactics=career.pendingMatchday.tactics||{...career.tactics};career.pendingMatchday.tactics[key]=el.value;saveCareer().catch(e=>showToast("Tactical change could not be saved: "+e.message,true));}else{career.tactics[key]=el.value;Object.assign(getClub(career.clubId).tactics,career.tactics);saveCareer().catch(e=>showToast("Tactical change could not be saved: "+e.message,true));}}));
     document.querySelectorAll("[data-sub-out]").forEach(el=>el.addEventListener("change",()=>{matchdaySubOut=el.value;if(career.pendingMatchday)career.pendingMatchday.subOutId=el.value;}));
     document.querySelectorAll("[data-sub-in]").forEach(el=>el.addEventListener("change",()=>{matchdaySubIn=el.value;if(career.pendingMatchday)career.pendingMatchday.subInId=el.value;}));
     const next=$("playRoundButton");if(next)next.addEventListener("click",career.fixtures.some(f=>!f.played)?openMatchday:startNextSeason);
@@ -293,6 +293,7 @@ function matchEventText(event){
     if(event.type==="yellow")return "🟨 "+event.minute+"' Yellow card — "+event.player+" · "+event.team;
     if(event.type==="red")return "🟥 "+event.minute+"' Red card — "+event.player+" · "+event.team;
     if(event.type==="chance")return "◉ "+event.minute+"' Chance — "+event.player+" · "+event.team;
+    if(event.type==="substitution")return "↔ "+event.minute+"' Substitution — "+event.playerOut+" off, "+event.player+" on · "+event.team;
     return event.minute+"' "+event.type+" — "+(event.player||event.team||"Match event");
 }
 function matchEventsMarkup(events){
