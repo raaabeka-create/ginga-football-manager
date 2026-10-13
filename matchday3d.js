@@ -3,7 +3,7 @@ try {
   THREE = await import("https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js");
 } catch (error) {
   const fallback = () => document.querySelectorAll("[data-matchday-3d]").forEach(stage => {
-    stage.innerHTML = '<div class="matchday-3d-fallback"><strong>3D match view could not load</strong><p>Check your internet connection or allow the Three.js CDN to load, then refresh the matchday screen.</p></div>';
+    if (!stage.querySelector(".matchday-3d-fallback")) stage.innerHTML = '<div class="matchday-3d-fallback"><strong>3D match view could not load</strong><p>Check your internet connection or allow the Three.js CDN to load, then refresh the matchday screen.</p></div>';
   });
   fallback();
   new MutationObserver(fallback).observe(document.body, { childList: true, subtree: true });
@@ -199,7 +199,7 @@ function initialize(stage){
   function onDocumentEvent(event){const button=event.target.closest&&event.target.closest("[data-3d-event]");if(button&&panel.contains(button))setEvent(button.getAttribute("data-3d-event"));}
   document.addEventListener("click",onDocumentEvent);
   panel.querySelectorAll("[data-3d-camera]").forEach(button=>button.addEventListener("click",()=>{currentCamera=button.getAttribute("data-3d-camera")||"broadcast";cameraTarget(camera,currentCamera);panel.querySelectorAll("[data-3d-camera]").forEach(b=>b.classList.toggle("active",b===button));}));
-  panel.querySelectorAll("[data-3d-pause]").forEach(button=>button.addEventListener("click",()=>{paused=!paused;button.textContent=paused?"Play animation":"Pause animation";}));
+  panel.querySelectorAll("[data-3d-pause]").forEach(button=>{button.textContent=paused?"Play animation":"Pause animation";button.addEventListener("click",()=>{paused=!paused;button.textContent=paused?"Play animation":"Pause animation";});});
   function animate(time){
     if(!stage.isConnected){dispose();return;}
     const dt=lastTime?Math.min(.05,(time-lastTime)/1000):0;lastTime=time;
