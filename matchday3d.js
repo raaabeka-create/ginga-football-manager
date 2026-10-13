@@ -1,4 +1,15 @@
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+let THREE;
+try {
+  THREE = await import("https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js");
+} catch (error) {
+  const fallback = () => document.querySelectorAll("[data-matchday-3d]").forEach(stage => {
+    stage.innerHTML = '<div class="matchday-3d-fallback"><strong>3D match view could not load</strong><p>Check your internet connection or allow the Three.js CDN to load, then refresh the matchday screen.</p></div>';
+  });
+  fallback();
+  new MutationObserver(fallback).observe(document.body, { childList: true, subtree: true });
+  console.error("Ginga FM 3D renderer could not load", error);
+}
+if (THREE) {
 
 const mounted = new WeakMap();
 const activeScenes = new Set();
@@ -185,7 +196,7 @@ function initialize(stage){
   const observer=new ResizeObserver(resize);observer.observe(stage);
   let paused=reducedMotion,elapsed=0,lastTime=0,selectedEventIndex=Math.max(0,(data.events||[]).length-1),currentCamera="broadcast";
   const setEvent=index=>{const evs=data.events||[];if(!evs.length)return;selectedEventIndex=clamp(Number(index)||0,0,evs.length-1);const ev=evs[selectedEventIndex];const hudText=stage.querySelector(".matchday-3d-hud small");if(hudText)hudText.textContent=ev.minute+"′ · "+String(ev.type||"incident").toUpperCase()+" · "+(ev.player||ev.team||"Match incident");};
-  function onDocumentEvent(event){const button=event.target.closest&&event.target.closest("[data-3d-event]");if(button&&stage.contains(button))setEvent(button.getAttribute("data-3d-event"));}
+  function onDocumentEvent(event){const button=event.target.closest&&event.target.closest("[data-3d-event]");if(button&&panel.contains(button))setEvent(button.getAttribute("data-3d-event"));}
   document.addEventListener("click",onDocumentEvent);
   panel.querySelectorAll("[data-3d-camera]").forEach(button=>button.addEventListener("click",()=>{currentCamera=button.getAttribute("data-3d-camera")||"broadcast";cameraTarget(camera,currentCamera);panel.querySelectorAll("[data-3d-camera]").forEach(b=>b.classList.toggle("active",b===button));}));
   panel.querySelectorAll("[data-3d-pause]").forEach(button=>button.addEventListener("click",()=>{paused=!paused;button.textContent=paused?"Play animation":"Pause animation";}));
@@ -232,3 +243,5 @@ function scan(){
 const mutationObserver=new MutationObserver(scan);
 function start(){scan();mutationObserver.observe(document.getElementById("view")||document.body,{childList:true,subtree:true});}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
+
+}
