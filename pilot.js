@@ -314,6 +314,62 @@ function openMatchday(){
     }
     activePage="matchday";matchdaySubOut="";matchdaySubIn="";shell();
 }
+
+function renderMatchdayMovementPitch(pending,stage,home,away,isHome,currentScore,events){
+    const full=pending.fullResult||{};
+    const redIds=new Set((pending.redCardedPlayerIds||[]).map(Number));
+    const homeIds=stage==="FULLTIME"?(full.homeFinalLineup||full.homeLineup||[]):(isHome?(pending.lineup||[]):(pending.opponentLineup||[]));
+    const awayIds=stage==="FULLTIME"?(full.awayFinalLineup||full.awayLineup||[]):(isHome?(pending.opponentLineup||[]):(pending.lineup||[]));
+    const formations={"4-3-3":[4,3,3],"4-4-2":[4,4,2],"4-2-3-1":[4,5,1],"5-3-2":[5,3,2],"5-4-1":[5,4,1]};
+    const ownFormation=String((pending.tactics&&pending.tactics.formation)||career.tactics.formation||"4-3-3");
+    const opponentClub=isHome?away:home;
+    const opponentFormation=String((opponentClub.tactics&&opponentClub.tactics.formation)||"4-3-3");
+    const last=(events||[]).slice().sort((a,b)=>Number(b.minute||0)-Number(a.minute||0))[0]||null;
+    const attackingTeam=last&&last.team?last.team:(Number(currentScore.homePossession||50)>=50?home.name:away.name);
+    const attackHome=attackingTeam===home.name;
+    const latestText=last?matchEventText(last):"Open play · teams settling into their shape";
+    function markerMarkup(ids,isHomeSide,formation){
+        let list=(ids||[]).map(id=>players.find(pl=>Number(pl.id)===Number(id))).filter(pl=>pl&&!pl.retired&&!redIds.has(Number(pl.id)));
+        const keeper=list.find(pl=>String(pl.position||"").toUpperCase()==="GK")||list[0];
+        if(!keeper)return "";
+        const rest=list.filter(pl=>pl!==keeper);
+        const shape=formations[formation]||formations["4-3-3"];
+        const used=new Set([Number(keeper.id)]);
+        const rows=[
+            {count:shape[0],x:isHomeSide?20:80,types:["CB","LB","RB","LWB","RWB"]},
+            {count:shape[1],x:isHomeSide?34:66,types:["DM","CM","AM","LM","RM"]},
+            {count:shape[2],x:isHomeSide?46:54,types:["ST","CF","LW","RW"]}
+        ];
+        const coords=[];
+        const add=(pl,x,y,index)=>{
+            used.add(Number(pl.id));
+            const dx=((index%3)-1)*7*(isHomeSide?1:-1);
+            const dy=(index%2===0?-1:1)*(5+(index%3)*2);
+            const surname=String(pl.name||"Player").trim().split(/\s+/).slice(-1)[0];
+            const short=surname.length>10?surname.slice(0,9)+"…":surname;
+            coords.push('<button type="button" class="movement-player '+(isHomeSide?"movement-home":"movement-away")+(String(pl.position).toUpperCase()==="GK"?" movement-keeper":"")+'" style="left:'+x+'%;top:'+y+'%;--move-x:'+dx+'px;--move-y:'+dy+'px;--move-delay:'+((index%7)*-.37)+'s" data-action="view-player" data-player="'+pl.id+'" title="'+safe(pl.name)+' · '+safe(pl.position)+' · OVR '+playerOverall(pl)+'"><span class="movement-shirt">'+safe(String(index+1).padStart(2,"0"))+'</span><b>'+safe(short)+'</b></button>');
+        };
+        add(keeper,isHomeSide?6:94,50,isHomeSide?0:11);
+        let idx=isHomeSide?1:12;
+        rows.forEach(row=>{
+            const preferred=rest.filter(pl=>!used.has(Number(pl.id))&&row.types.includes(String(pl.position||"").toUpperCase()));
+            const chosen=preferred.slice(0,row.count);
+            while(chosen.length<row.count){
+                const fallback=rest.find(pl=>!used.has(Number(pl.id))&&!chosen.some(x=>Number(x.id)===Number(pl.id)));
+                if(!fallback)break;
+                chosen.push(fallback);
+            }
+            chosen.forEach((pl,j)=>add(pl,row.x,((j+1)/(chosen.length+1))*100,idx++));
+        });
+        return coords.join("");
+    }
+    const ballStart=attackHome?37:63,ballEnd=attackHome?76:24;
+    const path=attackHome?"M 420 300 Q 560 160 760 300":"M 580 300 Q 440 440 240 300";
+    const possHome=Number(currentScore.homePossession||50);
+    const minute=last?Number(last.minute||0):(stage==="FULLTIME"?90:45);
+    return '<section class="game-panel matchday-movement-panel"><div class="panel-heading"><div><p class="panel-eyebrow">TACTICAL VISUALIZER</p><h2>Player movement</h2><p class="subtle">Animated formation view · '+safe(home.name)+' vs '+safe(away.name)+'</p></div><span class="movement-live-chip">'+(stage==="FULLTIME"?"FULL TIME":"HALF TIME")+'</span></div><div class="movement-pitch-wrap"><div class="movement-pitch" role="img" aria-label="Animated top-down football pitch showing both teams and ball movement"><svg class="movement-pitch-lines" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><rect x="18" y="18" width="964" height="564" rx="3"/><line x1="500" y1="18" x2="500" y2="582"/><circle cx="500" cy="300" r="82"/><circle cx="500" cy="300" r="4"/><rect x="18" y="170" width="145" height="260"/><rect x="18" y="230" width="55" height="140"/><rect x="0" y="255" width="18" height="90"/><rect x="837" y="170" width="145" height="260"/><rect x="927" y="230" width="55" height="140"/><rect x="982" y="255" width="18" height="90"/><path d="M163 245 Q205 300 163 355"/><path d="M837 245 Q795 300 837 355"/></svg><svg class="movement-pass-trail" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><path d="'+path+'"/></svg>'+markerMarkup(homeIds,true,ownFormation)+markerMarkup(awayIds,false,opponentFormation)+'<span class="movement-ball" style="--ball-start-x:'+ballStart+'%;--ball-end-x:'+ballEnd+'%"><span></span></span><span class="movement-pitch-label movement-home-label">'+safe(home.name)+'</span><span class="movement-pitch-label movement-away-label">'+safe(away.name)+'</span></div></div><div class="movement-legend"><span><i class="legend-dot legend-home"></i>'+safe(home.name)+'</span><span><i class="legend-dot legend-away"></i>'+safe(away.name)+'</span><span><i class="legend-ball"></i>Ball movement</span></div><div class="movement-insight"><span class="movement-minute">'+minute+"' </span><div><strong>"+(attackHome?safe(home.name):safe(away.name))+" in possession / attacking phase</strong><p>"+safe(latestText)+"</p></div><div class="movement-possession"><small>POSSESSION</small><b>"+possHome+"% — "+Number(currentScore.awayPossession||100-possHome)+"%</b></div></div><p class="movement-disclaimer">Player markers move in an animated tactical pattern based on the lineups and match incidents. Exact player coordinates and real-time tracking are not yet generated by this match engine.</p></section>';
+}
+
 function renderMatchdayScreen(){
     const club=getClub(career.clubId),pending=career.pendingMatchday||null;
     const next=career.fixtures.find(f=>!f.played);
@@ -344,6 +400,7 @@ function renderMatchdayScreen(){
     const homeScore=Number(currentScore.homeGoals||0),awayScore=Number(currentScore.awayGoals||0);
     const status=stage==="HALFTIME"?"HALF-TIME":"FULL-TIME";
     const shotsHome=Number(currentScore.homeShots||0),shotsAway=Number(currentScore.awayShots||0);
+    const movementPitch=renderMatchdayMovementPitch(pending,stage,home,away,isHome,currentScore,events);
     const statsMarkup='<div class="matchday-stat-row"><span>Shots</span><strong>'+shotsHome+'</strong><div class="stat-track"><i style="width:'+Math.round(shotsHome/Math.max(1,shotsHome+shotsAway)*100)+'%"></i></div><strong>'+shotsAway+'</strong></div><div class="matchday-stat-row"><span>Possession</span><strong>'+Number(currentScore.homePossession||50)+'%</strong><div class="stat-track"><i style="width:'+Number(currentScore.homePossession||50)+'%"></i></div><strong>'+Number(currentScore.awayPossession||50)+'%</strong></div>';
     const substitutionPanel=stage==="HALFTIME"?'<section class="game-panel"><div class="panel-heading"><div><p class="panel-eyebrow">BENCH MANAGEMENT</p><h2>Half-time substitutions</h2><p class="subtle">'+Number(pending.subsUsed||0)+' of 5 substitutions used. Substitutions are applied to the second half.</p></div></div><div class="matchday-sub-grid"><label>Player coming off<select data-sub-out><option value="">Select starter</option>'+lineup.filter(p=>pending.lineup.some(id=>Number(id)===Number(p.id))).map(p=>'<option value="'+p.id+'" '+(String(pending.subOutId||matchdaySubOut)===String(p.id)?"selected":"")+'>'+safe(p.position)+' · '+safe(p.name)+'</option>').join("")+'</select></label><label>Player coming on<select data-sub-in><option value="">Select available substitute</option>'+bench.map(p=>'<option value="'+p.id+'" '+(String(pending.subInId||matchdaySubIn)===String(p.id)?"selected":"")+'>'+safe(p.position)+' · '+safe(p.name)+' · OVR '+playerOverall(p)+'</option>').join("")+'</select></label><button class="small-btn" data-action="make-substitution" '+(Number(pending.subsUsed||0)>=5||!bench.length?'disabled':'')+'>Confirm substitution</button></div></section>':'';
     const talkPanel=stage==="HALFTIME"?'<section class="game-panel"><p class="panel-eyebrow">DRESSING ROOM</p><h2>Half-time team talk</h2><p class="subtle">'+(pending.teamTalk?"Team talk delivered: "+safe(pending.teamTalk)+".":"Choose one team talk. It can influence player morale for the second half.")+'</p><div class="team-talk-options"><button class="team-talk '+(pending.teamTalk==="Encourage"?"talk-selected":"")+'" data-action="deliver-team-talk" data-talk="Encourage" '+(pending.teamTalkDelivered?'disabled':'')+'>✊ Encourage <small>Lift confidence and morale</small></button><button class="team-talk '+(pending.teamTalk==="Demand more"?"talk-selected":"")+'" data-action="deliver-team-talk" data-talk="Demand more" '+(pending.teamTalkDelivered?'disabled':'')+'>⚡ Demand more <small>Raise intensity; modest morale risk</small></button><button class="team-talk '+(pending.teamTalk==="Calm heads"?"talk-selected":"")+'" data-action="deliver-team-talk" data-talk="Calm heads" '+(pending.teamTalkDelivered?'disabled':'')+'>🧠 Calm heads <small>Reduce pressure and restore composure</small></button></div></section>':'';
@@ -351,7 +408,7 @@ function renderMatchdayScreen(){
     const userDismissals=(pending&&pending.userRedCardIds||[]).length,opponentDismissals=(pending&&pending.opponentRedCardIds||[]).length;
     const dismissalText=userDismissals?"Your team has "+userDismissals+" player(s) sent off. The dismissed player(s) cannot return; continue with fewer players.":opponentDismissals?opponent.name+" has "+opponentDismissals+" player(s) sent off and must continue with fewer players.":"";
     const dismissalNote=(stage==="HALFTIME"&&dismissalText)?'<p class="matchday-dismissal-note">🟥 '+safe(dismissalText)+'</p>':'';
-    return '<div class="matchday-screen"><div class="matchday-topbar"><button class="text-btn" data-page="dashboard">← Manager office</button><span class="matchday-stage '+(stage==="HALFTIME"?"stage-half":"stage-full")+'">'+status+' · MD '+round+'</span></div><section class="matchday-hero live-match-hero"><div><p class="panel-eyebrow">LIVE MATCH CENTRE</p><h1>'+(stage==="HALFTIME"?"The interval":"Full-time report")+'</h1><p>'+(stage==="HALFTIME"?"The first 45 minutes are complete. Make tactical changes, deliver a team talk and use up to five substitutions before the second half.":"The final whistle has gone. Review the result, key incidents and match statistics.")+'</p></div><div class="matchday-venue"><span>'+(isHome?"HOME":"AWAY")+' · SEASON '+career.season+'</span><strong>'+safe(home.city||"Match venue")+'</strong><small>'+safe(home.name)+" vs "+safe(away.name)+'</small></div></section><section class="matchday-scoreboard"><div class="score-team"><span class="mini-crest">'+safe(home.name.split(/\s+/).map(w=>w[0]).join("").slice(0,3))+'</span><strong>'+safe(home.name)+'</strong><small>HOME</small></div><div class="score-centre"><span class="matchday-live-status">'+status+'</span><strong>'+homeScore+' <i>–</i> '+awayScore+'</strong><small>Matchday '+round+' · '+(stage==="HALFTIME"?"45 minutes played":"90 minutes played")+'</small></div><div class="score-team"><span class="mini-crest">'+safe(away.name.split(/\s+/).map(w=>w[0]).join("").slice(0,3))+'</span><strong>'+safe(away.name)+'</strong><small>AWAY</small></div></section>'+dismissalNote+'<div class="matchday-live-grid"><section class="game-panel"><div class="panel-heading"><div><p class="panel-eyebrow">MATCH STATISTICS</p><h2>Match momentum</h2></div><span class="live-pill">'+status+'</span></div>'+statsMarkup+'<div class="panel-divider"></div><p class="panel-eyebrow">MATCH COMMENTARY</p><h2>Key incidents</h2>'+eventMarkup+'</section><div>'+substitutionPanel+talkPanel+(stage==="HALFTIME"?'<section class="game-panel"><p class="panel-eyebrow">TACTICAL ADJUSTMENTS</p><h2>Change the plan</h2><p class="subtle">Changes affect the second half and will become your saved tactical setup.</p>'+tacticControls+'<button class="game-btn matchday-primary" data-action="play-second-half">Start second half →</button></section>':'<section class="game-panel"><p class="panel-eyebrow">MATCHDAY COMPLETE</p><h2>Post-match briefing</h2><p class="subtle">League results, player condition, finances and board confidence have been updated and saved to your career.</p><button class="game-btn matchday-primary" data-action="finish-matchday">Return to dashboard →</button><button class="game-btn secondary" data-page="league">View league table</button></section>')+'</div></div></div>';
+    return '<div class="matchday-screen"><div class="matchday-topbar"><button class="text-btn" data-page="dashboard">← Manager office</button><span class="matchday-stage '+(stage==="HALFTIME"?"stage-half":"stage-full")+'">'+status+' · MD '+round+'</span></div><section class="matchday-hero live-match-hero"><div><p class="panel-eyebrow">LIVE MATCH CENTRE</p><h1>'+(stage==="HALFTIME"?"The interval":"Full-time report")+'</h1><p>'+(stage==="HALFTIME"?"The first 45 minutes are complete. Make tactical changes, deliver a team talk and use up to five substitutions before the second half.":"The final whistle has gone. Review the result, key incidents and match statistics.")+'</p></div><div class="matchday-venue"><span>'+(isHome?"HOME":"AWAY")+' · SEASON '+career.season+'</span><strong>'+safe(home.city||"Match venue")+'</strong><small>'+safe(home.name)+" vs "+safe(away.name)+'</small></div></section><section class="matchday-scoreboard"><div class="score-team"><span class="mini-crest">'+safe(home.name.split(/\s+/).map(w=>w[0]).join("").slice(0,3))+'</span><strong>'+safe(home.name)+'</strong><small>HOME</small></div><div class="score-centre"><span class="matchday-live-status">'+status+'</span><strong>'+homeScore+' <i>–</i> '+awayScore+'</strong><small>Matchday '+round+' · '+(stage==="HALFTIME"?"45 minutes played":"90 minutes played")+'</small></div><div class="score-team"><span class="mini-crest">'+safe(away.name.split(/\s+/).map(w=>w[0]).join("").slice(0,3))+'</span><strong>'+safe(away.name)+'</strong><small>AWAY</small></div></section>'+movementPitch+dismissalNote+'<div class="matchday-live-grid"><section class="game-panel"><div class="panel-heading"><div><p class="panel-eyebrow">MATCH STATISTICS</p><h2>Match momentum</h2></div><span class="live-pill">'+status+'</span></div>'+statsMarkup+'<div class="panel-divider"></div><p class="panel-eyebrow">MATCH COMMENTARY</p><h2>Key incidents</h2>'+eventMarkup+'</section><div>'+substitutionPanel+talkPanel+(stage==="HALFTIME"?'<section class="game-panel"><p class="panel-eyebrow">TACTICAL ADJUSTMENTS</p><h2>Change the plan</h2><p class="subtle">Changes affect the second half and will become your saved tactical setup.</p>'+tacticControls+'<button class="game-btn matchday-primary" data-action="play-second-half">Start second half →</button></section>':'<section class="game-panel"><p class="panel-eyebrow">MATCHDAY COMPLETE</p><h2>Post-match briefing</h2><p class="subtle">League results, player condition, finances and board confidence have been updated and saved to your career.</p><button class="game-btn matchday-primary" data-action="finish-matchday">Return to dashboard →</button><button class="game-btn secondary" data-page="league">View league table</button></section>')+'</div></div></div>';
 }
 function mergeMatchHalves(first,second,pending){
     const allEvents=(first.events||[]).concat(second.events||[]).sort((a,b)=>Number(a.minute||0)-Number(b.minute||0));
@@ -373,7 +430,7 @@ function mergeMatchHalves(first,second,pending){
         awayShots:Number(first.awayShots||0)+Number(second.awayShots||0),
         homePossession:Math.round((Number(first.homePossession||50)+Number(second.homePossession||50))/2),
         awayPossession:Math.round((Number(first.awayPossession||50)+Number(second.awayPossession||50))/2),
-        homeLineup:allHome,awayLineup:allAway,minutesByPlayer,events:allEvents
+        homeLineup:allHome,awayLineup:allAway,homeFinalLineup:(second.homeLineup||[]).slice(),awayFinalLineup:(second.awayLineup||[]).slice(),minutesByPlayer,events:allEvents
     };
     // Keep possession totals internally consistent after rounding.
     combined.awayPossession=100-combined.homePossession;
