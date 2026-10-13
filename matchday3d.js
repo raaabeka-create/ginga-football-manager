@@ -222,8 +222,8 @@ function initialize(stage){
     const squad=teamPlayers[side].filter(p=>!p.userData.isKeeper);
     const preferred=squad.filter(p=>/ST|CF|LW|RW|AM|CM|LM|RM/i.test(p.userData.position));
     const pool=preferred.length?preferred:squad;
-    const step=Math.floor(phase/3.15)%Math.max(1,pool.length);
-    return pool[step]||squad[0]||null;
+    const step=phase<3.2?0:phase<7.2?1:2;
+    return pool[step%Math.max(1,pool.length)]||squad[0]||null;
   };
   const dampVector=(object,target,lambda,dt)=>{object.position.x=THREE.MathUtils.damp(object.position.x,target.x,lambda,dt);object.position.z=THREE.MathUtils.damp(object.position.z,target.z,lambda,dt);};
   let lastBallPosition=new THREE.Vector3(0,.4,0);
@@ -236,16 +236,17 @@ function initialize(stage){
     const carrier=chooseCarrier(possessionSide,phase);
     const squad=teamPlayers[possessionSide].filter(p=>!p.userData.isKeeper);
     const carrierIndex=Math.max(0,squad.indexOf(carrier));
-    const receiver=squad[(carrierIndex+2+Math.floor(phase/3))%Math.max(1,squad.length)]||carrier;
     const passOne=phase>=3.2&&phase<4.5,passTwo=phase>=7.2&&phase<8.55;
+    const passFrom=passOne?squad[0]:passTwo?(squad[1]||squad[0]):carrier;
+    const passTo=passOne?(squad[1]||squad[0]):passTwo?(squad[2]||squad[1]||squad[0]):(squad[(carrierIndex+1)%Math.max(1,squad.length)]||carrier);
+    const receiver=passTo||carrier;
     const shotPhase=phase>=10.1&&phase<12.25;
     const replayActive=highlightEvent&&elapsed-highlightStarted<5.5;
     const replayType=replayActive?String(highlightEvent.type||"").toLowerCase():"";
     const replaySide=replayActive?(highlightEvent.team===data.home?.name?"home":highlightEvent.team===data.away?.name?"away":possessionSide):null;
     const replaySign=replaySide==="home"?1:-1;
     let ballTarget=carrier?new THREE.Vector3(carrier.position.x+attackSign*1.25,.4,carrier.position.z+.4):new THREE.Vector3(0,.4,0);
-    if(passOne&&carrier&&receiver)ballTarget.copy(receiver.position).add(new THREE.Vector3(0,.4,0));
-    if(passTwo&&receiver)ballTarget.copy(receiver.position).add(new THREE.Vector3(0,.4,0));
+    if((passOne||passTwo)&&passTo)ballTarget.copy(passTo.position).add(new THREE.Vector3(0,.4,0));
     if(shotPhase)ballTarget.set(attackSign*51,.42,carrier?carrier.position.z*.18:0);
     if(replayActive&&["goal","chance"].includes(replayType))ballTarget.set(replaySign*51,.45,replayType==="goal"?0:(carrier?carrier.position.z*.2:0));
     if(replayActive&&["red","yellow","card"].some(t=>replayType.includes(t)))ballTarget.copy(carrier?carrier.position:new THREE.Vector3(0,.4,0));
@@ -308,8 +309,8 @@ function initialize(stage){
     let target=ballTarget.clone();
     let flight=0;
     if(passOne||passTwo){
-      const from=carrier?carrier.position:(new THREE.Vector3());
-      const to=receiver?receiver.position:from;
+      const from=passFrom?passFrom.position:(new THREE.Vector3());
+      const to=passTo?passTo.position:from;
       ballFrom.set(from.x,.4,from.z);target.set(to.x,.4,to.z);
       flight=passOne?clamp((phase-3.2)/1.3,0,1):clamp((phase-7.2)/1.35,0,1);
       target.x=ballFrom.x+(to.x-ballFrom.x)*flight;target.z=ballFrom.z+(to.z-ballFrom.z)*flight;
@@ -330,7 +331,8 @@ function initialize(stage){
     ball.position.y=THREE.MathUtils.damp(ball.position.y,target.y,6,dt||.016);
     ball.rotation.x+=dt*7;ball.rotation.z+=dt*5;
     const bp=ball.position;
-    for(let i=0;i<90;i++){const t=i/89;ballTrailPositions[i*3]=lastBallPosition.x+(bp.x-lastBallPosition.x)*t;ballTrailPositions[i*3+1]=Math.max(.1,lastBallPosition.y+(bp.y-lastBallPosition.y)*t);ballTrailPositions[i*3+2]=lastBallPosition.z+(bp.z-lastBallPosition.z)*t;}
+    for(let i=89;i>0;i--){ballTrailPositions[i*3]=ballTrailPositions[(i-1)*3];ballTrailPositions[i*3+1]=ballTrailPositions[(i-1)*3+1];ballTrailPositions[i*3+2]=ballTrailPositions[(i-1)*3+2];}
+    ballTrailPositions[0]=bp.x;ballTrailPositions[1]=bp.y;ballTrailPositions[2]=bp.z;
     trailGeometry.attributes.position.needsUpdate=true;lastBallPosition.copy(bp);
     renderer.render(scene,camera);
     if(loading){loading.style.opacity="0";loading.style.pointerEvents="none";loading.setAttribute("aria-hidden","true");setTimeout(()=>{if(loading.isConnected)loading.remove();},180);}
