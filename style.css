@@ -1120,10 +1120,10 @@ body.matchday-mode .page-heading{display:none}
 .movement-home .movement-shirt{background:#b62536}
 .movement-away .movement-shirt{background:#1468b7}
 .movement-keeper .movement-shirt{background:#c9a227;color:#152016}
-@keyframes movement-player-run{0%,100%{transform:translate(-50%,-50%) translate(0,0)}28%{transform:translate(-50%,-50%) translate(var(--move-x),var(--move-y))}62%{transform:translate(-50%,-50%) translate(calc(var(--move-x) * -0.45),calc(var(--move-y) * -0.5))}}
+@keyframes movement-player-run{0%,100%{transform:translate(-50%,-50%) translate(0,0)}28%{transform:translate(-50%,-50%) translate(var(--move-x),var(--move-y))}62%{transform:translate(-50%,-50%) translate(0,0)}}
 .movement-ball{position:absolute;left:var(--ball-start-x);top:50%;z-index:5;width:15px;height:15px;animation:movement-ball-run 5.4s ease-in-out infinite;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
 .movement-ball span{display:block;width:100%;height:100%;border-radius:50%;border:2px solid #fff;background:radial-gradient(circle at 35% 35%,#fff 0 18%,#262626 19% 28%,#f7f7f7 29% 54%,#242424 55% 65%,#f5f5f5 66%);box-shadow:0 0 0 3px rgba(255,231,115,.24)}
-@keyframes movement-ball-run{0%{left:var(--ball-start-x);top:52%}25%{left:var(--ball-end-x);top:34%}52%{left:calc((var(--ball-start-x) + var(--ball-end-x)) / 2);top:65%}78%{left:var(--ball-start-x);top:43%}100%{left:var(--ball-start-x);top:52%}}
+@keyframes movement-ball-run{0%{left:var(--ball-start-x);top:52%}25%{left:var(--ball-end-x);top:34%}52%{left:var(--ball-mid-x);top:65%}78%{left:var(--ball-start-x);top:43%}100%{left:var(--ball-start-x);top:52%}}
 .movement-pitch-label{position:absolute;z-index:2;top:7px;color:rgba(255,255,255,.85);font-size:clamp(7px,.85vw,10px);font-weight:900;text-transform:uppercase;letter-spacing:.7px;max-width:35%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 3px #092016}
 .movement-home-label{left:10px}.movement-away-label{right:10px;text-align:right}
 .movement-legend{display:flex;flex-wrap:wrap;gap:15px;margin:12px 2px 4px;color:var(--muted);font-size:10px;font-weight:700}
