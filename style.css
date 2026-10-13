@@ -1162,3 +1162,19 @@ body.matchday-mode .page-heading{display:none}
 .matchday-3d-loading{transition:opacity .18s ease-out}
 .matchday-3d-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:28px;text-align:center;background:radial-gradient(ellipse at center,#263e35,#111a22 75%);color:#fff}
 .matchday-3d-fallback strong{font-size:18px}.matchday-3d-fallback p{max-width:420px;color:#c3ced0;font-size:12px;line-height:1.6}
+
+
+/* Integrated 2D match replay: additive styles, preserving the existing Ginga FM layout */
+.matchday-view-switch{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px;padding:7px;border:1px solid var(--border);border-radius:10px;background:var(--surface-secondary)}
+.matchday-view-switch .small-btn{min-height:36px}
+.matchday-view-switch .small-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+.matchday-visual-view.is-hidden{display:none!important}
+.matchday-2d-stage{min-width:0}
+.matchday-2d-canvas-frame{width:100%;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:#1e4d2b;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.matchday-2d-canvas{display:block;width:100%;height:auto;aspect-ratio:3/2;touch-action:pan-y}
+.matchday-2d-controls{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:12px 0 5px}
+.matchday-2d-controls label{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;font-weight:800}
+.matchday-2d-controls input[type=range]{width:110px;accent-color:var(--accent)}
+.matchday-2d-clock{margin-left:auto;color:var(--muted);font-size:10px;font-weight:800}
+.matchday-2d-clock b{margin-left:5px;color:var(--text);font-variant-numeric:tabular-nums}
+@media(max-width:560px){.matchday-view-switch{padding:5px}.matchday-2d-controls{gap:7px}.matchday-2d-controls .small-btn{padding:7px 9px}.matchday-2d-controls label{width:100%;justify-content:flex-start}.matchday-2d-clock{margin-left:0}}
