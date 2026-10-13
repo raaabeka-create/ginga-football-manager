@@ -320,68 +320,34 @@ function renderMatchdayMovementPitch(pending,stage,home,away,isHome,currentScore
     const redIds=new Set((pending.redCardedPlayerIds||[]).map(Number));
     const homeIds=stage==="FULLTIME"?(full.homeFinalLineup||full.homeLineup||[]):(isHome?(pending.lineup||[]):(pending.opponentLineup||[]));
     const awayIds=stage==="FULLTIME"?(full.awayFinalLineup||full.awayLineup||[]):(isHome?(pending.opponentLineup||[]):(pending.lineup||[]));
-    const formations={"4-3-3":[4,3,3],"4-4-2":[4,4,2],"4-2-3-1":[4,5,1],"5-3-2":[5,3,2],"5-4-1":[5,4,1]};
     const ownFormation=String((pending.tactics&&pending.tactics.formation)||career.tactics.formation||"4-3-3");
     const opponentClub=isHome?away:home;
     const opponentFormation=String((opponentClub.tactics&&opponentClub.tactics.formation)||"4-3-3");
-    const last=(events||[]).slice().sort((a,b)=>Number(b.minute||0)-Number(a.minute||0))[0]||null;
-    const attackingTeam=last&&last.team?last.team:(Number(currentScore.homePossession||50)>=50?home.name:away.name);
-    const attackHome=attackingTeam===home.name;
-    const latestText=last?matchEventText(last):"Open play · teams settling into their shape";
-    function markerMarkup(ids,isHomeSide,formation){
-        let list=(ids||[]).map(id=>players.find(pl=>Number(pl.id)===Number(id))).filter(pl=>pl&&!pl.retired&&!redIds.has(Number(pl.id)));
-        const keeper=list.find(pl=>String(pl.position||"").toUpperCase()==="GK")||list[0];
-        if(!keeper)return "";
-        const rest=list.filter(pl=>pl!==keeper);
-        const shape=formations[formation]||formations["4-3-3"];
-        const used=new Set([Number(keeper.id)]);
-        const rows=[
-            {count:shape[0],x:isHomeSide?20:80,types:["CB","LB","RB","LWB","RWB"]},
-            {count:shape[1],x:isHomeSide?34:66,types:["DM","CM","AM","LM","RM"]},
-            {count:shape[2],x:isHomeSide?46:54,types:["ST","CF","LW","RW"]}
-        ];
-        const coords=[];
-        const add=(pl,x,y,index)=>{
-            used.add(Number(pl.id));
-            const dx=((index%3)-1)*7*(isHomeSide?1:-1);
-            const dy=(index%2===0?-1:1)*(5+(index%3)*2);
-            const surname=String(pl.name||"Player").trim().split(/\s+/).slice(-1)[0];
-            const short=surname.length>10?surname.slice(0,9)+"…":surname;
-            coords.push('<button type="button" class="movement-player '+(isHomeSide?"movement-home":"movement-away")+(String(pl.position).toUpperCase()==="GK"?" movement-keeper":"")+'" style="left:'+x+'%;top:'+y+'%;--move-x:'+dx+'px;--move-y:'+dy+'px;--move-delay:'+((index%7)*-.37)+'s" data-action="view-player" data-player="'+pl.id+'" title="'+safe(pl.name)+' · '+safe(pl.position)+' · OVR '+playerOverall(pl)+'"><span class="movement-shirt">'+safe(String(index+1).padStart(2,"0"))+'</span><b>'+safe(short)+'</b></button>');
-        };
-        add(keeper,isHomeSide?6:94,50,isHomeSide?0:11);
-        let idx=isHomeSide?1:12;
-        rows.forEach(row=>{
-            const preferred=rest.filter(pl=>!used.has(Number(pl.id))&&row.types.includes(String(pl.position||"").toUpperCase()));
-            const chosen=preferred.slice(0,row.count);
-            while(chosen.length<row.count){
-                const fallback=rest.find(pl=>!used.has(Number(pl.id))&&!chosen.some(x=>Number(x.id)===Number(pl.id)));
-                if(!fallback)break;
-                chosen.push(fallback);
-            }
-            chosen.forEach((pl,j)=>add(pl,row.x,((j+1)/(chosen.length+1))*100,idx++));
-        });
-        return coords.join("");
+    function teamData(club,ids,formation){
+        const list=(ids||[]).map(id=>players.find(pl=>Number(pl.id)===Number(id))).filter(pl=>pl&&!pl.retired&&!redIds.has(Number(pl.id)));
+        return {name:String(club.name||"Club"),formation,players:list.map((pl,index)=>({id:Number(pl.id),name:String(pl.name||"Player"),position:String(pl.position||"CM"),overall:playerOverall(pl),number:index+1}))};
     }
-    const ballStart=attackHome?37:63,ballEnd=attackHome?76:24;
-    const path=attackHome?"M 420 300 Q 560 160 760 300":"M 580 300 Q 440 440 240 300";
+    const last=(events||[]).slice().sort((a,b)=>Number(b.minute||0)-Number(a.minute||0))[0]||null;
     const possHome=Number(currentScore.homePossession||50);
     const minute=last?Number(last.minute||0):(stage==="FULLTIME"?90:45);
-    const homeFormation=isHome?ownFormation:opponentFormation;
-    const awayFormation=isHome?opponentFormation:ownFormation;
+    const data={
+        stage,minute,score:{home:Number(currentScore.homeGoals||0),away:Number(currentScore.awayGoals||0)},
+        home:teamData(home,homeIds,isHome?ownFormation:opponentFormation),
+        away:teamData(away,awayIds,isHome?opponentFormation:ownFormation),
+        events:(events||[]).slice().sort((a,b)=>Number(a.minute||0)-Number(b.minute||0)).map(ev=>({type:String(ev.type||"event"),minute:Number(ev.minute||0),team:String(ev.team||""),player:String(ev.player||""),playerOut:String(ev.playerOut||""),assistPlayer:String(ev.assistPlayer||"")}))
+    };
+    const lastText=last?matchEventText(last):"Open play — both teams settling into their shape";
+    const dataAttribute=safe(JSON.stringify(data));
+    const eventButtons=data.events.length?data.events.slice(-8).map((ev,i)=>'<button type="button" class="matchday-3d-event" data-3d-event="'+(data.events.length-Math.min(8,data.events.length)+i)+'"><b>'+ev.minute+'′</b><span>'+safe(ev.type==="goal"?"GOAL":ev.type==="chance"?"CHANCE":ev.type==="red"?"RED CARD":ev.type==="yellow"?"YELLOW CARD":ev.type==="substitution"?"SUBSTITUTION":ev.type.toUpperCase())+' · '+safe(ev.player||ev.team||"Match incident")+'</span></button>').join(""):'<p class="subtle">No major incidents yet. The 3D view shows the teams in their tactical shape.</p>';
     const html=[];
-    html.push('<section class="game-panel matchday-movement-panel">');
-    html.push('<div class="panel-heading"><div><p class="panel-eyebrow">TACTICAL VISUALIZER</p><h2>Player movement</h2><p class="subtle">Animated formation view · '+safe(home.name)+' vs '+safe(away.name)+'</p></div><span class="movement-live-chip">'+(stage==="FULLTIME"?"FULL TIME":"HALF TIME")+'</span></div>');
-    html.push('<div class="movement-pitch-wrap"><div class="movement-pitch" role="img" aria-label="Animated top-down football pitch showing both teams and ball movement">');
-    html.push('<svg class="movement-pitch-lines" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><rect x="18" y="18" width="964" height="564" rx="3"/><line x1="500" y1="18" x2="500" y2="582"/><circle cx="500" cy="300" r="82"/><circle cx="500" cy="300" r="4"/><rect x="18" y="170" width="145" height="260"/><rect x="18" y="230" width="55" height="140"/><rect x="0" y="255" width="18" height="90"/><rect x="837" y="170" width="145" height="260"/><rect x="927" y="230" width="55" height="140"/><rect x="982" y="255" width="18" height="90"/><path d="M163 245 Q205 300 163 355"/><path d="M837 245 Q795 300 837 355"/></svg>');
-    html.push('<svg class="movement-pass-trail" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><path d="'+path+'"/></svg>');
-    html.push(markerMarkup(homeIds,true,homeFormation));
-    html.push(markerMarkup(awayIds,false,awayFormation));
-    html.push('<span class="movement-ball" style="--ball-start-x:'+ballStart+'%;--ball-end-x:'+ballEnd+'%;--ball-mid-x:'+(attackHome?56:44)+'%"><span></span></span>');
-    html.push('<span class="movement-pitch-label movement-home-label">'+safe(home.name)+'</span><span class="movement-pitch-label movement-away-label">'+safe(away.name)+'</span></div></div>');
-    html.push('<div class="movement-legend"><span><i class="legend-dot legend-home"></i>'+safe(home.name)+'</span><span><i class="legend-dot legend-away"></i>'+safe(away.name)+'</span><span><i class="legend-ball"></i>Ball movement</span></div>');
-    html.push('<div class="movement-insight"><span class="movement-minute">'+minute+'′</span><div><strong>'+(attackHome?safe(home.name):safe(away.name))+' in possession / attacking phase</strong><p>'+safe(latestText)+'</p></div><div class="movement-possession"><small>POSSESSION</small><b>'+possHome+'% — '+Number(currentScore.awayPossession||100-possHome)+'%</b></div></div>');
-    html.push('<p class="movement-disclaimer">Player markers move in an animated tactical pattern based on the lineups and match incidents. Exact player coordinates and real-time tracking are not yet generated by this match engine.</p></section>');
+    html.push('<section class="game-panel matchday-movement-panel matchday-3d-panel">');
+    html.push('<div class="panel-heading"><div><p class="panel-eyebrow">3D MATCH ENGINE · DESKTOP VIEW</p><h2>Matchday 3D</h2><p class="subtle">3D stadium, player models, ball movement and incident-focused highlights</p></div><span class="movement-live-chip">'+(stage==="FULLTIME"?"FULL TIME":"HALF TIME")+'</span></div>');
+    html.push('<div class="matchday-3d-stage" data-matchday-3d="'+dataAttribute+'" role="img" aria-label="Three-dimensional football stadium with animated players and ball"><div class="matchday-3d-loading"><span class="matchday-3d-spinner"></span><strong>Building the stadium…</strong><small>Preparing the 3D pitch and players</small></div></div>');
+    html.push('<div class="matchday-3d-controls"><div class="matchday-3d-camera-controls"><button type="button" class="small-btn active" data-3d-camera="broadcast">Broadcast</button><button type="button" class="small-btn" data-3d-camera="tactical">Tactical</button><button type="button" class="small-btn" data-3d-camera="goal">Behind goal</button></div><button type="button" class="small-btn" data-3d-pause>Pause animation</button></div>');
+    html.push('<div class="movement-legend"><span><i class="legend-dot legend-home"></i>'+safe(home.name)+'</span><span><i class="legend-dot legend-away"></i>'+safe(away.name)+'</span><span><i class="legend-ball"></i>Ball</span></div>');
+    html.push('<div class="movement-insight"><span class="movement-minute">'+minute+'′</span><div><strong>'+safe(home.name)+' '+Number(currentScore.homeGoals||0)+' — '+Number(currentScore.awayGoals||0)+' '+safe(away.name)+'</strong><p>'+safe(lastText)+'</p></div><div class="movement-possession"><small>POSSESSION</small><b>'+possHome+'% — '+Number(currentScore.awayPossession||100-possHome)+'%</b></div></div>');
+    html.push('<div class="matchday-3d-event-strip"><div class="panel-heading"><div><p class="panel-eyebrow">HIGHLIGHT SELECTOR</p><h3>Match incidents</h3></div><small>Select an incident to replay its animation</small></div><div class="matchday-3d-event-list">'+eventButtons+'</div></div>');
+    html.push('<p class="movement-disclaimer">This is a new 3D presentation layer built around Ginga FM’s existing score and incidents. Player runs are currently procedural highlight animations, not exact tracking coordinates; detailed motion-captured animations and fully event-calculated trajectories would be a later upgrade.</p></section>');
     return html.join("");
 }
 
