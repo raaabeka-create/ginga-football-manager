@@ -77,7 +77,7 @@ function init(canvas){
    return;
   }
   if(state.owner){b.x=state.owner.x+(state.owner.team==="home"?10:-10);b.y=state.owner.y+3;return}
-  const closest=players.filter(p=>p.role!=="gk").sort((a,b)=>Math.hypot(a.x-b.x,b.y-b.y)-Math.hypot(b.x-b.x,b.y-b.y))[0];
+  const closest=players.filter(p=>p.role!=="gk").sort((a,b)=>Math.hypot(a.x-state.ball.x,a.y-state.ball.y)-Math.hypot(b.x-state.ball.x,b.y-state.ball.y))[0];
   if(closest){state.owner=closest}
  }
  function drawPitch(){
