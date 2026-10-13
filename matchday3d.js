@@ -156,6 +156,7 @@ function initialize(stage){
   if(mounted.has(stage))return;
   const data=readData(stage);
   stage.innerHTML="";
+  const panel=stage.closest(".matchday-3d-panel")||stage.parentElement;
   const canvas=document.createElement("canvas");canvas.className="matchday-3d-canvas";canvas.setAttribute("aria-label","3D matchday stadium and animated players");stage.appendChild(canvas);
   const hud=document.createElement("div");hud.className="matchday-3d-hud";hud.innerHTML='<span class="matchday-3d-hud-pill">'+(data.stage==="FULLTIME"?"FULL TIME":"HALF TIME")+'</span><strong>'+Number(data.score?.home||0)+' — '+Number(data.score?.away||0)+'</strong><small>'+String(data.home?.name||"Home")+' vs '+String(data.away?.name||"Away")+'</small>';stage.appendChild(hud);
   const scene=new THREE.Scene();scene.background=new THREE.Color(0x111a22);scene.fog=new THREE.Fog(0x111a22,90,175);
@@ -184,14 +185,12 @@ function initialize(stage){
   const observer=new ResizeObserver(resize);observer.observe(stage);
   let paused=reducedMotion,elapsed=0,lastTime=0,selectedEventIndex=Math.max(0,(data.events||[]).length-1),currentCamera="broadcast";
   const setEvent=index=>{const evs=data.events||[];if(!evs.length)return;selectedEventIndex=clamp(Number(index)||0,0,evs.length-1);const ev=evs[selectedEventIndex];const hudText=stage.querySelector(".matchday-3d-hud small");if(hudText)hudText.textContent=ev.minute+"′ · "+String(ev.type||"incident").toUpperCase()+" · "+(ev.player||ev.team||"Match incident");};
-  stage.querySelectorAll("[data-3d-event]").forEach(button=>button.addEventListener("click",()=>setEvent(button.dataset._eventIndex??button.getAttribute("data-3d-event"))));
   function onDocumentEvent(event){const button=event.target.closest&&event.target.closest("[data-3d-event]");if(button&&stage.contains(button))setEvent(button.getAttribute("data-3d-event"));}
   document.addEventListener("click",onDocumentEvent);
-  const eventHandler=event=>{if(!stage.contains(event.target))return;};
-  stage.querySelectorAll("[data-3d-camera]").forEach(button=>button.addEventListener("click",()=>{currentCamera=button.dataset._camera||button.getAttribute("data-3d-camera");cameraTarget(camera,currentCamera);stage.querySelectorAll("[data-3d-camera]").forEach(b=>b.classList.toggle("active",b===button));}));
-  stage.querySelectorAll("[data-3d-pause]").forEach(button=>button.addEventListener("click",()=>{paused=!paused;button.textContent=paused?"Play animation":"Pause animation";}));
+  panel.querySelectorAll("[data-3d-camera]").forEach(button=>button.addEventListener("click",()=>{currentCamera=button.getAttribute("data-3d-camera")||"broadcast";cameraTarget(camera,currentCamera);panel.querySelectorAll("[data-3d-camera]").forEach(b=>b.classList.toggle("active",b===button));}));
+  panel.querySelectorAll("[data-3d-pause]").forEach(button=>button.addEventListener("click",()=>{paused=!paused;button.textContent=paused?"Play animation":"Pause animation";}));
   function animate(time){
-    if(!stage.isConnected){renderer.setAnimationLoop(null);observer.disconnect();document.removeEventListener("click",onDocumentEvent);activeScenes.delete(dispose);return;}
+    if(!stage.isConnected){dispose();return;}
     const dt=lastTime?Math.min(.05,(time-lastTime)/1000):0;lastTime=time;
     if(!paused)elapsed+=dt;
     const phase=elapsed*.52,ev=(data.events||[])[selectedEventIndex]||null;
