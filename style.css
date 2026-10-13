@@ -1103,3 +1103,36 @@ body.matchday-mode .page-heading{display:none}
 @media(max-width:600px){body.matchday-mode .main{padding:12px 10px}.matchday-hero{display:block;padding:22px}.matchday-venue{margin-top:18px;max-width:none}.matchday-score{gap:8px;padding:15px 8px}.matchday-score span{font-size:11px}.matchday-score strong{font-size:25px}.matchday-score.pre-match-score strong{font-size:18px}.scout-metrics{gap:5px}.scout-metrics>div{padding:10px 7px}.matchday-tactics{grid-template-columns:1fr 1fr}.matchday-scoreboard{gap:7px;padding:15px 7px}.score-team .mini-crest{width:30px;height:34px;flex-basis:34px}.score-team strong{font-size:10px}.score-centre>strong{font-size:31px}.score-centre>small{font-size:8px}.matchday-stat-row{grid-template-columns:62px 25px minmax(20px,1fr) 25px;gap:5px;font-size:10px}.matchday-sub-grid{grid-template-columns:1fr}.team-talk-options{grid-template-columns:1fr}.matchday-topbar{align-items:flex-start}.matchday-lineup-row{grid-template-columns:22px 32px minmax(0,1fr) 24px 38px;gap:5px}}
 
 .matchday-dismissal-note{padding:12px 14px;margin:12px 0;border:1px solid rgba(198,40,56,.35);border-left:4px solid #c62838;border-radius:8px;background:rgba(198,40,56,.09);color:var(--text);font-size:11px;line-height:1.6}
+
+/* Matchday player-movement visualizer */
+.matchday-movement-panel{margin:18px 0;overflow:hidden}
+.movement-live-chip{display:inline-flex;align-items:center;padding:6px 10px;border-radius:99px;background:rgba(38,166,91,.12);border:1px solid rgba(38,166,91,.3);color:#23834c;font-size:9px;font-weight:900;letter-spacing:.9px;white-space:nowrap}
+.movement-pitch-wrap{padding:10px;border-radius:14px;background:#101b19;border:1px solid rgba(255,255,255,.12)}
+.movement-pitch{position:relative;isolation:isolate;aspect-ratio:5/3;width:100%;overflow:hidden;border-radius:8px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0,rgba(255,255,255,.035) 10%,transparent 10%,transparent 20%),linear-gradient(180deg,#176a43 0%,#1d7a4c 50%,#176a43 100%)}
+.movement-pitch-lines{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:rgba(255,255,255,.62);stroke-width:2.1;pointer-events:none;z-index:0}
+.movement-pass-trail{position:absolute;inset:0;width:100%;height:100%;z-index:1;overflow:visible;pointer-events:none}
+.movement-pass-trail path{fill:none;stroke:rgba(255,231,115,.9);stroke-width:5;stroke-linecap:round;stroke-dasharray:13 13;animation:movement-pass-flow 1.2s linear infinite;filter:drop-shadow(0 0 4px rgba(255,232,115,.45))}
+@keyframes movement-pass-flow{to{stroke-dashoffset:-52}}
+.movement-player{position:absolute;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:32px;max-width:78px;padding:0;border:0;background:transparent;color:#fff;cursor:pointer;transform:translate(-50%,-50%);animation:movement-player-run 3.4s ease-in-out infinite;animation-delay:var(--move-delay);transition:filter .2s}
+.movement-player:hover,.movement-player:focus-visible{z-index:8;filter:brightness(1.3);outline:2px solid #ffe66d;outline-offset:3px;border-radius:5px}
+.movement-shirt{display:grid;place-items:center;width:clamp(21px,2.5vw,31px);height:clamp(21px,2.5vw,31px);border:2px solid rgba(255,255,255,.95);border-radius:50%;font-size:clamp(7px,.85vw,10px);font-weight:900;box-shadow:0 2px 6px rgba(0,0,0,.38)}
+.movement-player b{display:block;max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(7px,.8vw,10px);font-weight:800;text-shadow:0 1px 3px #092016,0 1px 5px #092016;line-height:1.1}
+.movement-home .movement-shirt{background:#b62536}
+.movement-away .movement-shirt{background:#1468b7}
+.movement-keeper .movement-shirt{background:#c9a227;color:#152016}
+@keyframes movement-player-run{0%,100%{transform:translate(-50%,-50%) translate(0,0)}28%{transform:translate(-50%,-50%) translate(var(--move-x),var(--move-y))}62%{transform:translate(-50%,-50%) translate(calc(var(--move-x) * -0.45),calc(var(--move-y) * -0.5))}}
+.movement-ball{position:absolute;left:var(--ball-start-x);top:50%;z-index:5;width:15px;height:15px;animation:movement-ball-run 5.4s ease-in-out infinite;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.movement-ball span{display:block;width:100%;height:100%;border-radius:50%;border:2px solid #fff;background:radial-gradient(circle at 35% 35%,#fff 0 18%,#262626 19% 28%,#f7f7f7 29% 54%,#242424 55% 65%,#f5f5f5 66%);box-shadow:0 0 0 3px rgba(255,231,115,.24)}
+@keyframes movement-ball-run{0%{left:var(--ball-start-x);top:52%}25%{left:var(--ball-end-x);top:34%}52%{left:calc((var(--ball-start-x) + var(--ball-end-x)) / 2);top:65%}78%{left:var(--ball-start-x);top:43%}100%{left:var(--ball-start-x);top:52%}}
+.movement-pitch-label{position:absolute;z-index:2;top:7px;color:rgba(255,255,255,.85);font-size:clamp(7px,.85vw,10px);font-weight:900;text-transform:uppercase;letter-spacing:.7px;max-width:35%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 3px #092016}
+.movement-home-label{left:10px}.movement-away-label{right:10px;text-align:right}
+.movement-legend{display:flex;flex-wrap:wrap;gap:15px;margin:12px 2px 4px;color:var(--muted);font-size:10px;font-weight:700}
+.movement-legend>span{display:inline-flex;align-items:center;gap:6px}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%}.legend-home{background:#b62536}.legend-away{background:#1468b7}.legend-ball{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ffe66d;box-shadow:0 0 0 2px rgba(255,230,109,.25)}
+.movement-insight{display:flex;align-items:center;gap:12px;margin-top:12px;padding:12px;border-radius:10px;background:var(--surface-soft);border:1px solid var(--border)}
+.movement-minute{flex-shrink:0;color:var(--accent-hover);font-weight:900;font-size:12px}
+.movement-insight>div:nth-child(2){flex:1;min-width:0}.movement-insight strong{font-size:11px}.movement-insight p{margin:4px 0 0;color:var(--muted);font-size:10px;line-height:1.5}
+.movement-possession{display:flex;flex-direction:column;align-items:flex-end;gap:4px;white-space:nowrap}.movement-possession small{color:var(--muted);font-size:8px;font-weight:900;letter-spacing:.7px}.movement-possession b{font-size:11px}
+.movement-disclaimer{margin:10px 0 0;color:var(--muted);font-size:9px;line-height:1.5}
+@media(max-width:640px){.movement-pitch-wrap{padding:5px}.movement-pitch{aspect-ratio:4/3}.movement-player{max-width:47px}.movement-player b{max-width:47px;font-size:7px}.movement-shirt{width:20px;height:20px;font-size:7px}.movement-ball{width:11px;height:11px}.movement-insight{align-items:flex-start;flex-wrap:wrap}.movement-possession{margin-left:auto}.movement-pitch-label{max-width:38%}}
+@media(prefers-reduced-motion:reduce){.movement-player,.movement-ball,.movement-pass-trail path{animation:none!important}}
