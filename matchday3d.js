@@ -218,12 +218,15 @@ function initialize(stage){
     button.addEventListener("click",()=>{paused=!paused;button.textContent=paused?"Play animation":"Pause animation";});
   });
   const teamPlayers={home:all.filter(p=>p.userData.side==="home"),away:all.filter(p=>p.userData.side==="away")};
-  const chooseCarrier=(side,phase)=>{
+  const rankedAttackers=side=>{
     const squad=teamPlayers[side].filter(p=>!p.userData.isKeeper);
     const preferred=squad.filter(p=>/ST|CF|LW|RW|AM|CM|LM|RM/i.test(p.userData.position));
-    const pool=preferred.length?preferred:squad;
+    return preferred.length?preferred:squad;
+  };
+  const chooseCarrier=(side,phase)=>{
+    const pool=rankedAttackers(side);
     const step=phase<3.2?0:phase<7.2?1:2;
-    return pool[step%Math.max(1,pool.length)]||squad[0]||null;
+    return pool[step%Math.max(1,pool.length)]||pool[0]||null;
   };
   const dampVector=(object,target,lambda,dt)=>{object.position.x=THREE.MathUtils.damp(object.position.x,target.x,lambda,dt);object.position.z=THREE.MathUtils.damp(object.position.z,target.z,lambda,dt);};
   let lastBallPosition=new THREE.Vector3(0,.4,0);
@@ -235,10 +238,11 @@ function initialize(stage){
     const attackSign=possessionSide==="home"?1:-1;
     const carrier=chooseCarrier(possessionSide,phase);
     const squad=teamPlayers[possessionSide].filter(p=>!p.userData.isKeeper);
-    const carrierIndex=Math.max(0,squad.indexOf(carrier));
+    const attackPool=rankedAttackers(possessionSide);
+    const carrierIndex=Math.max(0,attackPool.indexOf(carrier));
     const passOne=phase>=3.2&&phase<4.5,passTwo=phase>=7.2&&phase<8.55;
-    const passFrom=passOne?squad[0]:passTwo?(squad[1]||squad[0]):carrier;
-    const passTo=passOne?(squad[1]||squad[0]):passTwo?(squad[2]||squad[1]||squad[0]):(squad[(carrierIndex+1)%Math.max(1,squad.length)]||carrier);
+    const passFrom=passOne?attackPool[0]:passTwo?(attackPool[1]||attackPool[0]):carrier;
+    const passTo=passOne?(attackPool[1]||attackPool[0]):passTwo?(attackPool[2]||attackPool[1]||attackPool[0]):(attackPool[(carrierIndex+1)%Math.max(1,attackPool.length)]||carrier);
     const receiver=passTo||carrier;
     const shotPhase=phase>=10.1&&phase<12.25;
     const replayActive=highlightEvent&&elapsed-highlightStarted<5.5;
@@ -263,9 +267,9 @@ function initialize(stage){
         if(/ST|CF|LW|RW|AM/i.test(player.userData.position)){tx+=sign*(phase>6?8:3);tz+=Math.sin(elapsed*.95+i)*4.5;}
         if(/CM|DM|LM|RM/i.test(player.userData.position)){tx+=sign*(phase>3?6:0);tz+=Math.sin(elapsed*.6+i)*3.2;}
         if(player===carrier){tx+=sign*(phase<3.2?5:phase<7.2?12:phase<10.1?20:24);tz+=Math.sin(elapsed*1.1)*2.5;}
-        if(passOne&&player===carrier){tx-=sign*2;tz+=2;}
-        if(passOne&&player===receiver){tx+=sign*6;tz-=3;}
-        if(passTwo&&player===receiver){tx+=sign*10;tz+=Math.sin(elapsed)*3;}
+        if((passOne||passTwo)&&player===passFrom){tx-=sign*2;tz+=2;}
+        if(passOne&&player===passTo){tx+=sign*6;tz-=3;}
+        if(passTwo&&player===passTo){tx+=sign*10;tz+=Math.sin(elapsed)*3;}
         if(shotPhase&&/ST|CF|LW|RW/i.test(player.userData.position)){tx=sign*39;tz*=.45;}
       }else{
         const ballX=carrier?carrier.position.x:0,ballZ=carrier?carrier.position.z:0;
