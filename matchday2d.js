@@ -36,17 +36,22 @@ function init(canvas){
  const W=900,H=600,P={x:40,y:30,w:820,h:540};
  const home={primary:"#1a4d8c"},away={primary:"#c41e3a"};
  const homeTeam=formation(data.home||{},"home"),awayTeam=formation(data.away||{},"away"),players=[...homeTeam,...awayTeam];
- const state={running:!reducedMotion,speed:1,elapsed:0,last:0,owner:null,passFrom:null,passTo:null,passStart:0,ball:{x:W/2,y:H/2}};
+ const state={running:!reducedMotion,speed:1,elapsed:0,last:0,owner:null,passFrom:null,passTo:null,passStart:0,shot:false,shotStart:0,shotFrom:null,shotTeam:null,ball:{x:W/2,y:H/2}};
  const panel=canvas.closest(".matchday-visual-view");
  const start=panel&&panel.querySelector("[data-2d-start]"),pause=panel&&panel.querySelector("[data-2d-pause]"),reset=panel&&panel.querySelector("[data-2d-reset]"),slider=panel&&panel.querySelector("[data-2d-speed]"),clock=panel&&panel.querySelector("[data-2d-time]");
  function setClock(){if(clock)clock.textContent=fmt(state.elapsed)}
  function resetState(){
-  state.elapsed=0;state.owner=homeTeam.find(p=>p.role==="mid")||homeTeam[1]||homeTeam[0]||null;state.passFrom=null;state.passTo=null;state.passStart=0;
+  state.elapsed=0;state.owner=homeTeam.find(p=>p.role==="mid")||homeTeam[1]||homeTeam[0]||null;state.passFrom=null;state.passTo=null;state.passStart=0;state.shot=false;state.shotStart=0;state.shotFrom=null;state.shotTeam=null;
   players.forEach(p=>{p.px=P.x+p.bx*P.w;p.py=P.y+p.by*P.h;p.tx=p.px;p.ty=p.py;p.x=p.px;p.y=p.py});
   state.ball.x=state.owner?state.owner.x+10:W/2;state.ball.y=state.owner?state.owner.y:H/2;setClock();draw();
  }
- function choosePass(){
+ function chooseShot(){
   if(!state.owner)return;
+  state.shot=true;state.shotStart=state.elapsed;state.shotTeam=state.owner.team;
+  state.shotFrom={x:state.owner.x,y:state.owner.y};state.owner=null;state.passFrom=null;state.passTo=null;
+ }
+ function choosePass(){
+  if(!state.owner||state.shot)return;
   const owner=state.owner,team=owner.team==="home"?homeTeam:awayTeam,dir=owner.team==="home"?1:-1;
   const candidates=team.filter(p=>p!==owner&&p.role!=="gk").sort((a,b)=>dir*(b.x-a.x));
   const pool=candidates.slice(0,Math.min(5,candidates.length));
@@ -61,7 +66,7 @@ function init(canvas){
    tx+=teamAttacks?dir*(.025+((Math.sin(state.elapsed*.55+p.phase)+1)*.045))*P.w:0;
    const influence=p.role==="gk"?.025:(p===state.owner?.13:(teamAttacks?.08:.18));
    tx+=(b.x-tx)*influence;ty+=(b.y-ty)*influence;
-   if(p.role==="gk"){tx=P.x+(p.team==="home"?.055:.945)*P.w;ty=clamp(b.y,P.y+.39*P.h,P.y+.61*P.h)}
+   if(p.role==="gk"){tx=P.x+(p.team==="home"?.055:.945)*P.w;ty=clamp(b.y,P.y+.39*P.h,P.y+.61*P.h);if(state.shot&&p.team!==(state.shotTeam)){ty=clamp(b.y,P.y+.22*P.h,P.y+.78*P.h)}}
    if(p===state.owner){tx+=dir*12;ty+=Math.sin(state.elapsed*4+p.phase)*4}
    p.tx=clamp(tx,P.x+13,P.x+P.w-13);p.ty=clamp(ty,P.y+13,P.y+P.h-13);
    const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy),step=p.speed*dt;
@@ -70,6 +75,19 @@ function init(canvas){
  }
  function advanceBall(){
   const b=state.ball;
+  if(state.shot&&state.shotFrom){
+   const progress=clamp((state.elapsed-state.shotStart)/1.35,0,1);
+   const goalX=state.shotTeam==="home"?P.x+P.w-3:P.x+3;
+   const goalY=H/2+Math.sin(state.shotStart*2.7)*23;
+   b.x=state.shotFrom.x+(goalX-state.shotFrom.x)*progress;
+   b.y=state.shotFrom.y+(goalY-state.shotFrom.y)*progress-Math.sin(progress*Math.PI)*17;
+   if(progress>=1){
+    const defending=state.shotTeam==="home"?awayTeam:homeTeam;
+    state.owner=defending.find(p=>p.role==="gk")||defending[1]||null;
+    state.shot=false;state.shotFrom=null;state.shotTeam=null;
+   }
+   return;
+  }
   if(state.passTo&&state.passFrom){
    const duration=1.05/state.speed,progress=clamp((state.elapsed-state.passStart)/duration,0,1),from=state.passFrom,to=state.passTo;
    b.x=from.x+(to.x-from.x)*progress;b.y=from.y+(to.y-from.y)*progress-Math.sin(progress*Math.PI)*24;
@@ -110,7 +128,7 @@ function init(canvas){
  function frame(timestamp){
   if(!canvas.isConnected){dispose();return}
   const dt=state.last?Math.min(.04,(timestamp-state.last)/1000):0;state.last=timestamp;
-  if(state.running){const scaled=dt*state.speed;state.elapsed+=scaled;if(state.elapsed>2700)state.elapsed=0;movePlayers(scaled);if(state.owner&&Math.random()<.018*state.speed)choosePass();advanceBall();setClock()}
+  if(state.running){const scaled=dt*state.speed;state.elapsed+=scaled;if(state.elapsed>2700)state.elapsed=0;movePlayers(scaled);if(state.owner){const closeToGoal=state.owner.team==="home"?state.owner.x>P.x+P.w-175:state.owner.x<P.x+175;if(closeToGoal&&Math.random()<.0035*state.speed)chooseShot();else if(Math.random()<.018*state.speed)choosePass()}advanceBall();setClock()}
   draw();state.raf=requestAnimationFrame(frame);
  }
  function dispose(){cancelAnimationFrame(state.raf);document.removeEventListener("click",clickHandler);mounted.delete(canvas)}
