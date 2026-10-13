@@ -1157,3 +1157,8 @@ body.matchday-mode .page-heading{display:none}
 @media(min-width:1100px){.matchday-3d-stage{height:min(64vw,720px)}}
 @media(max-width:700px){.matchday-3d-stage{height:430px;min-height:430px}.matchday-3d-hud{top:8px;left:8px;padding:8px 10px}.matchday-3d-hud>strong{font-size:20px}.matchday-3d-controls{align-items:flex-start}.matchday-3d-event{flex-basis:145px}}
 @media(prefers-reduced-motion:reduce){.matchday-3d-spinner{animation:none}}
+
+
+.matchday-3d-loading{transition:opacity .18s ease-out}
+.matchday-3d-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:28px;text-align:center;background:radial-gradient(ellipse at center,#263e35,#111a22 75%);color:#fff}
+.matchday-3d-fallback strong{font-size:18px}.matchday-3d-fallback p{max-width:420px;color:#c3ced0;font-size:12px;line-height:1.6}
