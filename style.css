@@ -1136,3 +1136,24 @@ body.matchday-mode .page-heading{display:none}
 .movement-disclaimer{margin:10px 0 0;color:var(--muted);font-size:9px;line-height:1.5}
 @media(max-width:640px){.movement-pitch-wrap{padding:5px}.movement-pitch{aspect-ratio:4/3}.movement-player{max-width:47px}.movement-player b{max-width:47px;font-size:7px}.movement-shirt{width:20px;height:20px;font-size:7px}.movement-ball{width:11px;height:11px}.movement-insight{align-items:flex-start;flex-wrap:wrap}.movement-possession{margin-left:auto}.movement-pitch-label{max-width:38%}}
 @media(prefers-reduced-motion:reduce){.movement-player,.movement-ball,.movement-pass-trail path{animation:none!important}}
+
+
+/* Desktop-first 3D matchday stadium */
+.matchday-3d-stage{position:relative;width:100%;height:clamp(430px,58vw,690px);min-height:430px;overflow:hidden;border-radius:13px;border:1px solid rgba(255,255,255,.12);background:#111a22;isolation:isolate}
+.matchday-3d-canvas{display:block;width:100%;height:100%;outline:none}
+.matchday-3d-loading{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse at center,#1e392f,#111a22 70%);color:#fff}
+.matchday-3d-loading strong{font-size:16px}.matchday-3d-loading small{color:#b9c5c8;font-size:11px}
+.matchday-3d-spinner{width:34px;height:34px;border:3px solid rgba(255,255,255,.2);border-top-color:#f0c94c;border-radius:50%;animation:matchday-3d-spin .8s linear infinite}
+@keyframes matchday-3d-spin{to{transform:rotate(360deg)}}
+.matchday-3d-hud{position:absolute;top:14px;left:14px;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:5px;max-width:70%;padding:11px 14px;border:1px solid rgba(255,255,255,.18);border-radius:10px;background:rgba(9,17,22,.78);color:#fff;pointer-events:none;backdrop-filter:blur(8px)}
+.matchday-3d-hud-pill{font-size:8px;font-weight:900;letter-spacing:1px;color:#f0c94c}.matchday-3d-hud>strong{font-size:25px;line-height:1.1}.matchday-3d-hud small{font-size:10px;color:#d0d8d9;line-height:1.4}
+.matchday-3d-controls{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 4px}
+.matchday-3d-camera-controls{display:flex;gap:7px;flex-wrap:wrap}.matchday-3d-camera-controls .small-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+.matchday-3d-event-strip{margin-top:18px;padding-top:15px;border-top:1px solid var(--border)}.matchday-3d-event-strip h3{margin:0;font-size:15px;color:var(--text)}.matchday-3d-event-strip .panel-heading{margin-bottom:10px}.matchday-3d-event-strip .panel-heading>small{font-size:10px;color:var(--muted)}
+.matchday-3d-event-list{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px}
+.matchday-3d-event{display:flex;flex-direction:column;gap:5px;flex:0 0 170px;min-height:61px;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-secondary);color:var(--text);text-align:left;cursor:pointer}
+.matchday-3d-event:hover,.matchday-3d-event:focus-visible{border-color:var(--accent);background:var(--accent-soft);outline:none}
+.matchday-3d-event b{font-size:10px;color:var(--accent-hover)}.matchday-3d-event span{font-size:10px;line-height:1.4;font-weight:800}
+@media(min-width:1100px){.matchday-3d-stage{height:min(64vw,720px)}}
+@media(max-width:700px){.matchday-3d-stage{height:430px;min-height:430px}.matchday-3d-hud{top:8px;left:8px;padding:8px 10px}.matchday-3d-hud>strong{font-size:20px}.matchday-3d-controls{align-items:flex-start}.matchday-3d-event{flex-basis:145px}}
+@media(prefers-reduced-motion:reduce){.matchday-3d-spinner{animation:none}}
